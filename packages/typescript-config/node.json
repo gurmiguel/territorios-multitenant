@@ -4,7 +4,11 @@
   "compilerOptions": {
     "lib": ["es2023"],
     "module": "nodenext",
-    "target": "es2022",
+    "sourceMap": true,
+    "strictNullChecks": true,
+    "forceConsistentCasingInFileNames": true,
+    "strictBindCallApply": false,
+    "target": "es2023",
 
     "esModuleInterop": true,
     "moduleResolution": "nodenext"
