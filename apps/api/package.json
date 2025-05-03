@@ -5,8 +5,8 @@
   "license": "UNLICENSED",
   "scripts": {
     "build": "nest build",
-    "start": "nest start",
-    "dev": "nest start --watch",
+    "start": "nest start -b swc",
+    "dev": "nest start --watch -b swc",
     "debug": "nest start --debug --watch",
     "preview": "node dist/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --max-warnings 0",
@@ -14,12 +14,17 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "db:run": "docker run --name territorios-pg -e POSTGRES_PASSWORD=secret -e POSTGRES_DB=application -p 5432:5432 postgres",
+    "db:start": "docker start learn-with-ai-pg -ia"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.1",
+    "@nestjs/config": "^4.0.2",
     "@nestjs/core": "^11.0.1",
     "@nestjs/platform-express": "^11.0.1",
+    "@nestjs/platform-fastify": "^11.1.0",
+    "prisma": "^6.7.0",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1"
   },
