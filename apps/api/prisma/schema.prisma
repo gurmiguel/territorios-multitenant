@@ -19,6 +19,7 @@ datasource db {
 model Congregation {
   id        Int      @id @default(autoincrement())
   name      String
+  slug      String   @default("")
   createdAt DateTime @default(now())
 
   users     User[]
@@ -75,7 +76,7 @@ model AccountProvider {
   id        String   @id @default(uuid())
   provider  String
   sub       String
-  payload   String
+  payload   Json
   isSafe    Boolean
   createdAt DateTime @default(now())
 

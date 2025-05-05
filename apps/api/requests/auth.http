@@ -1,4 +1,5 @@
 POST http://localhost:3333/auth/login
 Content-Type: application/json
+x-tenant-id: alemanha
 
 { "username": "gu.rmiguel@gmail.com" }

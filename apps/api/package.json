@@ -30,10 +30,13 @@
     "bcrypt": "^5.1.1",
     "passport": "^0.7.0",
     "passport-custom": "^1.1.1",
+    "passport-google-oauth2": "^0.2.0",
+    "passport-google-oidc": "^0.1.0",
     "passport-jwt": "^4.0.1",
     "prisma": "^6.7.0",
     "reflect-metadata": "^0.2.2",
-    "rxjs": "^7.8.1"
+    "rxjs": "^7.8.1",
+    "uuid": "^11.1.0"
   },
   "devDependencies": {
     "@nestjs/cli": "^11.0.0",
@@ -48,6 +51,7 @@
     "@types/jest": "^29.5.14",
     "@types/node": "^22.10.7",
     "@types/passport": "^1.0.17",
+    "@types/passport-google-oauth2": "^0.1.10",
     "@types/passport-jwt": "^4.0.1",
     "@types/supertest": "^6.0.2",
     "eslint": "^9.18.0",

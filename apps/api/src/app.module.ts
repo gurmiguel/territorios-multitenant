@@ -1,20 +1,33 @@
-import { Module } from '@nestjs/common'
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common'
 import { ConfigModule } from '@nestjs/config'
 
-import { AppController } from './app.controller'
-import { AppService } from './app.service'
 import { AuthModule } from './auth/auth.module'
+import configuration from './config/configuration'
+import { CongregationsModule } from './congregations/congregations.module'
 import { PrismaModule } from './db/prisma.module'
+import { TenantsMiddleware } from './tenants/tenants.middleware'
+import { TenantsModule } from './tenants/tenants.module'
 import { UsersModule } from './users/users.module'
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ isGlobal: true }),
+    ConfigModule.forRoot({
+      isGlobal: true,
+      cache: true,
+      expandVariables: true,
+      load: [configuration],
+    }),
     AuthModule,
     UsersModule,
     PrismaModule,
+    CongregationsModule,
+    TenantsModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(TenantsMiddleware)
+      .forRoutes('*')
+  }
+}

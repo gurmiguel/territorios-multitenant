@@ -3,6 +3,8 @@ import { ConfigService } from '@nestjs/config'
 import { JwtModule } from '@nestjs/jwt'
 import { PassportModule } from '@nestjs/passport'
 
+import { Configuration } from '~/config/configuration'
+import { Congregation, User as PrismaUser } from '~/generated/prisma'
 import { UsersModule } from '~/users/users.module'
 
 import { AuthController } from './auth.controller'
@@ -15,8 +17,8 @@ import { LocalStrategy } from './strategies/local.strategy'
     PassportModule,
     JwtModule.registerAsync({
       inject: [ConfigService],
-      useFactory: async (configService: ConfigService) => ({
-        secret: configService.get('AUTH_SECRET'),
+      useFactory: async (configService: ConfigService<Configuration, true>) => ({
+        secret: configService.get('auth', { infer: true }).secret,
         signOptions: { expiresIn: '60m' },
       }),
     }),
@@ -25,3 +27,9 @@ import { LocalStrategy } from './strategies/local.strategy'
   controllers: [AuthController],
 })
 export class AuthModule {}
+
+declare module 'express' {
+  interface User extends PrismaUser {
+    congregation: Congregation
+  }
+}

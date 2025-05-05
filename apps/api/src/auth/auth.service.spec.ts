@@ -32,7 +32,7 @@ describe('AuthService', () => {
     const user = { id: '123456', email: username }
     jest.spyOn(usersService, 'find').mockImplementationOnce(async () => user as any)
 
-    const result = await service.validateUser(username, authConstants.defaultPassword)
+    const result = await service.validateUserByUsername(username, authConstants.defaultPassword)
 
     expect(result).toEqual(user)
   })

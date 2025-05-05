@@ -9,11 +9,15 @@ export class UsersService {
     private readonly prisma: PrismaService,
   ) {}
 
-  async find(criteria: Prisma.UserWhereInput) {
-    return this.prisma.user.findFirst({ where: criteria })
+  get find() {
+    return this.prisma.user.findFirst
   }
 
-  async create(data: Prisma.UserCreateInput) {
-    return this.prisma.user.create({ data })
+  get create() {
+    return this.prisma.user.create
+  }
+
+  async addProvider(data: Prisma.AccountProviderCreateArgs['data']) {
+    await this.prisma.accountProvider.create({ data })
   }
 }
