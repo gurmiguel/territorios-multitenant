@@ -1,14 +1,29 @@
 import { promisify } from 'node:util'
 
-import { Injectable } from '@nestjs/common'
-import { JwtService, JwtSignOptions } from '@nestjs/jwt'
+import { Injectable, Logger, UnauthorizedException } from '@nestjs/common'
+import { JwtService } from '@nestjs/jwt'
 import bcrypt from 'bcrypt'
-import { User } from 'express'
 
+import { Congregation, User as PrismaUser } from '~/generated/prisma'
 import { TenantHolderService } from '~/tenants/tenant-holder.service'
 import { UsersService } from '~/users/users.service'
 
 import authConstants from './constants'
+
+type User = Express.User
+
+interface TokenPayload {
+  sub: User['id']
+  iss: User['congregation']['slug']
+}
+
+interface AccessTokenPayload extends TokenPayload {
+  type: 'access_token'
+  username: User['email']
+}
+interface RefreshTokenPayload extends TokenPayload {
+  type: 'refresh_token'
+}
 
 @Injectable()
 export class AuthService {
@@ -31,12 +46,7 @@ export class AuthService {
     if (!user || await this.checkPassword(password, authConstants.defaultPassword))
       return null
 
-    const {
-      /* use spread operator to remove any sensitive info here */
-      ...result
-    } = user
-
-    return result
+    return this.buildUser(user)
   }
 
   async validateUserByProvider(requestId: string, provider: string, uid: string, profile: Pick<User, 'email' | 'name'>): Promise<User | null> {
@@ -88,17 +98,41 @@ export class AuthService {
       })
     }
 
-    return user
+    return this.buildUser(user)
+  }
+
+  async validateUserByRefreshToken(requestId: string, refreshToken: any) {
+    const tenant = this.tenantHolder.getTenant(requestId)
+
+    try {
+      const tokenPayload = await this.jwtService.verifyAsync<RefreshTokenPayload>(refreshToken)
+
+      if (tenant.slug !== tokenPayload.iss)
+        throw new UnauthorizedException('Tenant id invalid for this user')
+
+      const user = await this.usersService.find({
+        where: { id: tokenPayload.sub, congregationId: tenant.id },
+        include: { congregation: true },
+      })
+
+      if (!user)
+        throw new UnauthorizedException()
+
+      return this.buildUser(user)
+    } catch (e) {
+      Logger.error(e)
+      throw e instanceof UnauthorizedException ? e : new UnauthorizedException()
+    }
   }
 
   async signin(user: User) {
-    const opts: JwtSignOptions = {
-      subject: user.id,
-      issuer: user.congregation.slug,
+    const payload: TokenPayload = {
+      sub: user.id,
+      iss: user.congregation.slug,
     }
     return {
-      access_token: await this.jwtService.signAsync({ type: 'access_token', username: user.email }, opts),
-      refresh_token: await this.jwtService.signAsync({ type: 'refresh_token' }, { ...opts, expiresIn: '60 days' }),
+      access_token: await this.jwtService.signAsync({ ...payload, type: 'access_token', username: user.email } satisfies AccessTokenPayload, { expiresIn: '1h' }),
+      refresh_token: await this.jwtService.signAsync({ ...payload, type: 'refresh_token' } satisfies RefreshTokenPayload, { expiresIn: '60 days' }),
     }
   }
 
@@ -112,5 +146,22 @@ export class AuthService {
     const compare = promisify(bcrypt.compare)
 
     return compare(password, encrypted)
+  }
+
+  private buildUser(user: PrismaUser & { congregation: Congregation }): User {
+    const {
+      /* use spread operator to remove any sensitive info here */
+      ...userData
+    } = user
+
+    const { usersService } = this
+
+    return {
+      ...userData,
+      async refresh() {
+        Object.assign(this, await usersService.find({ where: { id: userData.id }, include: { congregation: true } }))
+        return this
+      },
+    }
   }
 }

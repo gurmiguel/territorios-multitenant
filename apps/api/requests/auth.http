@@ -1,5 +1,19 @@
-POST http://localhost:3333/auth/login
+@baseUrl = http://localhost:3333
+
+# @name login
+POST {{baseUrl}}/auth/login
 Content-Type: application/json
 x-tenant-id: alemanha
 
 { "username": "gu.rmiguel@gmail.com" }
+
+###
+
+@refreshToken = {{login.response.body.$.refresh_token}}
+
+# @name refresh
+POST {{baseUrl}}/auth/refresh
+Content-Type: application/json
+x-tenant-id: alemanha
+
+{ "refresh_token": "{{refreshToken}}" }

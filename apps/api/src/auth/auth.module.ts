@@ -10,6 +10,7 @@ import { UsersModule } from '~/users/users.module'
 import { AuthController } from './auth.controller'
 import { AuthService } from './auth.service'
 import { LocalStrategy } from './strategies/local.strategy'
+import { RefreshTokenStrategy } from './strategies/refresh-token.strategy'
 
 @Module({
   imports: [
@@ -23,13 +24,17 @@ import { LocalStrategy } from './strategies/local.strategy'
       }),
     }),
   ],
-  providers: [AuthService, LocalStrategy],
+  providers: [AuthService, LocalStrategy, RefreshTokenStrategy],
   controllers: [AuthController],
 })
 export class AuthModule {}
 
-declare module 'express' {
-  interface User extends PrismaUser {
-    congregation: Congregation
+declare global {
+  namespace Express {
+    interface User extends PrismaUser {
+      congregation: Congregation
+      /** @summary refresh user data against storage */
+      refresh(): Promise<User>
+    }
   }
 }
