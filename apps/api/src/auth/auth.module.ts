@@ -4,11 +4,11 @@ import { JwtModule } from '@nestjs/jwt'
 import { PassportModule } from '@nestjs/passport'
 
 import { Configuration } from '~/config/configuration'
-import { Congregation, User as PrismaUser } from '~/generated/prisma'
 import { UsersModule } from '~/users/users.module'
 
 import { AuthController } from './auth.controller'
 import { AuthService } from './auth.service'
+import { AccessTokenStrategy } from './strategies/access-token.strategy'
 import { LocalStrategy } from './strategies/local.strategy'
 import { RefreshTokenStrategy } from './strategies/refresh-token.strategy'
 
@@ -24,17 +24,15 @@ import { RefreshTokenStrategy } from './strategies/refresh-token.strategy'
       }),
     }),
   ],
-  providers: [AuthService, LocalStrategy, RefreshTokenStrategy],
+  providers: [AuthService, LocalStrategy, AccessTokenStrategy, RefreshTokenStrategy],
   controllers: [AuthController],
 })
 export class AuthModule {}
 
+type BuildUserReturn = ReturnType<InstanceType<typeof AuthService>['buildUser']>
+
 declare global {
   namespace Express {
-    interface User extends PrismaUser {
-      congregation: Congregation
-      /** @summary refresh user data against storage */
-      refresh(): Promise<User>
-    }
+    interface User extends BuildUserReturn {}
   }
 }

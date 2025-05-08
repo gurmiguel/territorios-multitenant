@@ -1,5 +1,4 @@
 import { Controller, Get, Post, Request, UnauthorizedException, UseGuards } from '@nestjs/common'
-import { Request as NextRequest } from 'express'
 
 import { AuthService } from './auth.service'
 import { GoogleAuthGuard } from './guards/google.guard'
@@ -30,7 +29,7 @@ export class AuthController {
 
   @UseGuards(RefreshTokenAuthGuard)
   @Post('/refresh')
-  async refreshTokenAuth(@Request() req: NextRequest) {
+  async refreshTokenAuth(@Request() req: Express.Request) {
     const { user } = req
 
     if (user) return await this.authService.signin(user)

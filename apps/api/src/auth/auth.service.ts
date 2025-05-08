@@ -101,13 +101,24 @@ export class AuthService {
     return this.buildUser(user)
   }
 
-  async validateUserByRefreshToken(requestId: string, refreshToken: any) {
+  async validateUserByRefreshToken(requestId: string, refreshToken: string) {
+    return this.validateByToken(requestId, 'refresh_token', refreshToken)
+  }
+
+  async validateUserByAccessToken(requestId: string, accessToken: string) {
+    return this.validateByToken(requestId, 'access_token', accessToken)
+  }
+
+  private async validateByToken<T extends AccessTokenPayload | RefreshTokenPayload>(requestId: string, tokenType: T['type'], token: string) {
     const tenant = this.tenantHolder.getTenant(requestId)
 
     try {
-      const tokenPayload = await this.jwtService.verifyAsync<RefreshTokenPayload>(refreshToken)
+      const tokenPayload = await this.jwtService.verifyAsync<T>(token)
 
-      if (tenant.slug !== tokenPayload.iss)
+      if (tokenPayload.type !== tokenType)
+        throw new UnauthorizedException(`Token is not a valid ${tokenType}`)
+
+      if (tokenPayload.iss !== tenant.slug)
         throw new UnauthorizedException('Tenant id invalid for this user')
 
       const user = await this.usersService.find({
@@ -148,7 +159,7 @@ export class AuthService {
     return compare(password, encrypted)
   }
 
-  private buildUser(user: PrismaUser & { congregation: Congregation }): User {
+  private buildUser(user: PrismaUser & { congregation: Congregation }) {
     const {
       /* use spread operator to remove any sensitive info here */
       ...userData

@@ -17,3 +17,12 @@ Content-Type: application/json
 x-tenant-id: alemanha
 
 { "refresh_token": "{{refreshToken}}" }
+
+###
+
+@accessToken = {{login.response.body.$.access_token}}
+
+# @name getProfile
+GET {{baseUrl}}/users
+Authorization: Bearer {{accessToken}}
+x-tenant-id: alemanha
