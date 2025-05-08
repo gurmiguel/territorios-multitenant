@@ -1,5 +1,4 @@
 import { CallHandler, ExecutionContext, Injectable, NestInterceptor } from '@nestjs/common'
-import { Request } from 'express'
 import { tap } from 'rxjs/operators'
 
 import { TenantHolderService } from './tenant-holder.service'
@@ -11,7 +10,7 @@ export class TenantsInterceptor implements NestInterceptor {
   ) {}
 
   async intercept(context: ExecutionContext, next: CallHandler) {
-    const request = context.switchToHttp().getRequest<Request>()
+    const request = context.switchToHttp().getRequest<Application.Request>()
 
     return next.handle()
       .pipe(

@@ -13,23 +13,25 @@ export class AuthController {
 
   @UseGuards(LocalAuthGuard)
   @Post('/login')
-  async login(@Request() req) {
-    return await this.authService.signin(req.user)
+  async login(@Request() req: Application.Request) {
+    return await this.authService.signin(req.user!)
   }
 
   @UseGuards(GoogleAuthGuard)
   @Get('/google')
-  async google(@Request() _req) { /* redirect automatically handled by passport */ }
+  async google() {
+    /* redirect automatically handled by passport */
+  }
 
   @UseGuards(GoogleAuthGuard)
   @Get('/google/callback')
-  async googleCallback(@Request() req) {
-    // TODO: redirect user back to client with refresh token information
+  async googleCallback() {
+    /* redirect automatically handled by passport/custom guard */
   }
 
   @UseGuards(RefreshTokenAuthGuard)
   @Post('/refresh')
-  async refreshTokenAuth(@Request() req: Express.Request) {
+  async refreshTokenAuth(@Request() req: Application.Request) {
     const { user } = req
 
     if (user) return await this.authService.signin(user)

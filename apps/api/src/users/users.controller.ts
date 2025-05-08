@@ -6,7 +6,7 @@ import { AccessTokenAuthGuard } from '~/auth/guards/access-token.guard'
 @Controller('users')
 export class UsersController {
   @Get()
-  async getUser(@Request() req: Express.Request) {
+  async getUser(@Request() req: Application.Request) {
     return req.user!
   }
 }

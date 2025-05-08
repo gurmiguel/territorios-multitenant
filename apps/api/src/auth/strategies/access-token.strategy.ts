@@ -1,6 +1,5 @@
 import { ForbiddenException, Injectable, UnauthorizedException } from '@nestjs/common'
 import { PassportStrategy } from '@nestjs/passport'
-import { Request } from 'express'
 import { Strategy } from 'passport-custom'
 
 import { AuthService } from '../auth.service'
@@ -13,7 +12,7 @@ export class AccessTokenStrategy extends PassportStrategy(Strategy, 'access_toke
     super()
   }
 
-  async validate(req: Request) {
+  async validate(req: Application.Request) {
     const accessToken = this.getBearerToken(req)
     const user = await this.authService.validateUserByAccessToken(req.id, accessToken)
 
@@ -23,7 +22,7 @@ export class AccessTokenStrategy extends PassportStrategy(Strategy, 'access_toke
     return user
   }
 
-  private getBearerToken(req: Request) {
+  private getBearerToken(req: Application.Request) {
     const [ type, token ] = req.headers.authorization?.split(' ') ?? []
 
     switch (type) {

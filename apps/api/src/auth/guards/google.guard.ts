@@ -1,11 +1,51 @@
-import { Injectable } from '@nestjs/common'
+import { ExecutionContext, ForbiddenException, Injectable } from '@nestjs/common'
 import { AuthGuard } from '@nestjs/passport'
+
+import { AuthService } from '../auth.service'
+import { GoogleStrategy } from '../strategies/google.strategy'
 
 @Injectable()
 export class GoogleAuthGuard extends AuthGuard('google') {
-  constructor() {
+  constructor(
+    private readonly strategy: GoogleStrategy,
+    private readonly authService: AuthService,
+  ) {
     super({
       accessType: 'offline',
+      prompt: 'select_account',
     })
+  }
+
+  async canActivate(context: ExecutionContext) {
+    const request = context.switchToHttp().getRequest<Application.Request>()
+    const response = context.switchToHttp().getResponse<Application.Response>()
+    const { redirectUrl } = request.query
+
+    const sessionKey = (this.strategy as any)._key
+
+    request.session[sessionKey] ??= {}
+    const session = request.session[sessionKey]
+
+    if (!redirectUrl && !['state', 'code', 'scope'].every(k => k in request.query)) {
+      throw new ForbiddenException('redirectUrl parameter was not provided')
+    } else if (redirectUrl) {
+      session.redirectUrl = redirectUrl
+    }
+
+    const activate = (await super.canActivate(context)) as boolean
+
+    if (activate) {
+      const { refresh_token } = await this.authService.signin(request.user!)
+
+      const redirectUrl = new URL(session.redirectUrl)
+      redirectUrl.searchParams.set('auth_result', 'success')
+      redirectUrl.searchParams.set('auth_provider', 'google')
+      redirectUrl.searchParams.set('code', refresh_token)
+
+      response.redirect(302, redirectUrl.href)
+      return false
+    }
+
+    return activate
   }
 }

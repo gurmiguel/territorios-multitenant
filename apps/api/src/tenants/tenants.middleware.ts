@@ -1,5 +1,4 @@
 import { ForbiddenException, Injectable, NestMiddleware } from '@nestjs/common'
-import { Request, Response } from 'express'
 
 import { CongregationsService } from '~/congregations/congregations.service'
 
@@ -12,7 +11,7 @@ export class TenantsMiddleware implements NestMiddleware {
     private readonly congregationsService: CongregationsService,
   ) {}
 
-  async use(request: Request, _response: Response, next: ()=> void) {
+  async use(request: Application.Request, _response: Application.Response, next: ()=> void) {
     if (!this.shouldInterceptRequest(request))
       return next()
 
@@ -30,11 +29,16 @@ export class TenantsMiddleware implements NestMiddleware {
     next()
   }
 
-  private getTenantFromRequest(request: Request) {
+  private getTenantFromRequest(request: Application.Request) {
     let tenantId = request.headers['x-tenant-id']
 
     if (tenantId)
       return Array.isArray(tenantId) ? tenantId[0]! : tenantId
+
+    tenantId = request.query.tenant?.toString()
+
+    if (tenantId)
+      return tenantId
 
     const hostname = request.hostname
 
@@ -43,7 +47,7 @@ export class TenantsMiddleware implements NestMiddleware {
     return tenantId
   }
 
-  private shouldInterceptRequest(request: Request) {
+  private shouldInterceptRequest(request: Application.Request) {
     if (this.tenantHolder.hasTenant(request.id))
       return false
 

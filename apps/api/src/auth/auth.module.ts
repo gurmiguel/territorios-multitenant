@@ -9,6 +9,7 @@ import { UsersModule } from '~/users/users.module'
 import { AuthController } from './auth.controller'
 import { AuthService } from './auth.service'
 import { AccessTokenStrategy } from './strategies/access-token.strategy'
+import { GoogleStrategy } from './strategies/google.strategy'
 import { LocalStrategy } from './strategies/local.strategy'
 import { RefreshTokenStrategy } from './strategies/refresh-token.strategy'
 
@@ -24,7 +25,13 @@ import { RefreshTokenStrategy } from './strategies/refresh-token.strategy'
       }),
     }),
   ],
-  providers: [AuthService, LocalStrategy, AccessTokenStrategy, RefreshTokenStrategy],
+  providers: [
+    AuthService,
+    LocalStrategy,
+    GoogleStrategy,
+    AccessTokenStrategy,
+    RefreshTokenStrategy,
+  ],
   controllers: [AuthController],
 })
 export class AuthModule {}

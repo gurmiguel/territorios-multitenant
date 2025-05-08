@@ -1,6 +1,5 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common'
 import { PassportStrategy } from '@nestjs/passport'
-import { Request } from 'express'
 import { Strategy } from 'passport-custom'
 
 import { AuthService } from '../auth.service'
@@ -13,7 +12,7 @@ export class RefreshTokenStrategy extends PassportStrategy(Strategy, 'refresh') 
     super()
   }
 
-  async validate(req: Request) {
+  async validate(req: Application.Request) {
     const { refresh_token: refreshToken } = req.body
     const user = await this.authService.validateUserByRefreshToken(req.id, refreshToken)
 
