@@ -7,10 +7,18 @@ import { UsersService } from '~/users/users.service'
 import { AuthService } from './auth.service'
 import authConstants from './constants'
 
+jest.mock('../users/users.service', () => ({
+  UsersService: class {
+    protected prisma = jest.fn()
+    find = jest.fn()
+    create = jest.fn()
+    addProvider = jest.fn()
+  },
+}))
+
 describe('AuthService', () => {
   let service: AuthService
   let usersService: UsersService
-  let tenantHolderService: TenantHolderService
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -18,21 +26,12 @@ describe('AuthService', () => {
         TenantHolderService,
         JwtService,
         AuthService,
-        {
-          provide: UsersService,
-          useClass: class {
-            find = jest.fn()
-          },
-        },
+        UsersService,
       ],
     }).compile()
 
     service = module.get<AuthService>(AuthService)
     usersService = module.get<UsersService>(UsersService)
-    tenantHolderService = module.get<TenantHolderService>(TenantHolderService)
-
-    jest.spyOn(tenantHolderService, 'getTenant')
-      .mockImplementation(() => ({ id: 1, name: 'Test', createdAt: new Date(), slug: 'test' }))
   })
 
   it('should be able to login with username (email)', async () => {
@@ -43,7 +42,7 @@ describe('AuthService', () => {
       // @ts-expect-error
       .mockImplementationOnce(async () => user)
 
-    const result = await service.validateUserLocal('req-1', username, authConstants.defaultPassword)
+    const result = await service.validateUserLocal('req-test', username, authConstants.defaultPassword)
 
     expect(result).toMatchObject(user)
   })

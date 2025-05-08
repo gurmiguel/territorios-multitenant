@@ -1,12 +1,12 @@
-import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common'
+import { Module } from '@nestjs/common'
 import { ConfigModule } from '@nestjs/config'
 
 import { AuthModule } from './auth/auth.module'
 import configuration from './config/configuration'
 import { CongregationsModule } from './congregations/congregations.module'
 import { PrismaModule } from './db/prisma.module'
-import { TenantsMiddleware } from './tenants/tenants.middleware'
 import { TenantsModule } from './tenants/tenants.module'
+import { TerritoriesModule } from './territories/territories.module'
 import { UsersModule } from './users/users.module'
 
 @Module({
@@ -22,12 +22,7 @@ import { UsersModule } from './users/users.module'
     PrismaModule,
     CongregationsModule,
     TenantsModule,
+    TerritoriesModule,
   ],
 })
-export class AppModule implements NestModule {
-  configure(consumer: MiddlewareConsumer) {
-    consumer
-      .apply(TenantsMiddleware)
-      .forRoutes('*')
-  }
-}
+export class AppModule {}

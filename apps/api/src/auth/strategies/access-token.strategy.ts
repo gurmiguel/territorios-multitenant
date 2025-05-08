@@ -2,19 +2,22 @@ import { ForbiddenException, Injectable, UnauthorizedException } from '@nestjs/c
 import { PassportStrategy } from '@nestjs/passport'
 import { Strategy } from 'passport-custom'
 
+import { TenantsService } from '~/tenants/tenants.service'
+
 import { AuthService } from '../auth.service'
 
 @Injectable()
 export class AccessTokenStrategy extends PassportStrategy(Strategy, 'access_token') {
   constructor(
     private readonly authService: AuthService,
+    private readonly tenantsService: TenantsService,
   ) {
     super()
   }
 
   async validate(req: Application.Request) {
     const accessToken = this.getBearerToken(req)
-    const user = await this.authService.validateUserByAccessToken(req.id, accessToken)
+    const user = await this.authService.validateUserByAccessToken(this.tenantsService.getTenantIdFromRequest(req), accessToken)
 
     if (!user)
       throw new UnauthorizedException()

@@ -6,7 +6,7 @@ import { Prisma } from '~/generated/prisma'
 @Injectable()
 export class UsersService {
   constructor(
-    private readonly prisma: PrismaService,
+    protected readonly prisma: PrismaService,
   ) {}
 
   get find() {

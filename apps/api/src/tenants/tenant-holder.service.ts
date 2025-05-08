@@ -3,26 +3,26 @@ import { Global, Injectable, Scope } from '@nestjs/common'
 import { Congregation } from '~/generated/prisma'
 
 @Global()
-@Injectable({ scope: Scope.DEFAULT })
+@Injectable({ scope: Scope.REQUEST })
 export class TenantHolderService {
-  private requestsTenant = new Map<string, Congregation>()
+  protected tenant?: Congregation
 
-  getTenant(requestId: string) {
-    if (!this.hasTenant(requestId))
+  getTenant() {
+    if (!this.hasTenant())
       throw new TypeError('Tenant Id not defined, is this service intercepted by TenantsMiddleware?')
 
-    return this.requestsTenant.get(requestId)!
+    return this.tenant
   }
 
-  setTenant(requestId: string, tenant: Congregation) {
-    this.requestsTenant.set(requestId, tenant)
+  setTenant(tenant: Congregation) {
+    this.tenant = tenant
   }
 
-  hasTenant(requestId: string) {
-    return this.requestsTenant.has(requestId)
+  hasTenant() {
+    return this.tenant !== undefined
   }
 
-  clearTenant(requestId: string) {
-    this.requestsTenant.delete(requestId)
+  clearTenant() {
+    this.tenant = undefined
   }
 }

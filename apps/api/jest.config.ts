@@ -18,6 +18,7 @@ const config: Config = {
   collectCoverageFrom: [
     '**/*.(t|j)s',
   ],
+  setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
   coverageDirectory: '../coverage',
   testEnvironment: 'node',
   modulePaths: [tsconfig.compilerOptions.baseUrl],

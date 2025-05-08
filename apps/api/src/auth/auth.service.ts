@@ -5,7 +5,6 @@ import { JwtService } from '@nestjs/jwt'
 import bcrypt from 'bcrypt'
 
 import { Congregation, User as PrismaUser } from '~/generated/prisma'
-import { TenantHolderService } from '~/tenants/tenant-holder.service'
 import { UsersService } from '~/users/users.service'
 
 import authConstants from './constants'
@@ -29,16 +28,13 @@ interface RefreshTokenPayload extends TokenPayload {
 export class AuthService {
   constructor(
     private readonly usersService: UsersService,
-    private readonly tenantHolder: TenantHolderService,
     private readonly jwtService: JwtService,
   ) {}
 
-  async validateUserLocal(requestId: string, username: string, password: string): Promise<User | null> {
-    const tenantId = this.tenantHolder.getTenant(requestId).id
-
+  async validateUserLocal(tenantId: string, username: string, password: string): Promise<User | null> {
     const user = await this.usersService.find({
       where: {
-        email: username, congregationId: tenantId,
+        email: username, congregation: { slug: tenantId },
       },
       include: { congregation: true },
     })
@@ -49,12 +45,10 @@ export class AuthService {
     return this.buildUser(user)
   }
 
-  async validateUserByProvider(requestId: string, provider: string, uid: string, profile: Pick<User, 'email' | 'name'>): Promise<User | null> {
-    const tenantId = this.tenantHolder.getTenant(requestId).id
-
+  async validateUserByProvider(tenantId: string, provider: string, uid: string, profile: Pick<User, 'email' | 'name'>): Promise<User | null> {
     let user = await this.usersService.find({
       where: {
-        congregationId: tenantId,
+        congregation: { slug: tenantId },
         email: profile.email,
       },
       include: {
@@ -77,7 +71,7 @@ export class AuthService {
         data: {
           name: profile.name,
           email: profile.email,
-          congregationId: tenantId,
+          congregation: { connect: { slug: tenantId } },
           providers: {
             create: providerData,
           },
@@ -101,28 +95,26 @@ export class AuthService {
     return this.buildUser(user)
   }
 
-  async validateUserByRefreshToken(requestId: string, refreshToken: string) {
-    return this.validateByToken(requestId, 'refresh_token', refreshToken)
+  async validateUserByRefreshToken(tenantId: string, refreshToken: string) {
+    return this.validateByToken(tenantId, 'refresh_token', refreshToken)
   }
 
-  async validateUserByAccessToken(requestId: string, accessToken: string) {
-    return this.validateByToken(requestId, 'access_token', accessToken)
+  async validateUserByAccessToken(tenantId: string, accessToken: string) {
+    return this.validateByToken(tenantId, 'access_token', accessToken)
   }
 
-  private async validateByToken<T extends AccessTokenPayload | RefreshTokenPayload>(requestId: string, tokenType: T['type'], token: string) {
-    const tenant = this.tenantHolder.getTenant(requestId)
-
+  private async validateByToken<T extends AccessTokenPayload | RefreshTokenPayload>(tenantId: string, tokenType: T['type'], token: string) {
     try {
       const tokenPayload = await this.jwtService.verifyAsync<T>(token)
 
       if (tokenPayload.type !== tokenType)
         throw new UnauthorizedException(`Token is not a valid ${tokenType}`)
 
-      if (tokenPayload.iss !== tenant.slug)
+      if (tokenPayload.iss !== tenantId)
         throw new UnauthorizedException('Tenant id invalid for this user')
 
       const user = await this.usersService.find({
-        where: { id: tokenPayload.sub, congregationId: tenant.id },
+        where: { id: tokenPayload.sub, congregation: { slug: tenantId } },
         include: { congregation: true },
       })
 

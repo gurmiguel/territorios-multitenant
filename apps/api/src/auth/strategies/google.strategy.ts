@@ -4,6 +4,7 @@ import { PassportStrategy } from '@nestjs/passport'
 import { Profile, Strategy } from 'passport-google-oauth20'
 
 import { Configuration } from '~/config/configuration'
+import { TenantsService } from '~/tenants/tenants.service'
 
 import { AuthService } from '../auth.service'
 
@@ -11,6 +12,7 @@ import { AuthService } from '../auth.service'
 export class GoogleStrategy extends PassportStrategy(Strategy) {
   constructor(
     private readonly authService: AuthService,
+    private readonly tenantsService: TenantsService,
     config: ConfigService<Configuration, true>,
   ) {
     const origin = config.get('origin')
@@ -27,7 +29,7 @@ export class GoogleStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(req: Application.Request, accessToken: string, refreshToken: string, profile: Profile) {
-    const user = await this.authService.validateUserByProvider(req.id, profile.provider, profile.id, {
+    const user = await this.authService.validateUserByProvider(this.tenantsService.getTenantIdFromRequest(req), profile.provider, profile.id, {
       name: profile.displayName,
       email: profile.emails![0]!.value,
     })
