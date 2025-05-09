@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing'
 
 import { PrismaService } from '~/db/prisma.service'
 import { TenantHolderService } from '~/tenants/tenant-holder.service'
+import { any } from '~/utils/testing'
 
 import { TerritoriesService } from './territories.service'
 
@@ -33,6 +34,12 @@ describe('TerritoriesService', () => {
     const result = await service.getTerritories()
 
     expect(result).toHaveLength(1)
-    expect(result).toMatchObject([{id: 1}])
+    expect(result).toMatchObject([{
+      id: any(Number),
+      number: any(String),
+      color: any(String),
+      congregationId: any(Number),
+      hidden: any(Boolean),
+    }])
   })
 })

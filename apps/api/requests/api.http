@@ -1,28 +1,39 @@
 @baseUrl = http://localhost:3333
+@tenant = alemanha
+
+### AUTH
 
 # @name login
 POST {{baseUrl}}/auth/login
 Content-Type: application/json
-x-tenant-id: alemanha
+x-tenant-id: {{tenant}}
 
 { "username": "gu.rmiguel@gmail.com" }
 
 ###
-
 @refreshToken = {{login.response.body.$.refresh_token}}
+@accessToken = {{login.response.body.$.access_token}}
+###
+
 
 # @name refresh
 POST {{baseUrl}}/auth/refresh
 Content-Type: application/json
-x-tenant-id: alemanha
+x-tenant-id: {{tenant}}
 
 { "refresh_token": "{{refreshToken}}" }
 
 ###
 
-@accessToken = {{login.response.body.$.access_token}}
 
 # @name getProfile
 GET {{baseUrl}}/users
 Authorization: Bearer {{accessToken}}
-x-tenant-id: alemanha
+x-tenant-id: {{tenant}}
+
+###
+
+# @name listTerritories
+GET {{baseUrl}}/territories
+Authorization: Bearer {{accessToken}}
+x-tenant-id: {{tenant}}
