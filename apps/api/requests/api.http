@@ -37,3 +37,18 @@ x-tenant-id: {{tenant}}
 GET {{baseUrl}}/territories
 Authorization: Bearer {{accessToken}}
 x-tenant-id: {{tenant}}
+
+###
+
+# @name createTerritories
+POST {{baseUrl}}/territories
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+x-tenant-id: {{tenant}}
+
+{
+  "number": "1",
+  "color": "#000000",
+  "hidden": false,
+  "map": null
+}

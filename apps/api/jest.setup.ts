@@ -1,8 +1,16 @@
 jest.mock('./src/tenants/tenant-holder.service')
 
 const generatePrismaModuleMock = () => ({
-  find: jest.fn(),
+  findFirst: jest.fn(),
+  findUnique: jest.fn(),
   findMany: jest.fn(),
+  create: jest.fn(),
+  createMany: jest.fn(),
+  delete: jest.fn(),
+  deleteMany: jest.fn(),
+  update: jest.fn(),
+  updateMany: jest.fn(),
+  upsert: jest.fn(),
 })
 
 jest.mock('./src/generated/prisma', () => ({

@@ -1,4 +1,4 @@
-import { ExecutionContext, ForbiddenException, Injectable } from '@nestjs/common'
+import { ExecutionContext, ForbiddenException, HttpStatus, Injectable } from '@nestjs/common'
 import { AuthGuard } from '@nestjs/passport'
 
 import { AuthService } from '../auth.service'
@@ -42,7 +42,7 @@ export class GoogleAuthGuard extends AuthGuard('google') {
       redirectUrl.searchParams.set('auth_provider', 'google')
       redirectUrl.searchParams.set('code', refresh_token)
 
-      response.redirect(302, redirectUrl.href)
+      response.redirect(HttpStatus.FOUND, redirectUrl.href)
       return false
     }
 

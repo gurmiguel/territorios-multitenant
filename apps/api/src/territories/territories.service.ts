@@ -1,6 +1,9 @@
 import { Injectable } from '@nestjs/common'
+import z from 'zod'
 
 import { PrismaService } from '~/db/prisma.service'
+import { ValidationException } from '~/exceptions/application-exception/validation-exception'
+import { Territory } from '~/generated/prisma'
 import { TenantHolderService } from '~/tenants/tenant-holder.service'
 
 @Injectable()
@@ -13,6 +16,24 @@ export class TerritoriesService {
   async getTerritories() {
     return await this.prisma.territory.findMany({
       where: { congregation: { id: this.tenantHolder.getTenant()?.id } },
+    })
+  }
+
+  async createTerritory(data: Omit<Territory, 'id' | 'congregationId'>) {
+    const { error } = z.object({
+      number: z.string(),
+      color: z.string().regex(/^#([0-9a-f]{3}){1,2}/i),
+      hidden: z.boolean(),
+      map: z.string().url().nullable(),
+    }).safeParse(data)
+
+    if (error) throw new ValidationException(error)
+
+    return await this.prisma.territory.create({
+      data: {
+        ...data,
+        congregationId: this.tenantHolder.getTenant().id,
+      },
     })
   }
 }

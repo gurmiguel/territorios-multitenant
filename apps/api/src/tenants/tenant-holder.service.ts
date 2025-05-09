@@ -18,7 +18,7 @@ export class TenantHolderService {
     this.tenant = tenant
   }
 
-  hasTenant() {
+  hasTenant(): this is { tenant: Congregation } {
     return this.tenant !== undefined
   }
 

@@ -5,6 +5,7 @@ import { AuthModule } from './auth/auth.module'
 import configuration from './config/configuration'
 import { CongregationsModule } from './congregations/congregations.module'
 import { PrismaModule } from './db/prisma.module'
+import { ApplicationExceptionModule } from './exceptions/application-exception/application-exception.module'
 import { TenantsModule } from './tenants/tenants.module'
 import { TerritoriesModule } from './territories/territories.module'
 import { UsersModule } from './users/users.module'
@@ -23,6 +24,7 @@ import { UsersModule } from './users/users.module'
     CongregationsModule,
     TenantsModule,
     TerritoriesModule,
+    ApplicationExceptionModule,
   ],
 })
 export class AppModule {}
