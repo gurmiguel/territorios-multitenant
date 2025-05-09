@@ -6,9 +6,8 @@
 # @name login
 POST {{baseUrl}}/auth/login
 Content-Type: application/json
-x-tenant-id: {{tenant}}
 
-{ "username": "gu.rmiguel@gmail.com" }
+{ "tenant": "{{tenant}}", "username": "gu.rmiguel@gmail.com" }
 
 ###
 @refreshToken = {{login.response.body.$.refresh_token}}
@@ -19,7 +18,6 @@ x-tenant-id: {{tenant}}
 # @name refresh
 POST {{baseUrl}}/auth/refresh
 Content-Type: application/json
-x-tenant-id: {{tenant}}
 
 { "refresh_token": "{{refreshToken}}" }
 
@@ -29,14 +27,12 @@ x-tenant-id: {{tenant}}
 # @name getProfile
 GET {{baseUrl}}/users
 Authorization: Bearer {{accessToken}}
-x-tenant-id: {{tenant}}
 
 ###
 
 # @name listTerritories
 GET {{baseUrl}}/territories
 Authorization: Bearer {{accessToken}}
-x-tenant-id: {{tenant}}
 
 ###
 
@@ -44,7 +40,6 @@ x-tenant-id: {{tenant}}
 POST {{baseUrl}}/territories
 Content-Type: application/json
 Authorization: Bearer {{accessToken}}
-x-tenant-id: {{tenant}}
 
 {
   "number": "1",

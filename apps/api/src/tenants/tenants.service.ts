@@ -5,17 +5,19 @@ export class TenantsService {
   getTenantIdFromRequest(request: Application.Request) {
     let tenantId = request.headers['x-tenant-id']
 
+    tenantId ??= {...request.query, ...request.body}.tenant?.toString()
+
     if (tenantId)
       return Array.isArray(tenantId) ? tenantId[0]! : tenantId
 
-    tenantId = request.query.tenant?.toString()
-
-    if (tenantId)
-      return tenantId
-
     const hostname = request.hostname
 
-    tenantId = hostname.split('.').shift()!
+    const segments = hostname.split('.')
+
+    if (segments.length <= 1)
+      return undefined
+
+    tenantId = segments.shift()!
 
     return tenantId
   }

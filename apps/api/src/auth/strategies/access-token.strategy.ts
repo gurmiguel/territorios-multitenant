@@ -2,22 +2,19 @@ import { ForbiddenException, Injectable, UnauthorizedException } from '@nestjs/c
 import { PassportStrategy } from '@nestjs/passport'
 import { Strategy } from 'passport-custom'
 
-import { TenantsService } from '~/tenants/tenants.service'
-
 import { AuthService } from '../auth.service'
 
 @Injectable()
 export class AccessTokenStrategy extends PassportStrategy(Strategy, 'access_token') {
   constructor(
     private readonly authService: AuthService,
-    private readonly tenantsService: TenantsService,
   ) {
     super()
   }
 
   async validate(req: Application.Request) {
     const accessToken = this.getBearerToken(req)
-    const user = await this.authService.validateUserByAccessToken(this.tenantsService.getTenantIdFromRequest(req), accessToken)
+    const user = await this.authService.validateUserByAccessToken(accessToken)
 
     if (!user)
       throw new UnauthorizedException()
@@ -26,7 +23,8 @@ export class AccessTokenStrategy extends PassportStrategy(Strategy, 'access_toke
   }
 
   private getBearerToken(req: Application.Request) {
-    const [ type, token ] = req.headers.authorization?.split(' ') ?? []
+    const [ type, ...rest ] = req.headers.authorization?.split(' ') ?? []
+    const token = rest.join(' ')
 
     switch (type) {
       case 'Bearer':

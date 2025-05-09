@@ -9,7 +9,7 @@ export class TenantHolderService {
 
   getTenant() {
     if (!this.hasTenant())
-      throw new TypeError('Tenant Id not defined, is this service intercepted by TenantsMiddleware?')
+      throw new TypeError('Tenant Id not defined, is this service intercepted by TenantsInterceptor?')
 
     return this.tenant
   }

@@ -1,5 +1,7 @@
 import { Controller, Get, Post, Request, UnauthorizedException, UseGuards } from '@nestjs/common'
 
+import { ByPassTenant } from '~/tenants/tenants.interceptor'
+
 import { AuthService } from './auth.service'
 import { GoogleAuthGuard } from './guards/google.guard'
 import { LocalAuthGuard } from './guards/local.guard'
@@ -12,12 +14,14 @@ export class AuthController {
   ) {}
 
   @UseGuards(LocalAuthGuard)
+  @ByPassTenant()
   @Post('/login')
   async login(@Request() req: Application.Request) {
     return await this.authService.signin(req.user!)
   }
 
   @UseGuards(GoogleAuthGuard)
+  @ByPassTenant()
   @Get('/google')
   async google() {
     /* redirect automatically handled by passport */

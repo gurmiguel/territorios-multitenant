@@ -95,26 +95,23 @@ export class AuthService {
     return this.buildUser(user)
   }
 
-  async validateUserByRefreshToken(tenantId: string, refreshToken: string) {
-    return this.validateByToken(tenantId, 'refresh_token', refreshToken)
+  async validateUserByRefreshToken(refreshToken: string) {
+    return this.validateByToken('refresh_token', refreshToken)
   }
 
-  async validateUserByAccessToken(tenantId: string, accessToken: string) {
-    return this.validateByToken(tenantId, 'access_token', accessToken)
+  async validateUserByAccessToken(accessToken: string) {
+    return this.validateByToken('access_token', accessToken)
   }
 
-  private async validateByToken<T extends AccessTokenPayload | RefreshTokenPayload>(tenantId: string, tokenType: T['type'], token: string) {
+  private async validateByToken<T extends AccessTokenPayload | RefreshTokenPayload>(tokenType: T['type'], token: string) {
     try {
       const tokenPayload = await this.jwtService.verifyAsync<T>(token)
 
       if (tokenPayload.type !== tokenType)
         throw new UnauthorizedException(`Token is not a valid ${tokenType}`)
 
-      if (tokenPayload.iss !== tenantId)
-        throw new UnauthorizedException('Tenant id invalid for this user')
-
       const user = await this.usersService.find({
-        where: { id: tokenPayload.sub, congregation: { slug: tenantId } },
+        where: { id: tokenPayload.sub, congregation: { slug: tokenPayload.iss } },
         include: { congregation: true },
       })
 

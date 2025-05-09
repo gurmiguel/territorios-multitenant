@@ -2,6 +2,7 @@ import { Injectable, UnauthorizedException } from '@nestjs/common'
 import { PassportStrategy } from '@nestjs/passport'
 import { Strategy } from 'passport-custom'
 
+import { MissingTenantException } from '~/exceptions/tenant-exceptions'
 import { TenantsService } from '~/tenants/tenants.service'
 
 import { AuthService } from '../auth.service'
@@ -18,7 +19,12 @@ export class LocalStrategy extends PassportStrategy(Strategy, 'local') {
 
   async validate(req: Application.Request) {
     const { username } = req.body
-    const user = await this.authService.validateUserLocal(this.tenantsService.getTenantIdFromRequest(req), username, authConstants.defaultPassword)
+    const tenantId = this.tenantsService.getTenantIdFromRequest(req)
+
+    if (!tenantId)
+      throw new MissingTenantException()
+
+    const user = await this.authService.validateUserLocal(tenantId, username, authConstants.defaultPassword)
 
     if (!user)
       throw new UnauthorizedException()

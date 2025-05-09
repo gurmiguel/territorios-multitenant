@@ -1,26 +1,40 @@
-import { CallHandler, ExecutionContext, Injectable, NestInterceptor } from '@nestjs/common'
+import { CallHandler, ExecutionContext, Injectable, NestInterceptor, SetMetadata } from '@nestjs/common'
+import { Reflector } from '@nestjs/core'
 import { tap } from 'rxjs/operators'
 
 import { CongregationsService } from '~/congregations/congregations.service'
 
 import { TenantHolderService } from './tenant-holder.service'
-import { TenantsService } from './tenants.service'
+
+const BYPASS_TENANT = Symbol.for('bypass_tenant')
 
 @Injectable()
 export class TenantsInterceptor implements NestInterceptor {
   constructor(
+    protected readonly reflector: Reflector,
     protected readonly tenantHolder: TenantHolderService,
     protected readonly congregationsService: CongregationsService,
-    protected readonly tenantsService: TenantsService,
   ) {}
 
   async intercept(context: ExecutionContext, next: CallHandler) {
     const request = context.switchToHttp().getRequest<Application.Request>()
 
-    const tenant = await this.congregationsService.find({ slug: this.tenantsService.getTenantIdFromRequest(request) })
+    const bypass = this.reflector.getAllAndOverride<boolean>(BYPASS_TENANT, [
+      context.getHandler(),
+      context.getClass(),
+    ])
 
-    if (tenant)
-      this.tenantHolder.setTenant(tenant)
+    if (bypass)
+      return next.handle()
+
+    const user = request.user
+
+    if (user) {
+      const tenant = await this.congregationsService.find({ id: user.congregationId })
+
+      if (tenant)
+        this.tenantHolder.setTenant(tenant)
+    }
 
     return next.handle()
       .pipe(
@@ -28,3 +42,5 @@ export class TenantsInterceptor implements NestInterceptor {
       )
   }
 }
+
+export const ByPassTenant = () => SetMetadata(BYPASS_TENANT, true)
