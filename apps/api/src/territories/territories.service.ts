@@ -26,7 +26,18 @@ export class TerritoriesService {
 
   async getTerritories() {
     return await this.prisma.territory.findMany({
-      where: { congregation: { id: this.tenantHolder.getTenant()?.id } },
+      where: { congregation: { id: this.tenantHolder.getTenant().id } },
+    })
+  }
+
+  async getTerritory(id: number) {
+    return await this.prisma.territory.findFirst({
+      where: { congregation: { id: this.tenantHolder.getTenant().id }, id },
+      include: {
+        streets: {
+          include: { houses: true },
+        },
+      },
     })
   }
 

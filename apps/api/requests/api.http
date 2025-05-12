@@ -36,6 +36,12 @@ Authorization: Bearer {{accessToken}}
 
 ###
 
+# @name getTerritory
+GET {{baseUrl}}/territories/{{listTerritories.response.body.$.[0].id}}
+Authorization: Bearer {{accessToken}}
+
+###
+
 # @name createTerritories
 POST {{baseUrl}}/territories
 Content-Type: application/json

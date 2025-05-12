@@ -15,6 +15,11 @@ export class TerritoriesController {
     }
   }
 
+  @Get(':id')
+  async get(@Param('id') id: string) {
+    return await this.territoriesService.getTerritory(parseInt(id))
+  }
+
   @Post()
   async create(@Request() req: Application.Request) {
     const data = req.body
