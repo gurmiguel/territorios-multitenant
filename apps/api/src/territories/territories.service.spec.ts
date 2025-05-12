@@ -13,6 +13,13 @@ describe('TerritoriesService', () => {
   let prisma: PrismaService
   let tenantHolder: TenantHolderService
 
+  const invalidTerritoryData = {
+    number: '1',
+    color: 'blue', // must be hexadecimal
+    hidden: false,
+    map: 'not a url', // must be a url
+  }
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -68,13 +75,7 @@ describe('TerritoriesService', () => {
   })
 
   it('should fail if territory payload is invalid', async () => {
-    const data = {
-      number: '1',
-      color: 'blue', // must be hexadecimal
-      hidden: false,
-      map: 'not a url', // must be a url
-    }
-    const promise = service.createTerritory(data)
+    const promise = service.createTerritory(invalidTerritoryData)
 
     await expect(promise).rejects.toBeInstanceOf(ValidationException)
     const exception: ValidationException = await promise.catch(err => err)
@@ -87,20 +88,8 @@ describe('TerritoriesService', () => {
     expect(fieldErrors).not.toHaveProperty('hidden')
   })
 
-  it('should be able to update the territory data', async () => {
-    const data = {
-      number: '1',
-      color: '#000',
-      hidden: false,
-      map: null,
-    }
-    jest.spyOn(prisma.territory, 'create')
-      .mockImplementationOnce(({ data }) => ({
-        id: 1,
-        ...data,
-      }) as any)
-    const { id } = await service.createTerritory(data)
-
+  it('should be able to update the territory and fail if invalid data', async () => {
+    const id = 1
     jest.spyOn(prisma.territory, 'update')
       .mockImplementationOnce(({ where, data }) => ({
         id: where.id,
@@ -120,6 +109,10 @@ describe('TerritoriesService', () => {
       id,
       ...newData,
     })
+
+    const promise = service.updateTerritory(id, invalidTerritoryData)
+
+    await expect(promise).rejects.toBeInstanceOf(ValidationException)
   })
 
   it('should delete territory', async () => {
@@ -169,6 +162,28 @@ describe('TerritoriesService', () => {
       }) as any)
 
     const promise = service.addStreet(1, { name: null } as any)
+
+    await expect(promise).rejects.toBeInstanceOf(ValidationException)
+  })
+
+  it('should update street and fail if invalid data', async () => {
+    const id = 1
+    jest.spyOn(prisma.street, 'update')
+      .mockImplementationOnce(({ where, data }) => ({
+        ...where,
+        ...data,
+      }) as any)
+
+    await service.addStreet(1, { name: 'Test Street' })
+
+    const result = await service.updateStreet(1, id, { name: 'Other Test Street' })
+
+    expect(result).toMatchObject({
+      id,
+      name: any(String),
+    })
+
+    const promise = service.updateStreet(1, id, { name: null } as any)
 
     await expect(promise).rejects.toBeInstanceOf(ValidationException)
   })

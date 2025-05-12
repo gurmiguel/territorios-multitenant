@@ -77,3 +77,14 @@ Authorization: Bearer {{accessToken}}
 }
 
 ###
+
+# @name updateStreet
+PATCH {{baseUrl}}/territories/{{createTerritories.response.body.$.id}}/streets/{{addStreet.response.body.$.id}}
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "name": "Rua Teste 2"
+}
+
+###

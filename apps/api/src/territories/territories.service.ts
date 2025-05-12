@@ -73,5 +73,18 @@ export class TerritoriesService {
       },
     })
   }
+
+  async updateStreet(territoryId: number, id: number, streetData: Partial<Omit<Street, 'id' | 'territoryId'>>) {
+    const { error } = this.streetSchema.partial().safeParse(streetData)
+
+    if (error) throw new ValidationException(error)
+
+    return await this.prisma.street.update({
+      where: { territoryId, id },
+      data: {
+        ...streetData,
+      },
+    })
+  }
   // #endregion streets
 }
