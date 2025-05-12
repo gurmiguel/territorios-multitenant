@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing'
 
 import { PrismaService } from '~/db/prisma.service'
 import { ValidationException } from '~/exceptions/application-exception/validation-exception'
+import { PrismaClientKnownRequestError } from '~/generated/prisma/internal/prismaNamespace'
 import { TenantHolderService } from '~/tenants/tenant-holder.service'
 import { any } from '~/utils/testing'
 
@@ -45,11 +46,12 @@ describe('TerritoriesService', () => {
   })
 
   it('should create a territory for tenant', async () => {
+    const id = 1
     jest.spyOn(prisma.territory, 'create')
       .mockImplementationOnce(({ data }) => ({
-        id: 1,
+        id,
         ...data,
-      }) as unknown as ReturnType<typeof prisma.territory.create>)
+      }) as any)
 
     const result = await service.createTerritory({
       number: '1',
@@ -59,7 +61,7 @@ describe('TerritoriesService', () => {
     })
 
     expect(result).toMatchObject({
-      id: any(Number),
+      id,
       number: any(String),
       color: any(String),
     })
@@ -96,14 +98,14 @@ describe('TerritoriesService', () => {
       .mockImplementationOnce(({ data }) => ({
         id: 1,
         ...data,
-      }) as unknown as ReturnType<typeof prisma.territory.create>)
+      }) as any)
     const { id } = await service.createTerritory(data)
 
     jest.spyOn(prisma.territory, 'update')
       .mockImplementationOnce(({ where, data }) => ({
         id: where.id,
         ...data,
-      }) as unknown as ReturnType<typeof prisma.territory.update>)
+      }) as any)
 
     const newData = {
       number: '1.1',
@@ -118,5 +120,27 @@ describe('TerritoriesService', () => {
       id,
       ...newData,
     })
+  })
+
+  it('should delete territory', async () => {
+    jest.spyOn(prisma.territory, 'delete')
+      .mockImplementationOnce(({ where }) => ({ ...where } as any))
+
+    const result = await service.deleteTerritory(1)
+
+    expect(prisma.territory.delete).toHaveBeenCalled()
+
+    expect(result).toBe(true)
+  })
+
+  it('should fail when trying to delete inexistent territory', async () => {
+    jest.spyOn(prisma.territory, 'delete')
+      .mockRejectedValueOnce(new PrismaClientKnownRequestError('test', { clientVersion: '', code: '' }))
+
+    const promise = service.deleteTerritory(1)
+
+    expect(prisma.territory.delete).toHaveBeenCalled()
+
+    await expect(promise).rejects.toBeInstanceOf(PrismaClientKnownRequestError)
   })
 })

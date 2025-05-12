@@ -49,4 +49,10 @@ export class TerritoriesService {
       data: data,
     })
   }
+
+  async deleteTerritory(id: number) {
+    await this.prisma.territory.delete({ where: { id } })
+
+    return true
+  }
 }

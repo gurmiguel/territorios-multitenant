@@ -51,10 +51,18 @@ Authorization: Bearer {{accessToken}}
 ###
 
 # @name updateTerritory
-PATCH {{baseUrl}}/territories/1
+PATCH {{baseUrl}}/territories/{{createTerritories.response.body.$.id}}
 Content-Type: application/json
 Authorization: Bearer {{accessToken}}
 
 {
   "hidden": false
 }
+
+###
+
+# @name deleteTerritory
+DELETE {{baseUrl}}/territories/{{createTerritories.response.body.$.id}}
+Authorization: Bearer {{accessToken}}
+
+###
