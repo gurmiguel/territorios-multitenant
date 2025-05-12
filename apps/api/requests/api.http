@@ -28,7 +28,7 @@ Content-Type: application/json
 GET {{baseUrl}}/users
 Authorization: Bearer {{accessToken}}
 
-###
+### Territories
 
 # @name listTerritories
 GET {{baseUrl}}/territories
@@ -64,5 +64,16 @@ Authorization: Bearer {{accessToken}}
 # @name deleteTerritory
 DELETE {{baseUrl}}/territories/{{createTerritories.response.body.$.id}}
 Authorization: Bearer {{accessToken}}
+
+###
+
+# @name addStreet
+POST {{baseUrl}}/territories/{{createTerritories.response.body.$.id}}/streets
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "name": "Rua Teste"
+}
 
 ###

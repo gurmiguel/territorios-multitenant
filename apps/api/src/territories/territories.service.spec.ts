@@ -143,4 +143,33 @@ describe('TerritoriesService', () => {
 
     await expect(promise).rejects.toBeInstanceOf(PrismaClientKnownRequestError)
   })
+
+  it('should add a street to a territory', async () => {
+    const id = 1
+    jest.spyOn(prisma.street, 'create')
+      .mockImplementationOnce(({ data }) => ({
+        id,
+        ...data,
+      }) as any)
+
+    const result = await service.addStreet(1, { name: 'Test Street' })
+
+    expect(result).toMatchObject({
+      id: any(Number),
+      name: any(String),
+    })
+  })
+
+  it('should fail on creating street with invalid data', async () => {
+    const id = 1
+    jest.spyOn(prisma.street, 'create')
+      .mockImplementationOnce(({ data }) => ({
+        id,
+        ...data,
+      }) as any)
+
+    const promise = service.addStreet(1, { name: null } as any)
+
+    await expect(promise).rejects.toBeInstanceOf(ValidationException)
+  })
 })

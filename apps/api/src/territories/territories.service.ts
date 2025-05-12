@@ -3,7 +3,7 @@ import z from 'zod'
 
 import { PrismaService } from '~/db/prisma.service'
 import { ValidationException } from '~/exceptions/application-exception/validation-exception'
-import { Territory } from '~/generated/prisma'
+import { Street, Territory } from '~/generated/prisma'
 import { TenantHolderService } from '~/tenants/tenant-holder.service'
 
 @Injectable()
@@ -13,6 +13,10 @@ export class TerritoriesService {
     color: z.string().regex(/^#([0-9a-f]{3}){1,2}/i),
     hidden: z.boolean(),
     map: z.string().url().nullable(),
+  })
+
+  protected readonly streetSchema = z.object({
+    name: z.string(),
   })
 
   constructor(
@@ -55,4 +59,19 @@ export class TerritoriesService {
 
     return true
   }
+
+  // #region streets
+  async addStreet(territoryId: number, streetData: Omit<Street, 'id' | 'territoryId'>) {
+    const { error } = this.streetSchema.safeParse(streetData)
+
+    if (error) throw new ValidationException(error)
+
+    return await this.prisma.street.create({
+      data: {
+        territoryId,
+        ...streetData,
+      },
+    })
+  }
+  // #endregion streets
 }
