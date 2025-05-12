@@ -47,3 +47,14 @@ Authorization: Bearer {{accessToken}}
   "hidden": false,
   "map": null
 }
+
+###
+
+# @name updateTerritory
+PATCH {{baseUrl}}/territories/1
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "hidden": false
+}

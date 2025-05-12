@@ -8,6 +8,13 @@ import { TenantHolderService } from '~/tenants/tenant-holder.service'
 
 @Injectable()
 export class TerritoriesService {
+  protected readonly territorySchema = z.object({
+    number: z.string(),
+    color: z.string().regex(/^#([0-9a-f]{3}){1,2}/i),
+    hidden: z.boolean(),
+    map: z.string().url().nullable(),
+  })
+
   constructor(
     protected readonly tenantHolder: TenantHolderService,
     protected readonly prisma: PrismaService,
@@ -20,12 +27,7 @@ export class TerritoriesService {
   }
 
   async createTerritory(data: Omit<Territory, 'id' | 'congregationId'>) {
-    const { error } = z.object({
-      number: z.string(),
-      color: z.string().regex(/^#([0-9a-f]{3}){1,2}/i),
-      hidden: z.boolean(),
-      map: z.string().url().nullable(),
-    }).safeParse(data)
+    const { error } = this.territorySchema.safeParse(data)
 
     if (error) throw new ValidationException(error)
 
@@ -34,6 +36,17 @@ export class TerritoriesService {
         ...data,
         congregationId: this.tenantHolder.getTenant().id,
       },
+    })
+  }
+
+  async updateTerritory(id: Territory['id'], data: Partial<Omit<Territory, 'id' | 'congregationId'>>) {
+    const { error } = this.territorySchema.partial().safeParse(data)
+
+    if (error) throw new ValidationException(error)
+
+    return await this.prisma.territory.update({
+      where: { id },
+      data: data,
     })
   }
 }

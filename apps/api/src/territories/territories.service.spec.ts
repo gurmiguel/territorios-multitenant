@@ -84,4 +84,39 @@ describe('TerritoriesService', () => {
     expect(fieldErrors).not.toHaveProperty('number')
     expect(fieldErrors).not.toHaveProperty('hidden')
   })
+
+  it('should be able to update the territory data', async () => {
+    const data = {
+      number: '1',
+      color: '#000',
+      hidden: false,
+      map: null,
+    }
+    jest.spyOn(prisma.territory, 'create')
+      .mockImplementationOnce(({ data }) => ({
+        id: 1,
+        ...data,
+      }) as unknown as ReturnType<typeof prisma.territory.create>)
+    const { id } = await service.createTerritory(data)
+
+    jest.spyOn(prisma.territory, 'update')
+      .mockImplementationOnce(({ where, data }) => ({
+        id: where.id,
+        ...data,
+      }) as unknown as ReturnType<typeof prisma.territory.update>)
+
+    const newData = {
+      number: '1.1',
+      color: '#fff',
+      hidden: true,
+      map: 'https://maps.google.com/test-map',
+    }
+
+    const result = await service.updateTerritory(id, newData)
+
+    expect(result).toMatchObject({
+      id,
+      ...newData,
+    })
+  })
 })
