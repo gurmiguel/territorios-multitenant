@@ -187,4 +187,11 @@ describe('TerritoriesService', () => {
 
     await expect(promise).rejects.toBeInstanceOf(ValidationException)
   })
+
+  it('should delete street', async () => {
+    const result = await service.deleteStreet(1, 1)
+
+    expect(prisma.street.delete).toHaveBeenCalled()
+    expect(result).toBe(true)
+  })
 })

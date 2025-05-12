@@ -1,4 +1,4 @@
-import { Controller, Param, Patch, Post, Request } from '@nestjs/common'
+import { Controller, Delete, Param, Patch, Post, Request } from '@nestjs/common'
 
 import { TerritoriesService } from './territories.service'
 
@@ -20,5 +20,10 @@ export class StreetsController {
     const data = req.body
 
     return await this.territoriesService.updateStreet(parseInt(territoryId), parseInt(id), data)
+  }
+
+  @Delete(':id')
+  async delete(@Param('territoryId') territoryId: string, @Param('id') id: string) {
+    return await this.territoriesService.deleteStreet(parseInt(territoryId), parseInt(id))
   }
 }

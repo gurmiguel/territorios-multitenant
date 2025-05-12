@@ -88,3 +88,9 @@ Authorization: Bearer {{accessToken}}
 }
 
 ###
+
+# @name deleteStreet
+DELETE {{baseUrl}}/territories/{{createTerritories.response.body.$.id}}/streets/{{addStreet.response.body.$.id}}
+Authorization: Bearer {{accessToken}}
+
+###

@@ -86,5 +86,13 @@ export class TerritoriesService {
       },
     })
   }
+
+  async deleteStreet(territoryId: number, id: number) {
+    await this.prisma.street.delete({
+      where: { territoryId, id },
+    })
+
+    return true
+  }
   // #endregion streets
 }
