@@ -46,7 +46,16 @@ export class TerritoriesService {
       where: { congregation: { id: this.tenantHolder.getTenant().id }, id },
       include: {
         streets: {
-          include: { houses: true },
+          include: {
+            houses: {
+              include: {
+                updates: {
+                  take: 1,
+                  orderBy: [{ date: 'desc' }],
+                },
+              },
+            },
+          },
         },
       },
     })

@@ -59,6 +59,8 @@ model House {
 
   street   Street @relation(fields: [streetId], references: [id])
   streetId Int
+
+  updates StatusUpdate[]
 }
 
 model StatusUpdate {
@@ -67,8 +69,10 @@ model StatusUpdate {
   /// ["OK" | "Fail"]
   status String
 
-  user   User   @relation(fields: [userId], references: [id])
-  userId String
+  user    User   @relation(fields: [userId], references: [id])
+  userId  String
+  house   House  @relation(fields: [houseId], references: [id])
+  houseId Int
 }
 
 // Auth specific models

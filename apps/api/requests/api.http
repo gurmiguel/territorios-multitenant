@@ -35,9 +35,9 @@ GET {{baseUrl}}/territories
 Authorization: Bearer {{accessToken}}
 
 ###
-
+# @prompt territoryId
 # @name getTerritory
-GET {{baseUrl}}/territories/{{listTerritories.response.body.$.[0].id}}
+GET {{baseUrl}}/territories/{{territoryId}}
 Authorization: Bearer {{accessToken}}
 
 ###
@@ -55,9 +55,9 @@ Authorization: Bearer {{accessToken}}
 }
 
 ###
-
+# @prompt territoryId
 # @name updateTerritory
-PATCH {{baseUrl}}/territories/{{createTerritories.response.body.$.id}}
+PATCH {{baseUrl}}/territories/{{territoryId}}
 Content-Type: application/json
 Authorization: Bearer {{accessToken}}
 
@@ -66,15 +66,15 @@ Authorization: Bearer {{accessToken}}
 }
 
 ###
-
+# @prompt territoryId
 # @name deleteTerritory
-DELETE {{baseUrl}}/territories/{{createTerritories.response.body.$.id}}
+DELETE {{baseUrl}}/territories/{{territoryId}}
 Authorization: Bearer {{accessToken}}
 
 ###
-
+# @prompt territoryId
 # @name addStreet
-POST {{baseUrl}}/territories/{{createTerritories.response.body.$.id}}/streets
+POST {{baseUrl}}/territories/{{territoryId}}/streets
 Content-Type: application/json
 Authorization: Bearer {{accessToken}}
 
@@ -83,9 +83,10 @@ Authorization: Bearer {{accessToken}}
 }
 
 ###
-
+# @prompt territoryId
+# @prompt streetId
 # @name updateStreet
-PATCH {{baseUrl}}/territories/{{createTerritories.response.body.$.id}}/streets/{{addStreet.response.body.$.id}}
+PATCH {{baseUrl}}/territories/{{territoryId}}/streets/{{streetId}}
 Content-Type: application/json
 Authorization: Bearer {{accessToken}}
 
@@ -94,9 +95,26 @@ Authorization: Bearer {{accessToken}}
 }
 
 ###
-
+# @prompt territoryId
+# @prompt streetId
 # @name deleteStreet
-DELETE {{baseUrl}}/territories/{{createTerritories.response.body.$.id}}/streets/{{addStreet.response.body.$.id}}
+DELETE {{baseUrl}}/territories/{{territoryId}}/streets/{{streetId}}
 Authorization: Bearer {{accessToken}}
 
 ###
+# @prompt territoryId
+# @prompt streetId
+# @name addHouse
+POST {{baseUrl}}/territories/{{territoryId}}/streets/{{streetId}}/houses
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "type": "Casa",
+  "number": "1",
+  "complement": "Fundos",
+  "observation": "",
+  "phones": [
+    "11 99999-9999"
+  ]
+}
