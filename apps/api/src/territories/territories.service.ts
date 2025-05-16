@@ -53,26 +53,26 @@ export class TerritoriesService {
   }
 
   async createTerritory(data: Omit<Territory, 'id' | 'congregationId'>) {
-    const { error } = this.territorySchema.safeParse(data)
+    const { error, data: parsed } = this.territorySchema.safeParse(data)
 
     if (error) throw new ValidationException(error)
 
     return await this.prisma.territory.create({
       data: {
-        ...data,
+        ...parsed,
         congregationId: this.tenantHolder.getTenant().id,
       },
     })
   }
 
   async updateTerritory(id: Territory['id'], data: Partial<Omit<Territory, 'id' | 'congregationId'>>) {
-    const { error } = this.territorySchema.partial().safeParse(data)
+    const { error, data: parsed } = this.territorySchema.partial().safeParse(data)
 
     if (error) throw new ValidationException(error)
 
     return await this.prisma.territory.update({
       where: { id },
-      data: data,
+      data: parsed,
     })
   }
 
@@ -84,27 +84,27 @@ export class TerritoriesService {
 
   // #region streets
   async addStreet(territoryId: number, streetData: Omit<Street, 'id' | 'territoryId'>) {
-    const { error } = this.streetSchema.safeParse(streetData)
+    const { error, data: parsed } = this.streetSchema.safeParse(streetData)
 
     if (error) throw new ValidationException(error)
 
     return await this.prisma.street.create({
       data: {
         territoryId,
-        ...streetData,
+        ...parsed,
       },
     })
   }
 
   async updateStreet(territoryId: number, id: number, streetData: Partial<Omit<Street, 'id' | 'territoryId'>>) {
-    const { error } = this.streetSchema.partial().safeParse(streetData)
+    const { error, data: parsed } = this.streetSchema.partial().safeParse(streetData)
 
     if (error) throw new ValidationException(error)
 
     return await this.prisma.street.update({
       where: { territoryId, id },
       data: {
-        ...streetData,
+        ...parsed,
       },
     })
   }
