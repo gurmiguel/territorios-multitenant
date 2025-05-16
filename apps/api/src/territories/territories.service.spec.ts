@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing'
 
 import { PrismaService } from '~/db/prisma.service'
 import { ValidationException } from '~/exceptions/application-exception/validation-exception'
+import { House } from '~/generated/prisma'
 import { PrismaClientKnownRequestError } from '~/generated/prisma/internal/prismaNamespace'
 import { TenantHolderService } from '~/tenants/tenant-holder.service'
 import { any } from '~/utils/testing'
@@ -34,6 +35,7 @@ describe('TerritoriesService', () => {
     tenantHolder = await module.resolve<TenantHolderService>(TenantHolderService)
   })
 
+  // #region territories
   it('should list territories for tenant', async () => {
     jest.spyOn(prisma.territory, 'findMany')
       .mockResolvedValueOnce([
@@ -152,7 +154,9 @@ describe('TerritoriesService', () => {
 
     await expect(promise).rejects.toBeInstanceOf(PrismaClientKnownRequestError)
   })
+  // #endregion territories
 
+  // #region streets
   it('should add a street to a territory', async () => {
     const id = 1
     jest.spyOn(prisma.street, 'create')
@@ -210,4 +214,55 @@ describe('TerritoriesService', () => {
     expect(prisma.street.delete).toHaveBeenCalled()
     expect(result).toBe(true)
   })
+  // #endregion streets
+
+  // #region houses
+  it('should add a house to a territory/street', async () => {
+    const streetId = 1
+    const type = 'Casa'
+    const number = '102'
+    const complement = ''
+    const observation = ''
+    const phones = ['11 99999-9999']
+
+    jest.spyOn(prisma.house, 'create').mockImplementationOnce(({ data }) => ({
+      id: 1,
+      ...data,
+    }) as any)
+
+    const result = await service.addHouse(streetId, { type, number, complement, observation, phones })
+
+    expect(prisma.house.create).toHaveBeenCalled()
+    expect(result).toMatchObject<Partial<House>>({
+      id: any(Number),
+      streetId,
+      type,
+      number,
+      complement,
+      observation,
+      phones: phones.map(p => p.replace(/\D/g, '')),
+    })
+  })
+
+  it('should fail on adding a house with invalid data', async () => {
+    const streetId = 1
+    const type = 'INVALID'
+    const number = 'AAAA'
+    const complement = ''
+    const observation = ''
+    const phones = ['11 99999']
+    const promise = service.addHouse(streetId, { type, number, complement, observation, phones })
+
+    expect(promise).rejects.toBeInstanceOf(ValidationException)
+    const exception: ValidationException = await promise.catch(err => err)
+    const { fieldErrors } = exception.zodValidations.flatten()
+    expect(fieldErrors).toMatchObject({
+      type: [any(String)],
+      number: [any(String)],
+      phones: [any(String)],
+    })
+    expect(fieldErrors).not.toHaveProperty('complement')
+    expect(fieldErrors).not.toHaveProperty('observation')
+  })
+  // #endregion houses
 })

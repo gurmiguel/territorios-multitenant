@@ -3,8 +3,10 @@ import z from 'zod'
 
 import { PrismaService } from '~/db/prisma.service'
 import { ValidationException } from '~/exceptions/application-exception/validation-exception'
-import { Street, Territory } from '~/generated/prisma'
+import { House, Street, Territory } from '~/generated/prisma'
 import { TenantHolderService } from '~/tenants/tenant-holder.service'
+
+import { HouseTypes } from './house-types'
 
 @Injectable()
 export class TerritoriesService {
@@ -17,6 +19,15 @@ export class TerritoriesService {
 
   protected readonly streetSchema = z.object({
     name: z.string(),
+  })
+
+  protected houseSchema = z.object({
+    type: z.string().refine(string => string in HouseTypes),
+    number: z.string().min(1).regex(/(\d|S\/N)/i),
+    phones: z.array(z.string().regex(/\d{2} 9?\d{4}\-\d{4}/))
+      .transform(arr => arr.map(s => s.replace(/\D/g, ''))),
+    complement: z.string(),
+    observation: z.string(),
   })
 
   constructor(
@@ -106,4 +117,19 @@ export class TerritoriesService {
     return true
   }
   // #endregion streets
+
+  // #region houses
+  async addHouse(streetId: number, data: Omit<House, 'id' | 'streetId'>) {
+    const { error, data: parsed } = this.houseSchema.safeParse(data)
+
+    if (error) throw new ValidationException(error)
+
+    return await this.prisma.house.create({
+      data: {
+        streetId,
+        ...parsed,
+      },
+    })
+  }
+  // #endregion houses
 }
