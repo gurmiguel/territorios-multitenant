@@ -61,6 +61,8 @@ model House {
   streetId Int
 
   updates StatusUpdate[]
+
+  @@unique([type, number, complement])
 }
 
 model StatusUpdate {
