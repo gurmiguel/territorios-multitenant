@@ -97,13 +97,13 @@ describe('TerritoriesService', () => {
 
     await expect(promise).rejects.toBeInstanceOf(ValidationException)
     const exception: ValidationException = await promise.catch(err => err)
-    const { fieldErrors } = exception.zodValidations.flatten()
-    expect(fieldErrors).toMatchObject({
+    const { fields } = exception.issues
+    expect(fields).toMatchObject({
       color: [any(String)],
       map: [any(String)],
     })
-    expect(fieldErrors).not.toHaveProperty('number')
-    expect(fieldErrors).not.toHaveProperty('hidden')
+    expect(fields).not.toHaveProperty('number')
+    expect(fields).not.toHaveProperty('hidden')
   })
 
   it('should be able to update the territory and fail if invalid data', async () => {
@@ -255,14 +255,14 @@ describe('TerritoriesService', () => {
 
     expect(promise).rejects.toBeInstanceOf(ValidationException)
     const exception: ValidationException = await promise.catch(err => err)
-    const { fieldErrors } = exception.zodValidations.flatten()
-    expect(fieldErrors).toMatchObject({
+    const { fields } = exception.issues
+    expect(fields).toMatchObject({
       type: [any(String)],
       number: [any(String)],
       phones: [any(String)],
     })
-    expect(fieldErrors).not.toHaveProperty('complement')
-    expect(fieldErrors).not.toHaveProperty('observation')
+    expect(fields).not.toHaveProperty('complement')
+    expect(fields).not.toHaveProperty('observation')
   })
   // #endregion houses
 })

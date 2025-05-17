@@ -8,17 +8,12 @@ export class ValidationExceptionFilter extends BaseExceptionFilter {
   catch(exception: ValidationException, host: ArgumentsHost) {
     const response = host.switchToHttp().getResponse<Application.Response>()
 
-    const { fieldErrors, formErrors } = exception.zodValidations.flatten()
-    const issues = fieldErrors
-    if (formErrors.length)
-      issues['$'] = formErrors
-
     response
       .status(HttpStatus.BAD_REQUEST)
       .json({
         statusCode: HttpStatus.BAD_REQUEST,
-        message: exception.zodValidations.name,
-        issues,
+        message: exception.message,
+        issues: exception.issues,
       })
   }
 }
