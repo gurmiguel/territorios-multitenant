@@ -1,0 +1,8 @@
+import { Street } from '~/generated/prisma'
+import { EventData, EventRecord } from '~/utils/event'
+
+export class StreetCreatedEvent extends EventRecord<StreetCreatedEvent> implements EventData {
+  public static readonly event = 'street.created'
+
+  public readonly street!: Street
+}

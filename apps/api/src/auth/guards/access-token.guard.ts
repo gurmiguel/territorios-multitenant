@@ -1,7 +1,8 @@
 import { ExecutionContext, Injectable } from '@nestjs/common'
 import { Reflector } from '@nestjs/core'
 import { AuthGuard, IAuthGuard } from '@nestjs/passport'
-import { Observable } from 'rxjs'
+
+import { ALLOW_ANONYMOUS_KEY } from './allow-anonymous.guard'
 
 @Injectable()
 export class AccessTokenAuthGuard extends AuthGuard('access_token') {
@@ -11,13 +12,21 @@ export class AccessTokenAuthGuard extends AuthGuard('access_token') {
     super()
   }
 
-  canActivate(context: ExecutionContext): boolean | Promise<boolean> | Observable<boolean> {
+  async canActivate(context: ExecutionContext): Promise<boolean> {
     const useGuards = this.reflector.getAllAndMerge<Function[]>('__guards__', [context.getHandler(), context.getClass()])
 
     if (this.hasAuthGuards(useGuards))
       return true
 
-    return super.canActivate(context)
+    try {
+      return (await super.canActivate(context)) as boolean
+    } catch (ex) {
+      const allowAnonymous = this.reflector.getAllAndOverride<boolean>(ALLOW_ANONYMOUS_KEY, [context.getHandler(), context.getClass()]) ?? false
+
+      if (allowAnonymous) return true
+
+      throw ex
+    }
   }
 
   private hasAuthGuards(guards: Function[]) {

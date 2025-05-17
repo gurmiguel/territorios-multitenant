@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
+import { EventEmitter2 } from '@nestjs/event-emitter'
 import { subMilliseconds } from 'date-fns'
 import parseDuration from 'parse-duration'
 import z from 'zod'
@@ -7,9 +8,19 @@ import z from 'zod'
 import { Configuration } from '~/config/configuration'
 import { PrismaService } from '~/db/prisma.service'
 import { ValidationException } from '~/exceptions/application-exception/validation-exception'
-import { House, Street, Territory } from '~/generated/prisma'
+import { House, StatusUpdate, Street, Territory } from '~/generated/prisma'
 import { TenantHolderService } from '~/tenants/tenant-holder.service'
 
+import { HouseCreatedEvent } from './events/houses/house-created.event'
+import { HouseDeletedEvent } from './events/houses/house-deleted.event'
+import { HouseStatusUpdatedEvent } from './events/houses/house-status-updated.event'
+import { HouseUpdatedEvent } from './events/houses/house-updated.event'
+import { StreetCreatedEvent } from './events/streets/street-created.event'
+import { StreetDeletedEvent } from './events/streets/street-deleted.event'
+import { StreetUpdatedEvent } from './events/streets/street-updated.event'
+import { TerritoryCreatedEvent } from './events/territory/territory-created.event'
+import { TerritoryDeletedEvent } from './events/territory/territory-deleted.event'
+import { TerritoryUpdatedEvent } from './events/territory/territory-updated.event'
 import { HouseTypes } from './house-types'
 
 @Injectable()
@@ -38,6 +49,7 @@ export class TerritoriesService {
     protected readonly tenantHolder: TenantHolderService,
     protected readonly prisma: PrismaService,
     protected readonly config: ConfigService<Configuration, true>,
+    protected readonly emitter: EventEmitter2,
   ) {}
 
   get congregationId() {
@@ -75,12 +87,18 @@ export class TerritoriesService {
 
     if (error) throw new ValidationException(error)
 
-    return await this.prisma.territory.create({
+    const territory = await this.prisma.territory.create({
       data: {
         ...parsed,
         congregationId: this.congregationId,
       },
     })
+
+    this.emitter.emit(TerritoryCreatedEvent.event, new TerritoryCreatedEvent({
+      territory,
+    }))
+
+    return territory
   }
 
   async updateTerritory(id: Territory['id'], data: Partial<Omit<Territory, 'id' | 'congregationId'>>) {
@@ -88,14 +106,24 @@ export class TerritoriesService {
 
     if (error) throw new ValidationException(error)
 
-    return await this.prisma.territory.update({
+    const territory = await this.prisma.territory.update({
       where: { id, congregation: { id: this.congregationId } },
       data: parsed,
     })
+
+    this.emitter.emit(TerritoryUpdatedEvent.event, new TerritoryUpdatedEvent({
+      territory,
+    }))
+
+    return territory
   }
 
   async deleteTerritory(id: number) {
     await this.prisma.territory.delete({ where: { id, congregation: { id: this.congregationId } } })
+
+    this.emitter.emit(TerritoryDeletedEvent.event, new TerritoryDeletedEvent({
+      id,
+    }))
 
     return true
   }
@@ -106,7 +134,7 @@ export class TerritoriesService {
 
     if (error) throw new ValidationException(error)
 
-    return await this.prisma.street.create({
+    const street = await this.prisma.street.create({
       data: {
         territory: {
           connect: {
@@ -117,6 +145,12 @@ export class TerritoriesService {
         ...parsed,
       },
     })
+
+    this.emitter.emit(StreetCreatedEvent.event, new StreetCreatedEvent({
+      street,
+    }))
+
+    return street
   }
 
   async updateStreet(territoryId: number, id: number, streetData: Partial<Omit<Street, 'id' | 'territoryId'>>) {
@@ -124,7 +158,7 @@ export class TerritoriesService {
 
     if (error) throw new ValidationException(error)
 
-    return await this.prisma.street.update({
+    const street = await this.prisma.street.update({
       where: {
         territory: {
           id: territoryId,
@@ -136,6 +170,12 @@ export class TerritoriesService {
         ...parsed,
       },
     })
+
+    this.emitter.emit(StreetUpdatedEvent.event, new StreetUpdatedEvent({
+      street,
+    }))
+
+    return street
   }
 
   async deleteStreet(id: number) {
@@ -148,6 +188,10 @@ export class TerritoriesService {
       },
     })
 
+    this.emitter.emit(StreetDeletedEvent.event, new StreetDeletedEvent({
+      id,
+    }))
+
     return true
   }
   // #endregion streets
@@ -158,7 +202,7 @@ export class TerritoriesService {
 
     if (error) throw new ValidationException(error)
 
-    return await this.prisma.house.create({
+    const house = await this.prisma.house.create({
       data: {
         street: {
           connect: {
@@ -171,6 +215,12 @@ export class TerritoriesService {
         ...parsed,
       },
     })
+
+    this.emitter.emit(HouseCreatedEvent.event, new HouseCreatedEvent({
+      house,
+    }))
+
+    return house
   }
 
   async updateHouse(houseId: number, data: Partial<Omit<House, 'id' | 'street' | 'streetId' | 'updates'>>) {
@@ -178,7 +228,7 @@ export class TerritoriesService {
 
     if (error) throw new ValidationException(error)
 
-    return await this.prisma.house.update({
+    const house = await this.prisma.house.update({
       where: {
         id: houseId,
         street: {
@@ -189,12 +239,18 @@ export class TerritoriesService {
       },
       data: parsed,
     })
+
+    this.emitter.emit(HouseUpdatedEvent.event, new HouseUpdatedEvent({
+      house,
+    }))
+
+    return house
   }
 
-  async deleteHouse(houseId: number) {
+  async deleteHouse(id: number) {
     await this.prisma.house.delete({
       where: {
-        id: houseId,
+        id,
         street: {
           territory: {
             congregation: { id: this.congregationId },
@@ -202,6 +258,10 @@ export class TerritoriesService {
         },
       },
     })
+
+    this.emitter.emit(HouseDeletedEvent.event, new HouseDeletedEvent({
+      id,
+    }))
 
     return true
   }
@@ -228,6 +288,8 @@ export class TerritoriesService {
       },
     })
 
+    let newStatus: StatusUpdate
+
     if (replaceUpdate) {
       const updated = await this.prisma.statusUpdate.update({
         where: { id: replaceUpdate.id },
@@ -237,7 +299,7 @@ export class TerritoriesService {
         },
       })
 
-      return updated.date
+      newStatus = updated
     } else {
       const created = await this.prisma.statusUpdate.create({
         data: {
@@ -261,8 +323,15 @@ export class TerritoriesService {
         },
       })
 
-      return created.date
+      newStatus = created
     }
+
+    this.emitter.emit(HouseStatusUpdatedEvent.event, new HouseStatusUpdatedEvent({
+      houseId,
+      status: newStatus,
+    }))
+
+    return newStatus.date
   }
   // #endregion status
 }

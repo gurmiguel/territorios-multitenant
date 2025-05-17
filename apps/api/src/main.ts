@@ -16,6 +16,7 @@ async function bootstrap() {
 
   const config = app.get<ConfigService<Configuration, true>>(ConfigService)
 
+  app.enableCors()
   app.use(session({
     secret: config.get('auth', { infer: true }).secret,
     saveUninitialized: false,

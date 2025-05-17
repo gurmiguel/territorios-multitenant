@@ -48,7 +48,7 @@ Content-Type: application/json
 Authorization: Bearer {{accessToken}}
 
 {
-  "number": "1",
+  "number": "2",
   "color": "#000000",
   "hidden": false,
   "map": null
