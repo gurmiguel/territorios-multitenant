@@ -1,4 +1,4 @@
-import { Controller, Param, Post, Request } from '@nestjs/common'
+import { Controller, Param, Patch, Post, Request } from '@nestjs/common'
 
 import { TerritoriesService } from './territories.service'
 
@@ -13,5 +13,13 @@ export class HousesController {
     const data = req.body
 
     return await this.territoriesService.addHouse(parseInt(streetId), data)
+  }
+
+  @Patch(':houseId')
+  async update(@Param('houseId') houseId: string, @Request() req: Application.Request) {
+    const data = req.body
+    console.log(houseId, data)
+
+    return await this.territoriesService.updateHouse(parseInt(houseId), data)
   }
 }

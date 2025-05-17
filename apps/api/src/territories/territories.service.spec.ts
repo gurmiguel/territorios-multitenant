@@ -5,7 +5,7 @@ import { ValidationException } from '~/exceptions/application-exception/validati
 import { House } from '~/generated/prisma'
 import { PrismaClientKnownRequestError } from '~/generated/prisma/internal/prismaNamespace'
 import { TenantHolderService } from '~/tenants/tenant-holder.service'
-import { any } from '~/utils/testing'
+import { any, anything } from '~/utils/testing'
 
 import { TerritoriesService } from './territories.service'
 
@@ -63,7 +63,13 @@ describe('TerritoriesService', () => {
       where: { congregation: { id: tenantHolder.getTenant().id }, id: 1 },
       include: {
         streets: {
-          include: { houses: true },
+          include: {
+            houses: {
+              include: {
+                updates: anything(),
+              },
+            },
+          },
         },
       },
     }))
@@ -252,6 +258,48 @@ describe('TerritoriesService', () => {
     const observation = ''
     const phones = ['11 99999']
     const promise = service.addHouse(streetId, { type, number, complement, observation, phones })
+
+    expect(promise).rejects.toBeInstanceOf(ValidationException)
+    const exception: ValidationException = await promise.catch(err => err)
+    const { fields } = exception.issues
+    expect(fields).toMatchObject({
+      type: [any(String)],
+      number: [any(String)],
+      phones: [any(String)],
+    })
+    expect(fields).not.toHaveProperty('complement')
+    expect(fields).not.toHaveProperty('observation')
+  })
+
+  it('should update a house', async () => {
+    const houseId = 1
+    const newNumber = '103'
+
+    jest.spyOn(prisma.house, 'update')
+      .mockImplementationOnce(({ where, data }) => ({
+        ...where,
+        ...data,
+      }) as any)
+
+    const result = await service.updateHouse(houseId, { number: newNumber })
+
+    expect(prisma.house.update).toHaveBeenCalledWith(expect.objectContaining({
+      data: { number: newNumber },
+    }))
+    expect(result).toMatchObject({
+      id: houseId,
+      number: newNumber,
+    })
+  })
+
+  it('should fail updating a house with invalid data', async () => {
+    const houseId = 1
+    const type = 'INVALID'
+    const number = 'AAAA'
+    const complement = ''
+    const observation = ''
+    const phones = ['11 99999']
+    const promise = service.updateHouse(houseId, { type, number, complement, observation, phones })
 
     expect(promise).rejects.toBeInstanceOf(ValidationException)
     const exception: ValidationException = await promise.catch(err => err)

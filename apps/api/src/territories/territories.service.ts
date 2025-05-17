@@ -128,7 +128,7 @@ export class TerritoriesService {
   // #endregion streets
 
   // #region houses
-  async addHouse(streetId: number, data: Omit<House, 'id' | 'streetId'>) {
+  async addHouse(streetId: number, data: Omit<House, 'id' | 'street' | 'streetId' | 'updates'>) {
     const { error, data: parsed } = this.houseSchema.safeParse(data)
 
     if (error) throw new ValidationException(error)
@@ -138,6 +138,17 @@ export class TerritoriesService {
         streetId,
         ...parsed,
       },
+    })
+  }
+
+  async updateHouse(houseId: number, data: Partial<Omit<House, 'id' | 'street' | 'streetId' | 'updates'>>) {
+    const { error, data: parsed } = this.houseSchema.partial().safeParse(data)
+
+    if (error) throw new ValidationException(error)
+
+    return await this.prisma.house.update({
+      where: { id: houseId },
+      data: parsed,
     })
   }
   // #endregion houses

@@ -118,3 +118,16 @@ Authorization: Bearer {{accessToken}}
     "11 99999-9999"
   ]
 }
+
+###
+# @prompt territoryId
+# @prompt streetId
+# @prompt houseId
+# @name updateHouse
+PATCH {{baseUrl}}/territories/{{territoryId}}/streets/{{streetId}}/houses/{{houseId}}
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "number": "2"
+}
