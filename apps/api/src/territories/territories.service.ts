@@ -118,9 +118,9 @@ export class TerritoriesService {
     })
   }
 
-  async deleteStreet(territoryId: number, id: number) {
+  async deleteStreet(id: number) {
     await this.prisma.street.delete({
-      where: { territoryId, id },
+      where: { id },
     })
 
     return true
@@ -150,6 +150,14 @@ export class TerritoriesService {
       where: { id: houseId },
       data: parsed,
     })
+  }
+
+  async deleteHouse(houseId: number) {
+    await this.prisma.house.delete({
+      where: { id: houseId },
+    })
+
+    return true
   }
   // #endregion houses
 }

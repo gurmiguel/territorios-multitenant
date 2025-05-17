@@ -131,3 +131,11 @@ Authorization: Bearer {{accessToken}}
 {
   "number": "2"
 }
+
+###
+# @prompt territoryId
+# @prompt streetId
+# @prompt houseId
+# @name deleteHouse
+DELETE {{baseUrl}}/territories/{{territoryId}}/streets/{{streetId}}/houses/{{houseId}}
+Authorization: Bearer {{accessToken}}

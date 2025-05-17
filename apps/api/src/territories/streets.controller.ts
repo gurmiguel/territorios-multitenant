@@ -23,7 +23,7 @@ export class StreetsController {
   }
 
   @Delete(':id')
-  async delete(@Param('territoryId') territoryId: string, @Param('id') id: string) {
-    return await this.territoriesService.deleteStreet(parseInt(territoryId), parseInt(id))
+  async delete(@Param('id') id: string) {
+    return await this.territoriesService.deleteStreet(parseInt(id))
   }
 }

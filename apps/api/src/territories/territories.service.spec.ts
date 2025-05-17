@@ -215,7 +215,7 @@ describe('TerritoriesService', () => {
   })
 
   it('should delete street', async () => {
-    const result = await service.deleteStreet(1, 1)
+    const result = await service.deleteStreet(1)
 
     expect(prisma.street.delete).toHaveBeenCalled()
     expect(result).toBe(true)
@@ -311,6 +311,14 @@ describe('TerritoriesService', () => {
     })
     expect(fields).not.toHaveProperty('complement')
     expect(fields).not.toHaveProperty('observation')
+  })
+
+  it('should be able to delete a house', async () => {
+    const houseId = 1
+
+    const result = await service.deleteHouse(houseId)
+
+    expect(result).toBe(true)
   })
   // #endregion houses
 })
