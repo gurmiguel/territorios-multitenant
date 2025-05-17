@@ -1,6 +1,10 @@
 import { Injectable } from '@nestjs/common'
+import { ConfigService } from '@nestjs/config'
+import { subMilliseconds } from 'date-fns'
+import parseDuration from 'parse-duration'
 import z from 'zod'
 
+import { Configuration } from '~/config/configuration'
 import { PrismaService } from '~/db/prisma.service'
 import { ValidationException } from '~/exceptions/application-exception/validation-exception'
 import { House, Street, Territory } from '~/generated/prisma'
@@ -33,6 +37,7 @@ export class TerritoriesService {
   constructor(
     protected readonly tenantHolder: TenantHolderService,
     protected readonly prisma: PrismaService,
+    protected readonly config: ConfigService<Configuration, true>,
   ) {}
 
   async getTerritories() {
@@ -160,4 +165,39 @@ export class TerritoriesService {
     return true
   }
   // #endregion houses
+
+  // #region status
+  async addStatusUpdate(houseId: number, status: string, atDate: string | Date, userId: string) {
+    const date = new Date(atDate)
+    const durationThreshold = parseDuration(this.config.get('constants', { infer: true }).statusThreshold) ?? 60 * 1000
+    const threshold = subMilliseconds(date, durationThreshold)
+
+    const replaceUpdate = await this.prisma.statusUpdate.findFirst({
+      where: { houseId, userId, date: { gte: threshold } },
+    })
+
+    if (replaceUpdate) {
+      const updated = await this.prisma.statusUpdate.update({
+        where: { id: replaceUpdate.id },
+        data: {
+          date,
+          status,
+        },
+      })
+
+      return updated.date
+    } else {
+      const created = await this.prisma.statusUpdate.create({
+        data: {
+          date,
+          status,
+          houseId,
+          userId,
+        },
+      })
+
+      return created.date
+    }
+  }
+  // #endregion status
 }

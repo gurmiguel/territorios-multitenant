@@ -139,3 +139,17 @@ Authorization: Bearer {{accessToken}}
 # @name deleteHouse
 DELETE {{baseUrl}}/territories/{{territoryId}}/streets/{{streetId}}/houses/{{houseId}}
 Authorization: Bearer {{accessToken}}
+
+###
+# @prompt territoryId
+# @prompt streetId
+# @prompt houseId
+# @name updateHouseStatus
+POST {{baseUrl}}/territories/{{territoryId}}/streets/{{streetId}}/houses/{{houseId}}/status
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "status": "OK",
+  "date": "2025-05-01T10:00:00.000Z"
+}

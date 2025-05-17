@@ -14,6 +14,10 @@ function configuration() {
         clientSecret: process.env.GOOGLE_CLIENT_SECRET,
       },
     },
+    constants: {
+      /** Amount of time a status update will override the previous one instead of creating a new one */
+      statusThreshold: '1 minute',
+    },
   }
 }
 

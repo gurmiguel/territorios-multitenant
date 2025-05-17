@@ -1,3 +1,8 @@
+const now = new Date('2025-05-01T10:00:00.000Z')
+jest
+  .useFakeTimers({ now })
+  .setSystemTime(now)
+
 jest.mock('./src/tenants/tenant-holder.service')
 
 const generatePrismaModuleMock = () => ({

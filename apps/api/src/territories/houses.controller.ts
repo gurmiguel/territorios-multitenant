@@ -26,4 +26,12 @@ export class HousesController {
   async delete(@Param('houseId') houseId: string) {
     return await this.territoriesService.deleteHouse(parseInt(houseId))
   }
+
+  @Post(':houseId/status')
+  async updateStatus(@Param('houseId') houseId: string, @Request() req: Application.Request) {
+    const { status, date = new Date() } = req.body
+    const user = req.user!
+
+    return await this.territoriesService.addStatusUpdate(parseInt(houseId), status, date, user.id)
+  }
 }

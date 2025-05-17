@@ -1,13 +1,33 @@
+import { REQUEST } from '@nestjs/core'
 import { Test, TestingModule } from '@nestjs/testing'
+import parseDuration from 'parse-duration'
 
+import { AppModule } from '~/app.module'
+import configuration from '~/config/configuration'
 import { PrismaService } from '~/db/prisma.service'
 import { ValidationException } from '~/exceptions/application-exception/validation-exception'
-import { House } from '~/generated/prisma'
+import { House, StatusUpdate } from '~/generated/prisma'
 import { PrismaClientKnownRequestError } from '~/generated/prisma/internal/prismaNamespace'
 import { TenantHolderService } from '~/tenants/tenant-holder.service'
 import { any, anything } from '~/utils/testing'
 
 import { TerritoriesService } from './territories.service'
+
+const TEST_USER = {
+  id: '11111-11111-11111-11111',
+  congregation: {
+    id: 1,
+    name: 'Test Cong',
+    createdAt: new Date(),
+    slug: 'test-cong',
+  },
+  congregationId: 1,
+  createdAt: new Date(),
+  name: 'Test User',
+  email: 'test@example.com',
+  permissions: [],
+  refresh: jest.fn(),
+} satisfies Application.Request['user']
 
 describe('TerritoriesService', () => {
   let service: TerritoriesService
@@ -23,12 +43,11 @@ describe('TerritoriesService', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        TenantHolderService,
-        TerritoriesService,
-        PrismaService,
-      ],
-    }).compile()
+      imports: [AppModule],
+    })
+      .overrideProvider(REQUEST)
+      .useValue({ user: TEST_USER })
+      .compile()
 
     service = module.get<TerritoriesService>(TerritoriesService)
     prisma = module.get<PrismaService>(PrismaService)
@@ -38,7 +57,7 @@ describe('TerritoriesService', () => {
   // #region territories
   it('should list territories for tenant', async () => {
     jest.spyOn(prisma.territory, 'findMany')
-      .mockResolvedValueOnce([
+      .mockResolvedValue([
         { id: 1, number: '1', color: '#000000', congregationId: tenantHolder.getTenant()!.id, hidden: false, map: null },
       ] as any)
 
@@ -55,7 +74,8 @@ describe('TerritoriesService', () => {
   })
 
   it('should return territory data', async () => {
-    jest.spyOn(prisma.territory, 'findFirst').mockResolvedValueOnce({ id: 1 } as any)
+    jest.spyOn(prisma.territory, 'findFirst')
+      .mockResolvedValue({ id: 1 } as any)
 
     const result = await service.getTerritory(1)
 
@@ -79,7 +99,7 @@ describe('TerritoriesService', () => {
   it('should create a territory for tenant', async () => {
     const id = 1
     jest.spyOn(prisma.territory, 'create')
-      .mockImplementationOnce(({ data }) => ({
+      .mockImplementation(({ data }) => ({
         id,
         ...data,
       }) as any)
@@ -115,7 +135,7 @@ describe('TerritoriesService', () => {
   it('should be able to update the territory and fail if invalid data', async () => {
     const id = 1
     jest.spyOn(prisma.territory, 'update')
-      .mockImplementationOnce(({ where, data }) => ({
+      .mockImplementation(({ where, data }) => ({
         id: where.id,
         ...data,
       }) as any)
@@ -141,7 +161,7 @@ describe('TerritoriesService', () => {
 
   it('should delete territory', async () => {
     jest.spyOn(prisma.territory, 'delete')
-      .mockImplementationOnce(({ where }) => ({ ...where } as any))
+      .mockImplementation(({ where }) => ({ ...where } as any))
 
     const result = await service.deleteTerritory(1)
 
@@ -152,7 +172,7 @@ describe('TerritoriesService', () => {
 
   it('should fail when trying to delete inexistent territory', async () => {
     jest.spyOn(prisma.territory, 'delete')
-      .mockRejectedValueOnce(new PrismaClientKnownRequestError('test', { clientVersion: '', code: '' }))
+      .mockRejectedValue(new PrismaClientKnownRequestError('test', { clientVersion: '', code: '' }))
 
     const promise = service.deleteTerritory(1)
 
@@ -166,7 +186,7 @@ describe('TerritoriesService', () => {
   it('should add a street to a territory', async () => {
     const id = 1
     jest.spyOn(prisma.street, 'create')
-      .mockImplementationOnce(({ data }) => ({
+      .mockImplementation(({ data }) => ({
         id,
         ...data,
       }) as any)
@@ -182,7 +202,7 @@ describe('TerritoriesService', () => {
   it('should fail on creating street with invalid data', async () => {
     const id = 1
     jest.spyOn(prisma.street, 'create')
-      .mockImplementationOnce(({ data }) => ({
+      .mockImplementation(({ data }) => ({
         id,
         ...data,
       }) as any)
@@ -195,7 +215,7 @@ describe('TerritoriesService', () => {
   it('should update street and fail if invalid data', async () => {
     const id = 1
     jest.spyOn(prisma.street, 'update')
-      .mockImplementationOnce(({ where, data }) => ({
+      .mockImplementation(({ where, data }) => ({
         ...where,
         ...data,
       }) as any)
@@ -231,10 +251,11 @@ describe('TerritoriesService', () => {
     const observation = ''
     const phones = ['11 99999-9999']
 
-    jest.spyOn(prisma.house, 'create').mockImplementationOnce(({ data }) => ({
-      id: 1,
-      ...data,
-    }) as any)
+    jest.spyOn(prisma.house, 'create')
+      .mockImplementation(({ data }) => ({
+        id: 1,
+        ...data,
+      }) as any)
 
     const result = await service.addHouse(streetId, { type, number, complement, observation, phones })
 
@@ -276,7 +297,7 @@ describe('TerritoriesService', () => {
     const newNumber = '103'
 
     jest.spyOn(prisma.house, 'update')
-      .mockImplementationOnce(({ where, data }) => ({
+      .mockImplementation(({ where, data }) => ({
         ...where,
         ...data,
       }) as any)
@@ -321,4 +342,62 @@ describe('TerritoriesService', () => {
     expect(result).toBe(true)
   })
   // #endregion houses
+
+  // #region status
+  it('should be able to update house status', async () => {
+    const houseId = 1
+    const status = 'OK'
+
+    jest.spyOn(prisma.statusUpdate, 'create')
+      .mockImplementation(({ data }) => ({
+        id: '01AAAAAAAAAAAAAAAAAAAAA',
+        ...data,
+      }) as any)
+
+    const result = await service.addStatusUpdate(houseId, status, new Date(), TEST_USER.id)
+
+    expect(prisma.statusUpdate.create).toHaveBeenCalledWith(expect.objectContaining({
+      data: {
+        date: any(Date),
+        houseId,
+        status,
+        userId: TEST_USER.id,
+      },
+    }))
+    expect(result).toBeInstanceOf(Date)
+  })
+
+  it('should update a subsequent status update if within the threshold', async () => {
+    const houseId = 1
+
+    const { constants } = configuration()
+
+    let created!: StatusUpdate
+    jest.spyOn(prisma.statusUpdate, 'create')
+      .mockImplementation(({ data }) => {
+        created = {
+          id: '01AAAAAAAAAAAAAAAAAAAAA',
+          ...data,
+        } as any
+        return created as any
+      })
+    jest.spyOn(prisma.statusUpdate, 'update')
+      .mockImplementation(({ where, data }) => ({
+        ...where,
+        ...data,
+      }) as any)
+
+    await service.addStatusUpdate(houseId, 'OK', new Date(), TEST_USER.id)
+
+    await jest.advanceTimersByTimeAsync(parseDuration(constants.statusThreshold)!)
+
+    jest.spyOn(prisma.statusUpdate, 'findFirst')
+      .mockResolvedValue(created)
+
+    await service.addStatusUpdate(houseId, 'Fail', new Date(), TEST_USER.id)
+
+    expect(prisma.statusUpdate.create).toHaveBeenCalledTimes(1)
+    expect(prisma.statusUpdate.update).toHaveBeenCalledTimes(1)
+  })
+  // #endregion status
 })

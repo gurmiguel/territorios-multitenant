@@ -19,6 +19,7 @@ const config: Config = {
     '**/*.(t|j)s',
   ],
   setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
+  transformIgnorePatterns: ['/node_modules/(?!(parse-duration))/', '\\.pnp\\.[^\\\/]+$'],
   coverageDirectory: '../coverage',
   testEnvironment: 'node',
   modulePaths: [tsconfig.compilerOptions.baseUrl],
