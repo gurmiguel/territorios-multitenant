@@ -255,6 +255,7 @@ describe('TerritoriesService', () => {
       .mockImplementation(({ data }) => ({
         id: 1,
         ...data,
+        streetId: data.street?.connect?.id,
       }) as any)
 
     const result = await service.addHouse(streetId, { type, number, complement, observation, phones })
@@ -352,17 +353,18 @@ describe('TerritoriesService', () => {
       .mockImplementation(({ data }) => ({
         id: '01AAAAAAAAAAAAAAAAAAAAA',
         ...data,
+        houseId: data.house?.connect?.id,
       }) as any)
 
     const result = await service.addStatusUpdate(houseId, status, new Date(), TEST_USER.id)
 
     expect(prisma.statusUpdate.create).toHaveBeenCalledWith(expect.objectContaining({
-      data: {
+      data: expect.objectContaining({
         date: any(Date),
-        houseId,
+        house: { connect: expect.objectContaining({ id: houseId }) },
         status,
-        userId: TEST_USER.id,
-      },
+        user: { connect: expect.objectContaining({ id: TEST_USER.id }) },
+      }),
     }))
     expect(result).toBeInstanceOf(Date)
   })

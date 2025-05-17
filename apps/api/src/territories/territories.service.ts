@@ -40,15 +40,19 @@ export class TerritoriesService {
     protected readonly config: ConfigService<Configuration, true>,
   ) {}
 
+  get congregationId() {
+    return this.tenantHolder.getTenant().id
+  }
+
   async getTerritories() {
     return await this.prisma.territory.findMany({
-      where: { congregation: { id: this.tenantHolder.getTenant().id } },
+      where: { congregation: { id: this.congregationId } },
     })
   }
 
   async getTerritory(id: number) {
     return await this.prisma.territory.findFirst({
-      where: { congregation: { id: this.tenantHolder.getTenant().id }, id },
+      where: { congregation: { id: this.congregationId }, id },
       include: {
         streets: {
           include: {
@@ -74,7 +78,7 @@ export class TerritoriesService {
     return await this.prisma.territory.create({
       data: {
         ...parsed,
-        congregationId: this.tenantHolder.getTenant().id,
+        congregationId: this.congregationId,
       },
     })
   }
@@ -85,13 +89,13 @@ export class TerritoriesService {
     if (error) throw new ValidationException(error)
 
     return await this.prisma.territory.update({
-      where: { id },
+      where: { id, congregation: { id: this.congregationId } },
       data: parsed,
     })
   }
 
   async deleteTerritory(id: number) {
-    await this.prisma.territory.delete({ where: { id } })
+    await this.prisma.territory.delete({ where: { id, congregation: { id: this.congregationId } } })
 
     return true
   }
@@ -104,7 +108,12 @@ export class TerritoriesService {
 
     return await this.prisma.street.create({
       data: {
-        territoryId,
+        territory: {
+          connect: {
+            id: territoryId,
+            congregation: { id: this.congregationId },
+          },
+        },
         ...parsed,
       },
     })
@@ -116,7 +125,13 @@ export class TerritoriesService {
     if (error) throw new ValidationException(error)
 
     return await this.prisma.street.update({
-      where: { territoryId, id },
+      where: {
+        territory: {
+          id: territoryId,
+          congregation: { id: this.congregationId },
+        },
+        id,
+      },
       data: {
         ...parsed,
       },
@@ -125,7 +140,12 @@ export class TerritoriesService {
 
   async deleteStreet(id: number) {
     await this.prisma.street.delete({
-      where: { id },
+      where: {
+        id,
+        territory: {
+          congregation: { id: this.congregationId },
+        },
+      },
     })
 
     return true
@@ -140,7 +160,14 @@ export class TerritoriesService {
 
     return await this.prisma.house.create({
       data: {
-        streetId,
+        street: {
+          connect: {
+            id: streetId,
+            territory: {
+              congregation: { id: this.congregationId },
+            },
+          },
+        },
         ...parsed,
       },
     })
@@ -152,14 +179,28 @@ export class TerritoriesService {
     if (error) throw new ValidationException(error)
 
     return await this.prisma.house.update({
-      where: { id: houseId },
+      where: {
+        id: houseId,
+        street: {
+          territory: {
+            congregation: { id: this.congregationId },
+          },
+        },
+      },
       data: parsed,
     })
   }
 
   async deleteHouse(houseId: number) {
     await this.prisma.house.delete({
-      where: { id: houseId },
+      where: {
+        id: houseId,
+        street: {
+          territory: {
+            congregation: { id: this.congregationId },
+          },
+        },
+      },
     })
 
     return true
@@ -173,7 +214,18 @@ export class TerritoriesService {
     const threshold = subMilliseconds(date, durationThreshold)
 
     const replaceUpdate = await this.prisma.statusUpdate.findFirst({
-      where: { houseId, userId, date: { gte: threshold } },
+      where: {
+        houseId,
+        userId,
+        date: { gte: threshold },
+        house: {
+          street: {
+            territory: {
+              congregation: { id: this.congregationId },
+            },
+          },
+        },
+      },
     })
 
     if (replaceUpdate) {
@@ -191,8 +243,21 @@ export class TerritoriesService {
         data: {
           date,
           status,
-          houseId,
-          userId,
+          house: {
+            connect: {
+              id: houseId,
+              street: {
+                territory: {
+                  congregation: { id: this.congregationId },
+                },
+              },
+            },
+          },
+          user: {
+            connect: {
+              id: userId,
+            },
+          },
         },
       })
 
