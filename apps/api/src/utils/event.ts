@@ -7,7 +7,7 @@ export interface EventData {
   event: string
 }
 
-export abstract class EventRecord<T> extends RecordClass<EventRecord<T>, 'event'> implements EventData {
+export abstract class EventRecord<T extends EventRecord<T>> extends RecordClass<EventRecord<T>, 'event'> implements EventData {
   /**
    * Should be overriden by concrete class, workaround for static abstract properties
    * @deprecated */
@@ -15,6 +15,10 @@ export abstract class EventRecord<T> extends RecordClass<EventRecord<T>, 'event'
 
   get event() {
     return (this.constructor as any).event
+  }
+
+  constructor(data: Omit<T, 'event'>) {
+    super(data)
   }
 }
 

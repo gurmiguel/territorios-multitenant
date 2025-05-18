@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { EventEmitter2 } from '@nestjs/event-emitter'
 import { subMilliseconds } from 'date-fns'
+import { omit } from 'lodash-es'
 import parseDuration from 'parse-duration'
 import z from 'zod'
 
@@ -214,13 +215,21 @@ export class TerritoriesService {
         },
         ...parsed,
       },
+      include: {
+        street: {
+          select: {
+            territoryId: true,
+          },
+        },
+      },
     })
 
     this.emitter.emit(HouseCreatedEvent.event, new HouseCreatedEvent({
       house,
+      territoryId: house.street.territoryId,
     }))
 
-    return house
+    return omit(house, ['street'])
   }
 
   async updateHouse(houseId: number, data: Partial<Omit<House, 'id' | 'street' | 'streetId' | 'updates'>>) {
@@ -238,13 +247,21 @@ export class TerritoriesService {
         },
       },
       data: parsed,
+      include: {
+        street: {
+          select: {
+            territoryId: true,
+          },
+        },
+      },
     })
 
     this.emitter.emit(HouseUpdatedEvent.event, new HouseUpdatedEvent({
       house,
+      territoryId: house.street.territoryId,
     }))
 
-    return house
+    return omit(house, ['street'])
   }
 
   async deleteHouse(id: number) {
@@ -288,7 +305,7 @@ export class TerritoriesService {
       },
     })
 
-    let newStatus: StatusUpdate
+    let newStatus: StatusUpdate & { house: { street: { territoryId: Territory['id'] } } }
 
     if (replaceUpdate) {
       const updated = await this.prisma.statusUpdate.update({
@@ -296,6 +313,17 @@ export class TerritoriesService {
         data: {
           date,
           status,
+        },
+        include: {
+          house: {
+            select: {
+              street: {
+                select: {
+                  territoryId: true,
+                },
+              },
+            },
+          },
         },
       })
 
@@ -321,6 +349,17 @@ export class TerritoriesService {
             },
           },
         },
+        include: {
+          house: {
+            select: {
+              street: {
+                select: {
+                  territoryId: true,
+                },
+              },
+            },
+          },
+        },
       })
 
       newStatus = created
@@ -328,7 +367,8 @@ export class TerritoriesService {
 
     this.emitter.emit(HouseStatusUpdatedEvent.event, new HouseStatusUpdatedEvent({
       houseId,
-      status: newStatus,
+      territoryId: newStatus.house.street.territoryId,
+      status: omit(newStatus, 'house'),
     }))
 
     return newStatus.date

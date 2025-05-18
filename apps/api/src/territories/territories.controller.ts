@@ -1,9 +1,18 @@
 import { Controller, Delete, Get, Param, Patch, Post, Request, Sse } from '@nestjs/common'
 import { EventEmitter2 } from '@nestjs/event-emitter'
+import { pick } from 'lodash-es'
 import { filter, map, merge } from 'rxjs'
 
 import { fromTypedEvent } from '~/utils/event'
 
+import { HouseCreatedEvent } from './events/houses/house-created.event'
+import { HouseDeletedEvent } from './events/houses/house-deleted.event'
+import { HouseStatusUpdatedEvent } from './events/houses/house-status-updated.event'
+import { HouseUpdatedEvent } from './events/houses/house-updated.event'
+import { StreetCreatedEvent } from './events/streets/street-created.event'
+import { StreetDeletedEvent } from './events/streets/street-deleted.event'
+import { StreetUpdatedEvent } from './events/streets/street-updated.event'
+import { TerritoryCreatedEvent } from './events/territory/territory-created.event'
 import { TerritoryDeletedEvent } from './events/territory/territory-deleted.event'
 import { TerritoryUpdatedEvent } from './events/territory/territory-updated.event'
 import { TerritoriesService } from './territories.service'
@@ -46,18 +55,53 @@ export class TerritoriesController {
     return await this.territoriesService.deleteTerritory(parseInt(id))
   }
 
+  @Sse('updates')
+  listUpdates() {
+    return merge(
+      fromTypedEvent(this.emitter, TerritoryCreatedEvent)
+        .pipe(map(e => new MessageEvent(e.event, { data: e.territory }))),
+      fromTypedEvent(this.emitter, TerritoryDeletedEvent)
+        .pipe(map(e => new MessageEvent(e.event, { data: e.id }))),
+      // used to update main territory last updated at label
+      fromTypedEvent(this.emitter, HouseStatusUpdatedEvent)
+        .pipe(map(e => new MessageEvent(e.event, { data: pick(e, 'houseId', 'status') }))),
+    )
+  }
+
   @Sse(':territoryId/updates')
-  updates(@Param('territoryId') territoryId: string) {
+  territoryUpdates(@Param('territoryId') territoryId: string) {
     const id = parseInt(territoryId)
 
     return merge(
+      // territory
       fromTypedEvent(this.emitter, TerritoryUpdatedEvent)
         .pipe(filter(e => e.territory.id === id))
-        .pipe(map(e => new MessageEvent(e.event, { data: { territory: e.territory } }))),
+        .pipe(map(e => new MessageEvent(e.event, { data: e.territory }))),
       fromTypedEvent(this.emitter, TerritoryDeletedEvent)
         .pipe(filter(e => e.id === id))
-        .pipe(map(e => new MessageEvent(e.event, { data: { id } }))),
+        .pipe(map(e => new MessageEvent(e.event, { data: e.id }))),
+      // streets
+      fromTypedEvent(this.emitter, StreetCreatedEvent)
+        .pipe(filter(e => e.street.territoryId === id))
+        .pipe(map(e => new MessageEvent(e.event, { data: e.street }))),
+      fromTypedEvent(this.emitter, StreetUpdatedEvent)
+        .pipe(filter(e => e.street.territoryId === id))
+        .pipe(map(e => new MessageEvent(e.event, { data: e.street }))),
+      fromTypedEvent(this.emitter, StreetDeletedEvent)
+        .pipe(map(e => new MessageEvent(e.event, { data: e.id }))),
+      // houses
+      fromTypedEvent(this.emitter, HouseCreatedEvent)
+        .pipe(filter(e => e.territoryId === id))
+        .pipe(map(e => new MessageEvent(e.event, { data: e.house }))),
+      fromTypedEvent(this.emitter, HouseUpdatedEvent)
+        .pipe(filter(e => e.territoryId === id))
+        .pipe(map(e => new MessageEvent(e.event, { data: e.house }))),
+      fromTypedEvent(this.emitter, HouseDeletedEvent)
+        .pipe(map(e => new MessageEvent(e.event, { data: e.id }))),
+      // updates
+      fromTypedEvent(this.emitter, HouseStatusUpdatedEvent)
+        .pipe(filter(e => e.territoryId === id))
+        .pipe(map(e => new MessageEvent(e.event, { data: pick(e, 'houseId', 'status') }))),
     )
   }
-  // TODO: implement SSE for sending real-time updates to clients
 }
