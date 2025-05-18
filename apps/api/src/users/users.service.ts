@@ -20,4 +20,8 @@ export class UsersService {
   async addProvider(data: Prisma.AccountProviderCreateArgs['data']) {
     await this.prisma.accountProvider.create({ data })
   }
+
+  get countUsers() {
+    return this.prisma.user.count
+  }
 }

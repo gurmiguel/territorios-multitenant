@@ -2,7 +2,7 @@ import { ExecutionContext, Injectable } from '@nestjs/common'
 import { Reflector } from '@nestjs/core'
 import { AuthGuard, IAuthGuard } from '@nestjs/passport'
 
-import { ALLOW_ANONYMOUS_KEY } from './allow-anonymous.guard'
+import { ALLOW_ANONYMOUS_KEY } from '../decorators/allow-anonymous.decorator'
 
 @Injectable()
 export class AccessTokenAuthGuard extends AuthGuard('access_token') {

@@ -10,6 +10,7 @@ import { UsersModule } from '~/users/users.module'
 import { AuthController } from './auth.controller'
 import { AuthService } from './auth.service'
 import { AccessTokenAuthGuard } from './guards/access-token.guard'
+import { AllowGuard } from './guards/allow.guard'
 import { AccessTokenStrategy } from './strategies/access-token.strategy'
 import { GoogleStrategy } from './strategies/google.strategy'
 import { LocalStrategy } from './strategies/local.strategy'
@@ -36,6 +37,10 @@ import { RefreshTokenStrategy } from './strategies/refresh-token.strategy'
     {
       provide: APP_GUARD,
       useClass: AccessTokenAuthGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: AllowGuard,
     },
   ],
   controllers: [AuthController],

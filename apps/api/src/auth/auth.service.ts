@@ -7,28 +7,16 @@ import bcrypt from 'bcrypt'
 import { Congregation, User as PrismaUser } from '~/generated/prisma'
 import { UsersService } from '~/users/users.service'
 
+import { Action } from './action.enum'
+import { Area } from './area.enum'
 import authConstants from './constants'
-
-type User = Express.User
-
-interface TokenPayload {
-  sub: User['id']
-  iss: User['congregation']['slug']
-}
-
-interface AccessTokenPayload extends TokenPayload {
-  type: 'access_token'
-  username: User['email']
-}
-interface RefreshTokenPayload extends TokenPayload {
-  type: 'refresh_token'
-}
+import { Permissions } from './permissions.helper'
 
 @Injectable()
 export class AuthService {
   constructor(
-    private readonly usersService: UsersService,
-    private readonly jwtService: JwtService,
+    protected readonly usersService: UsersService,
+    protected readonly jwtService: JwtService,
   ) {}
 
   async validateUserLocal(tenantId: string, username: string, password: string): Promise<User | null> {
@@ -67,11 +55,20 @@ export class AuthService {
     }
 
     if (!user) {
+      const usersCount = await this.usersService.countUsers({ where: { congregation: { slug: tenantId } } })
+      const isFirstUser = usersCount === 0
+
       user = await this.usersService.create({
         data: {
           name: profile.name,
           email: profile.email,
           congregation: { connect: { slug: tenantId } },
+          permissions: isFirstUser
+            ? Permissions.getAllPermissions()
+            : Permissions.getFor({
+              area: { exclude: [Area.USERS] },
+              action: { include: [Action.READ] },
+            }),
           providers: {
             create: providerData,
           },
@@ -164,4 +161,19 @@ export class AuthService {
       },
     }
   }
+}
+
+type User = Express.User
+
+interface TokenPayload {
+  sub: User['id']
+  iss: User['congregation']['slug']
+}
+
+interface AccessTokenPayload extends TokenPayload {
+  type: 'access_token'
+  username: User['email']
+}
+interface RefreshTokenPayload extends TokenPayload {
+  type: 'refresh_token'
 }

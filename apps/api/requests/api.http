@@ -71,6 +71,8 @@ Authorization: Bearer {{accessToken}}
 DELETE {{baseUrl}}/territories/{{territoryId}}
 Authorization: Bearer {{accessToken}}
 
+### Streets
+
 ###
 # @prompt territoryId
 # @name addStreet
@@ -100,6 +102,8 @@ Authorization: Bearer {{accessToken}}
 # @name deleteStreet
 DELETE {{baseUrl}}/territories/{{territoryId}}/streets/{{streetId}}
 Authorization: Bearer {{accessToken}}
+
+### Houses
 
 ###
 # @prompt territoryId
@@ -151,5 +155,5 @@ Authorization: Bearer {{accessToken}}
 
 {
   "status": "OK",
-  "date": "2025-05-01T10:00:00.000Z"
+  "date": "{{$datetime iso8601}}"
 }

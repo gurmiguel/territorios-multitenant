@@ -3,6 +3,9 @@ import { EventEmitter2 } from '@nestjs/event-emitter'
 import { pick } from 'lodash-es'
 import { filter, map, merge } from 'rxjs'
 
+import { Action } from '~/auth/action.enum'
+import { Area } from '~/auth/area.enum'
+import { Allow } from '~/auth/decorators/allow.decorator'
 import { fromTypedEvent } from '~/utils/event'
 
 import { HouseCreatedEvent } from './events/houses/house-created.event'
@@ -24,6 +27,7 @@ export class TerritoriesController {
     protected readonly emitter: EventEmitter2,
   ) {}
 
+  @Allow([Area.TERRITORIES, Action.READ])
   @Get()
   async list() {
     return {
@@ -31,11 +35,13 @@ export class TerritoriesController {
     }
   }
 
+  @Allow([Area.TERRITORIES, Action.READ])
   @Get(':id')
   async get(@Param('id') id: string) {
     return await this.territoriesService.getTerritory(parseInt(id))
   }
 
+  @Allow([Area.TERRITORIES, Action.WRITE])
   @Post()
   async create(@Request() req: Application.Request) {
     const data = req.body
@@ -43,6 +49,7 @@ export class TerritoriesController {
     return await this.territoriesService.createTerritory(data)
   }
 
+  @Allow([Area.TERRITORIES, Action.WRITE])
   @Patch(':id')
   async update(@Param('id') id: string, @Request() req: Application.Request) {
     const data = req.body
@@ -50,11 +57,13 @@ export class TerritoriesController {
     return await this.territoriesService.updateTerritory(parseInt(id), data)
   }
 
+  @Allow([Area.TERRITORIES, Action.DELETE])
   @Delete(':id')
   async delete(@Param('id') id: string) {
     return await this.territoriesService.deleteTerritory(parseInt(id))
   }
 
+  @Allow([Area.TERRITORIES, Action.READ])
   @Sse('updates')
   listUpdates() {
     return merge(
@@ -68,6 +77,7 @@ export class TerritoriesController {
     )
   }
 
+  @Allow([Area.TERRITORIES, Action.READ])
   @Sse(':territoryId/updates')
   territoryUpdates(@Param('territoryId') territoryId: string) {
     const id = parseInt(territoryId)
