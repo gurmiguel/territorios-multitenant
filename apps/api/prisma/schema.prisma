@@ -22,8 +22,9 @@ model Congregation {
   slug      String   @unique @default("")
   createdAt DateTime @default(now())
 
-  users     User[]
-  Territory Territory[]
+  users       User[]
+  territories Territory[]
+  assets      Asset[]
 }
 
 model Territory {
@@ -98,12 +99,34 @@ model User {
   email       String
   permissions String[] @default([])
   createdAt   DateTime @default(now())
+  roles       String[] @default(["user"])
 
   congregation   Congregation @relation(fields: [congregationId], references: [id])
   congregationId Int
 
-  providers    AccountProvider[]
-  houseUpdates StatusUpdate[]
+  providers      AccountProvider[]
+  houseUpdates   StatusUpdate[]
+  uploadedAssets Asset[]
 
   @@unique([email, congregationId])
+}
+
+model Asset {
+  id          String    @id @default(nanoid())
+  type        AssetType
+  s3path      String
+  publicUrl   String?
+  contentType String
+  metadata    Json      @default("{}")
+  createdAt   DateTime  @default(now())
+
+  uploader       User         @relation(fields: [userId], references: [id])
+  userId         String
+  congregation   Congregation @relation(fields: [congregationId], references: [id])
+  congregationId Int
+}
+
+enum AssetType {
+  MAP
+  TERRITORY
 }

@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common'
+import { Module, OnApplicationBootstrap } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { APP_GUARD } from '@nestjs/core'
 import { JwtModule } from '@nestjs/jwt'
@@ -45,7 +45,15 @@ import { RefreshTokenStrategy } from './strategies/refresh-token.strategy'
   ],
   controllers: [AuthController],
 })
-export class AuthModule {}
+export class AuthModule implements OnApplicationBootstrap {
+  constructor(
+    protected readonly authService: AuthService,
+  ) {}
+
+  async onApplicationBootstrap() {
+    await this.authService.updateAdminsPermissions()
+  }
+}
 
 type BuildUserReturn = ReturnType<InstanceType<typeof AuthService>['buildUser']>
 

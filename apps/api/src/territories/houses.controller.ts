@@ -1,8 +1,8 @@
 import { Controller, Delete, Param, Patch, Post, Request } from '@nestjs/common'
 
-import { Action } from '~/auth/action.enum'
-import { Area } from '~/auth/area.enum'
 import { Allow } from '~/auth/decorators/allow.decorator'
+import { Action } from '~/auth/permissions/action.enum'
+import { Area } from '~/auth/permissions/area.enum'
 
 import { TerritoriesService } from './territories.service'
 

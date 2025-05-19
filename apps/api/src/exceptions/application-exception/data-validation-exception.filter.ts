@@ -5,6 +5,8 @@ import { PrismaClientKnownRequestError } from '~/generated/prisma/internal/prism
 
 @Catch(PrismaClientKnownRequestError)
 export class DataValidationExceptionFilter extends BaseExceptionFilter {
+  protected readonly logger = new Logger(DataValidationExceptionFilter.name)
+
   catch(exception: PrismaClientKnownRequestError, host: ArgumentsHost) {
     const response = host.switchToHttp().getResponse<Application.Response>()
 
@@ -23,7 +25,7 @@ export class DataValidationExceptionFilter extends BaseExceptionFilter {
     }
 
     if (false === exception.code in errorMap)
-      Logger.error('Unhandled Prisma exception', exception, exception.code)
+      this.logger.error('Unhandled Prisma exception', exception, exception.code)
 
     response
       .status(HttpStatus.BAD_REQUEST)

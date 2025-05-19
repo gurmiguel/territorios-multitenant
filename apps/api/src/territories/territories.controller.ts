@@ -3,9 +3,9 @@ import { EventEmitter2 } from '@nestjs/event-emitter'
 import { pick } from 'lodash-es'
 import { filter, map, merge } from 'rxjs'
 
-import { Action } from '~/auth/action.enum'
-import { Area } from '~/auth/area.enum'
 import { Allow } from '~/auth/decorators/allow.decorator'
+import { Action } from '~/auth/permissions/action.enum'
+import { Area } from '~/auth/permissions/area.enum'
 import { fromTypedEvent } from '~/utils/event'
 
 import { HouseCreatedEvent } from './events/houses/house-created.event'

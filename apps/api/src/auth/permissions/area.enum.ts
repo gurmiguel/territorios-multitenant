@@ -3,4 +3,5 @@ export enum Area {
   TERRITORIES = 'territories',
   STREETS = 'streets',
   HOUSES = 'houses',
+  ASSETS = 'assets',
 }

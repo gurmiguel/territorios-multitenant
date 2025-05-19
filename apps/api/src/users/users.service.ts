@@ -13,8 +13,16 @@ export class UsersService {
     return this.prisma.user.findFirst
   }
 
+  get findMany() {
+    return this.prisma.user.findMany
+  }
+
   get create() {
     return this.prisma.user.create
+  }
+
+  get updateMany() {
+    return this.prisma.user.updateMany
   }
 
   async addProvider(data: Prisma.AccountProviderCreateArgs['data']) {

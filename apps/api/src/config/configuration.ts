@@ -13,6 +13,7 @@ function configuration() {
         clientId: process.env.GOOGLE_CLIENT_ID,
         clientSecret: process.env.GOOGLE_CLIENT_SECRET,
       },
+      defaultPassword: process.env.DEFAULT_PASSWORD ?? '@@default',
     },
     constants: {
       /** Amount of time a status update will override the previous one instead of creating a new one */

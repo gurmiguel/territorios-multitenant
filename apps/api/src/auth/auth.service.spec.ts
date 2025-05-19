@@ -1,11 +1,11 @@
 import { JwtService } from '@nestjs/jwt'
 import { Test, TestingModule } from '@nestjs/testing'
 
+import configuration from '~/config/configuration'
 import { TenantHolderService } from '~/tenants/tenant-holder.service'
 import { UsersService } from '~/users/users.service'
 
 import { AuthService } from './auth.service'
-import authConstants from './constants'
 
 jest.mock('../users/users.service', () => ({
   UsersService: class {
@@ -42,7 +42,7 @@ describe('AuthService', () => {
       // @ts-expect-error
       .mockImplementationOnce(async () => user)
 
-    const result = await service.validateUserLocal('req-test', username, authConstants.defaultPassword)
+    const result = await service.validateUserLocal('req-test', username, configuration().auth.defaultPassword)
 
     expect(result).toMatchObject(user)
   })
