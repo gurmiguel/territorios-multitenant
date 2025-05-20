@@ -34,6 +34,9 @@ model Territory {
   hidden Boolean
   map    String?
 
+  image   Asset?  @relation(fields: [imageId], references: [id])
+  imageId String? @unique
+
   congregation   Congregation @relation(fields: [congregationId], references: [id])
   congregationId Int
 
@@ -124,6 +127,7 @@ model Asset {
   uploaderId     String
   congregation   Congregation @relation(fields: [congregationId], references: [id])
   congregationId Int
+  territory      Territory?
 }
 
 enum AssetType {

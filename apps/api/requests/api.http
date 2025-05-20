@@ -175,3 +175,19 @@ Content-Type: image/webp
 --{{multipartBoundary}}--
 
 ###
+
+###
+# @prompt territoryId
+# @name uploadTerritoryImage
+POST {{baseUrl}}/assets/territory/{{territoryId}}
+Content-Type: multipart/form-data; boundary={{multipartBoundary}}
+Authorization: Bearer {{accessToken}}
+
+--{{multipartBoundary}}
+Content-Disposition: form-data; name="file"; filename="territory.png"
+Content-Type: image/png
+
+< ./territory.png
+--{{multipartBoundary}}--
+
+###

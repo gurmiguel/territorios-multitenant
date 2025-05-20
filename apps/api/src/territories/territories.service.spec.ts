@@ -3,10 +3,12 @@ import { Test, TestingModule } from '@nestjs/testing'
 import parseDuration from 'parse-duration'
 
 import { AppModule } from '~/app.module'
+import { Permissions } from '~/auth/permissions/permissions.helper'
+import { Role } from '~/auth/permissions/role.enum'
 import configuration from '~/config/configuration'
 import { PrismaService } from '~/db/prisma.service'
 import { ValidationException } from '~/exceptions/application-exception/validation-exception'
-import { House, StatusUpdate } from '~/generated/prisma'
+import { House, StatusUpdate, Territory } from '~/generated/prisma'
 import { PrismaClientKnownRequestError } from '~/generated/prisma/internal/prismaNamespace'
 import { TenantHolderService } from '~/tenants/tenant-holder.service'
 import { any, anything } from '~/utils/testing'
@@ -25,8 +27,9 @@ const TEST_USER = {
   createdAt: new Date(),
   name: 'Test User',
   email: 'test@example.com',
-  permissions: [],
+  permissions: Permissions.getAllPermissions(),
   refresh: jest.fn(),
+  roles: [Role.ADMIN],
 } satisfies Application.Request['user']
 
 describe('TerritoriesService', () => {
@@ -39,7 +42,8 @@ describe('TerritoriesService', () => {
     color: 'blue', // must be hexadecimal
     hidden: false,
     map: 'not a url', // must be a url
-  }
+    imageId: null,
+  } satisfies Partial<Territory>
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -109,6 +113,7 @@ describe('TerritoriesService', () => {
       color: '#000000',
       hidden: false,
       map: null,
+      imageId: null,
     })
 
     expect(result).toMatchObject({
@@ -346,6 +351,7 @@ describe('TerritoriesService', () => {
 
   // #region status
   it('should be able to update house status', async () => {
+    const territoryId = 1
     const houseId = 1
     const status = 'OK'
 
@@ -354,6 +360,9 @@ describe('TerritoriesService', () => {
         id: '01AAAAAAAAAAAAAAAAAAAAA',
         ...data,
         houseId: data.house?.connect?.id,
+        house: {
+          street: { territoryId },
+        },
       }) as any)
 
     const result = await service.addStatusUpdate(houseId, status, new Date(), TEST_USER.id)
@@ -370,6 +379,7 @@ describe('TerritoriesService', () => {
   })
 
   it('should update a subsequent status update if within the threshold', async () => {
+    const territoryId = 1
     const houseId = 1
 
     const { constants } = configuration()
@@ -380,6 +390,9 @@ describe('TerritoriesService', () => {
         created = {
           id: '01AAAAAAAAAAAAAAAAAAAAA',
           ...data,
+          house: {
+            street: { territoryId },
+          },
         } as any
         return created as any
       })
@@ -387,6 +400,9 @@ describe('TerritoriesService', () => {
       .mockImplementation(({ where, data }) => ({
         ...where,
         ...data,
+        house: {
+          street: { territoryId },
+        },
       }) as any)
 
     await service.addStatusUpdate(houseId, 'OK', new Date(), TEST_USER.id)
