@@ -30,7 +30,7 @@ export class TenantsInterceptor implements NestInterceptor {
     const user = request.user
 
     if (user) {
-      const tenant = await this.congregationsService.find({ id: user.congregationId })
+      const tenant = await this.congregationsService.find({ where: { id: user.congregationId } })
 
       if (tenant)
         this.tenantHolder.setTenant(tenant)

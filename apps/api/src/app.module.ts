@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common'
 import { ConfigModule } from '@nestjs/config'
 import { EventEmitterModule } from '@nestjs/event-emitter'
 
+import { AssetsModule } from './assets/assets.module'
 import { AuthModule } from './auth/auth.module'
 import configuration from './config/configuration'
 import { CongregationsModule } from './congregations/congregations.module'
@@ -29,6 +30,7 @@ import { UsersModule } from './users/users.module'
     TenantsModule,
     TerritoriesModule,
     ApplicationExceptionModule,
+    AssetsModule,
   ],
 })
 export class AppModule {}

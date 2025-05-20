@@ -19,6 +19,12 @@ function configuration() {
       /** Amount of time a status update will override the previous one instead of creating a new one */
       statusThreshold: '1 minute',
     },
+    s3: {
+      accountId: process.env.S3_ACCOUNT_ID!,
+      accessKeyId: process.env.S3_ACCESS_KEY_ID!,
+      accessKeySecret: process.env.S3_ACCESS_KEY_SECRET!,
+      region: 'auto',
+    },
   }
 }
 

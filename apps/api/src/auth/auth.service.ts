@@ -139,12 +139,16 @@ export class AuthService {
   }
 
   async updateAdminsPermissions() {
+    const allPermissions = Permissions.getAllPermissions()
     const { count } = await this.usersService.updateMany({
       where: {
         roles: { has: Role.ADMIN },
+        NOT: {
+          permissions: { hasEvery: allPermissions },
+        },
       },
       data: {
-        permissions: Permissions.getAllPermissions(),
+        permissions: allPermissions,
       },
     })
 
