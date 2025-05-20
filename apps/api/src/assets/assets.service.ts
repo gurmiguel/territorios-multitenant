@@ -1,7 +1,10 @@
-import { CreateBucketCommand, ListBucketsCommand } from '@aws-sdk/client-s3'
+import { DeleteObjectCommand } from '@aws-sdk/client-s3'
 import { Injectable, Logger } from '@nestjs/common'
 
 import { CongregationsService } from '~/congregations/congregations.service'
+import { PrismaService } from '~/db/prisma.service'
+import { Asset, AssetType, User } from '~/generated/prisma'
+import { TenantHolderService } from '~/tenants/tenant-holder.service'
 
 import { S3Manager } from './s3/s3.manager'
 
@@ -12,6 +15,8 @@ export class AssetsService {
   constructor(
     protected readonly congregationsService: CongregationsService,
     protected readonly s3Manager: S3Manager,
+    protected readonly prisma: PrismaService,
+    protected readonly tenantHolder: TenantHolderService,
   ) {
   }
 
@@ -19,21 +24,45 @@ export class AssetsService {
     return this.s3Manager.getS3()
   }
 
-  async createTenantsBuckets() {
-    const tenants = await this.congregationsService.findMany()
+  async updateMap(userId: User['id'], file: Express.MulterS3.File) {
+    const existingAsset = await this.prisma.asset.findFirst({
+      where: { congregation: { id: this.tenantHolder.getTenant().id }, type: AssetType.MAP },
+    })
 
-    const existingBuckets = await this.s3.send(new ListBucketsCommand())
+    const publicUrl = this.s3Manager.getPublicUrl(file.key)
 
-    const missingBucketTenants = tenants.filter(t => !existingBuckets.Buckets?.some(b => b.Name === t.slug))
-
-    for (const tenant of missingBucketTenants) {
-      this.logger.log(`Creating R2 bucket for congregation: ${tenant.name} [bucket=${tenant.slug}]`)
-      await this.s3.send(new CreateBucketCommand({
-        Bucket: tenant.slug,
-        ACL: 'public-read',
-      }))
+    let asset: Asset
+    if (existingAsset) {
+      asset = await this.prisma.asset.update({
+        where: { id: existingAsset.id },
+        data: {
+          contentType: file.contentType,
+          s3path: file.key,
+          publicUrl,
+          metadata: file.metadata,
+        },
+      })
+      await this.s3.send(new DeleteObjectCommand({
+        Bucket: this.s3Manager.getBucket(),
+        Key: existingAsset.s3path,
+      })).catch((ex: Error) => {
+        this.logger.error('Could not delete existing map object: ' + ex.message)
+        return null
+      })
+    } else {
+      asset = await this.prisma.asset.create({
+        data: {
+          type: AssetType.MAP,
+          contentType: file.contentType,
+          s3path: file.key,
+          publicUrl,
+          congregationId: this.tenantHolder.getTenant().id,
+          uploaderId: userId,
+          metadata: file.metadata,
+        },
+      })
     }
 
-    this.logger.log(`Created R2 buckets for ${missingBucketTenants.length} congregations`)
+    return asset
   }
 }

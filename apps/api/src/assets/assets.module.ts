@@ -1,5 +1,5 @@
 
-import { Module, OnApplicationBootstrap } from '@nestjs/common'
+import { Module } from '@nestjs/common'
 import { MulterModule } from '@nestjs/platform-express'
 
 import { MulterConfigService } from '~/config/multer.config'
@@ -21,12 +21,4 @@ import { S3Manager } from './s3/s3.manager'
   providers: [AssetsService, S3Manager, MulterConfigService],
   exports: [S3Manager, MulterConfigService],
 })
-export class AssetsModule implements OnApplicationBootstrap {
-  constructor(
-    protected readonly assetsService: AssetsService,
-  ) {}
-
-  async onApplicationBootstrap() {
-    await this.assetsService.createTenantsBuckets()
-  }
-}
+export class AssetsModule {}

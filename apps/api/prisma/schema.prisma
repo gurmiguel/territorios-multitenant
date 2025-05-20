@@ -120,8 +120,8 @@ model Asset {
   metadata    Json      @default("{}")
   createdAt   DateTime  @default(now())
 
-  uploader       User         @relation(fields: [userId], references: [id])
-  userId         String
+  uploader       User         @relation(fields: [uploaderId], references: [id])
+  uploaderId     String
   congregation   Congregation @relation(fields: [congregationId], references: [id])
   congregationId Int
 }

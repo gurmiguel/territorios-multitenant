@@ -7,6 +7,8 @@ import { Configuration } from '~/config/configuration'
 @Injectable()
 export class S3Manager {
   protected readonly s3: S3Client
+  protected readonly bucket: string
+  protected readonly publicUrl: string
 
   constructor(
     config: ConfigService<Configuration, true>,
@@ -21,7 +23,16 @@ export class S3Manager {
       },
       region: s3Config.region,
     })
+    this.bucket = s3Config.bucket
+    this.publicUrl = s3Config.publicUrl.replace(/\/+$/, '')
   }
 
   getS3 = () => this.s3
+
+  getBucket() {
+    return this.bucket
+  }
+  getPublicUrl(objectKey: string) {
+    return `${this.publicUrl}/${objectKey}`
+  }
 }

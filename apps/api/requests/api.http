@@ -1,5 +1,6 @@
 @baseUrl = http://localhost:3333
 @tenant = alemanha
+@multipartBoundary = ------WebkitBoundaryBFBB8196D046
 
 ### AUTH
 
@@ -157,3 +158,20 @@ Authorization: Bearer {{accessToken}}
   "status": "OK",
   "date": "{{$datetime iso8601}}"
 }
+
+### Assets
+
+###
+# @name uploadMapImage
+POST {{baseUrl}}/assets/map
+Content-Type: multipart/form-data; boundary={{multipartBoundary}}
+Authorization: Bearer {{accessToken}}
+
+--{{multipartBoundary}}
+Content-Disposition: form-data; name="file"; filename="map.webp"
+Content-Type: image/webp
+
+< ./map.webp
+--{{multipartBoundary}}--
+
+###

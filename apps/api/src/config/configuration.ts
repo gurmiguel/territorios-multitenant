@@ -24,6 +24,8 @@ function configuration() {
       accessKeyId: process.env.S3_ACCESS_KEY_ID!,
       accessKeySecret: process.env.S3_ACCESS_KEY_SECRET!,
       region: 'auto',
+      publicUrl: process.env.S3_PUBLIC_URL!,
+      bucket: 'assets',
     },
   }
 }
