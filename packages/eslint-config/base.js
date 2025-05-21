@@ -1,5 +1,5 @@
 import stylistic from '@stylistic/eslint-plugin'
-import eslintImport from 'eslint-plugin-import'
+import eslintImport from 'eslint-plugin-import-x'
 import onlyWarn from 'eslint-plugin-only-warn'
 import turboPlugin from 'eslint-plugin-turbo'
 import tseslint from 'typescript-eslint'
