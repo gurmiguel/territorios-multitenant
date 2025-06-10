@@ -1,13 +1,24 @@
 {
-  "extends": "@repo/typescript-config/vite.json",
-  
+  "extends": "@repo/typescript-config/nextjs.json",
   "compilerOptions": {
-    "forceConsistentCasingInFileNames": true,
-    "baseUrl": ".",
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "baseUrl": "src/",
     "paths": {
-      "~/*": ["./src/*"],
+      "~/*": ["./*"]
     }
   },
-
-  "include": ["./**/*.ts", "./**/*.tsx", "eslint.config.mjs", "vite.config.js"]
+  "include": [
+    "**/*.ts",
+    "**/*.tsx",
+    "next-env.d.ts",
+    "next.config.js",
+    ".next/types/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
 }
