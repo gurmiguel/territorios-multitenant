@@ -63,9 +63,9 @@ export class TerritoriesService {
     })
   }
 
-  async getTerritory(id: number) {
+  async getTerritory(number: string) {
     return await this.prisma.territory.findFirst({
-      where: { congregation: { id: this.congregationId }, id },
+      where: { congregation: { id: this.congregationId }, number },
       include: {
         streets: {
           include: {
@@ -79,6 +79,7 @@ export class TerritoriesService {
             },
           },
         },
+        image: true,
       },
     })
   }

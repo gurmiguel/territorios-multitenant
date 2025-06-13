@@ -1,4 +1,5 @@
 import pluginNext from '@next/eslint-plugin-next'
+import pluginQuery from '@tanstack/eslint-plugin-query'
 import pluginReact from 'eslint-plugin-react'
 import pluginReactHooks from 'eslint-plugin-react-hooks'
 import globals from 'globals'
@@ -12,6 +13,7 @@ import { config as baseConfig } from './base.js'
  * */
 export const nextJsConfig = [
   ...baseConfig,
+  ...pluginQuery.configs['flat/recommended'],
   {
     ...pluginReact.configs.flat.recommended,
     languageOptions: {

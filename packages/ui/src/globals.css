@@ -20,7 +20,7 @@
   --muted-foreground: oklch(0.6320 0.0212 262.9618);
   --accent: oklch(1.0000 0 0);
   --accent-foreground: oklch(0.4305 0.1599 265.3017);
-  --destructive: oklch(0.7247 0.1463 21.3340);
+  --destructive: oklch(0.6494 0.2088 25.1416);
   --destructive-foreground: oklch(1.0000 0 0);
   --border: oklch(1.0000 0 0);
   --input: oklch(1.0000 0 0);
@@ -41,7 +41,7 @@
   --font-sans: DM Sans, sans-serif;
   --font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
   --font-mono: JetBrains Mono, monospace;
-  --radius: 0rem;
+  --radius: 0.25rem;
   --shadow-2xs: 0 1px 3px 0px hsl(0 0% 10.1961% / 0.05);
   --shadow-xs: 0 1px 3px 0px hsl(0 0% 10.1961% / 0.05);
   --shadow-sm: 0 1px 3px 0px hsl(0 0% 10.1961% / 0.10), 0 1px 2px -1px hsl(0 0% 10.1961% / 0.10);
@@ -189,7 +189,7 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground h-dvh tracking-wide m-0;
+    @apply flex flex-col bg-background text-foreground h-dvh tracking-wide m-0;
     letter-spacing: var(--tracking-normal);
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;

@@ -1,5 +1,6 @@
 import { Slot } from '@radix-ui/react-slot'
 import { cn } from '@repo/ui/lib/utils'
+import { Override } from '@repo/utils/types'
 import { cva, type VariantProps } from 'class-variance-authority'
 import * as React from 'react'
 
@@ -39,15 +40,14 @@ function Button({
   variant,
   size,
   asChild = false,
+  type = 'button',
   ...props
-}: React.ComponentProps<'button'> &
-  VariantProps<typeof buttonVariants> & {
-    asChild?: boolean
-  }) {
+}: Override<React.ComponentProps<'button'>, VariantProps<typeof buttonVariants> & { asChild?: boolean }>) {
   const Comp = asChild ? Slot : 'button'
 
   return (
     <Comp
+      type={type}
       data-slot="button"
       className={cn(buttonVariants({ variant, size, className }))}
       {...props}

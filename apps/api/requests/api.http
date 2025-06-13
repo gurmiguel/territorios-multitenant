@@ -2,6 +2,12 @@
 @tenant = alemanha
 @multipartBoundary = ------WebkitBoundaryBFBB8196D046
 
+### Metadata
+
+# @name getTenant
+GET {{baseUrl}}/congregations
+X-Tenant-Id: {{tenant}}
+
 ### AUTH
 
 # @name login
@@ -36,9 +42,9 @@ GET {{baseUrl}}/territories
 Authorization: Bearer {{accessToken}}
 
 ###
-# @prompt territoryId
+# @prompt number
 # @name getTerritory
-GET {{baseUrl}}/territories/{{territoryId}}
+GET {{baseUrl}}/territories/{{number}}
 Authorization: Bearer {{accessToken}}
 
 ###
@@ -187,7 +193,7 @@ Authorization: Bearer {{accessToken}}
 Content-Disposition: form-data; name="file"; filename="territory.png"
 Content-Type: image/png
 
-< ./territory.png
+< F:/GUSTAVO/Salão/Territórios/territorios-png/1.png
 --{{multipartBoundary}}--
 
 ###

@@ -79,12 +79,12 @@ describe('TerritoriesService', () => {
 
   it('should return territory data', async () => {
     jest.spyOn(prisma.territory, 'findFirst')
-      .mockResolvedValue({ id: 1 } as any)
+      .mockResolvedValue({ id: 1, number: '1' } as any)
 
-    const result = await service.getTerritory(1)
+    const result = await service.getTerritory('1')
 
     expect(prisma.territory.findFirst).toHaveBeenCalledWith(expect.objectContaining({
-      where: { congregation: { id: tenantHolder.getTenant().id }, id: 1 },
+      where: { congregation: { id: tenantHolder.getTenant().id }, number: '1' },
       include: {
         streets: {
           include: {
@@ -95,6 +95,7 @@ describe('TerritoriesService', () => {
             },
           },
         },
+        image: true,
       },
     }))
     expect(result).toBeTruthy()

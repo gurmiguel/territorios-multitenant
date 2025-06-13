@@ -36,9 +36,19 @@ export class TerritoriesController {
   }
 
   @Allow([Area.TERRITORIES, Action.READ])
-  @Get(':id')
-  async get(@Param('id') id: string) {
-    return await this.territoriesService.getTerritory(parseInt(id))
+  @Get(':number')
+  async get(@Param('number') number: string) {
+    const data = await this.territoriesService.getTerritory(number)
+
+    if (!data)
+      throw new Error(`Territory with number ${number} not found`)
+
+    const { image, ...territory } = data
+
+    return {
+      ...territory,
+      imageUrl: image?.publicUrl ?? null,
+    }
   }
 
   @Allow([Area.TERRITORIES, Action.WRITE])
