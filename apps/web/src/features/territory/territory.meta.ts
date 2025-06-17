@@ -1,13 +1,12 @@
-'use server'
-
 import { Metadata } from 'next'
 import { cache } from 'react'
 
+import { Territory } from './types'
 import { ServerApiClient } from '../api/api.server'
 
 export async function generateMetadata({ params }: { params: Promise<{ number: string }> }) {
   const { number } = await params
-  const { territory } = await fetchTerritory(number)
+  const territory = await fetchTerritory(number)
 
   return {
     title: `Território ${territory.number}`,
@@ -17,8 +16,8 @@ export async function generateMetadata({ params }: { params: Promise<{ number: s
   } satisfies Metadata
 }
 
-export const fetchTerritory = cache(async (number: string) => {
-  const territory = await ServerApiClient.getInstance().fetch<any>(`/territories/${number}`)
+const fetchTerritory = cache(async (number: string) => {
+  const territory = await ServerApiClient.getInstance().query<Territory>(`/territories/${number}`)
 
-  return { territory }
+  return territory
 })

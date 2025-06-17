@@ -11,7 +11,7 @@ export async function GET(request: NextRequest) {
   if (authResult !== 'success' || !code)
     redirect('/login')
 
-  const { access_token, refresh_token } = await ServerApiClient.getInstance().fetch<Record<'access_token' | 'refresh_token', string>>('/auth/refresh', {
+  const { access_token, refresh_token } = await ServerApiClient.getInstance().query<Record<'access_token' | 'refresh_token', string>>('/auth/refresh', {
     method: 'POST',
     body: JSON.stringify({ refresh_token: code })
   })

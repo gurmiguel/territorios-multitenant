@@ -306,7 +306,7 @@ export class TerritoriesService {
       },
     })
 
-    let newStatus: StatusUpdate & { house: { street: { territoryId: Territory['id'] } } }
+    let newStatus: StatusUpdate & { house: { street: { id: number, territory: Territory } } }
 
     if (replaceUpdate) {
       const updated = await this.prisma.statusUpdate.update({
@@ -320,7 +320,8 @@ export class TerritoriesService {
             select: {
               street: {
                 select: {
-                  territoryId: true,
+                  id: true,
+                  territory: true,
                 },
               },
             },
@@ -355,7 +356,8 @@ export class TerritoriesService {
             select: {
               street: {
                 select: {
-                  territoryId: true,
+                  id: true,
+                  territory: true,
                 },
               },
             },
@@ -366,9 +368,22 @@ export class TerritoriesService {
       newStatus = created
     }
 
+    const statusCount = await this.prisma.statusUpdate.count({ where: { houseId } })
+
+    const limit = this.config.get('constants', { infer: true }).statusBleedingLimit
+
+    if (statusCount > limit) {
+      await this.prisma.statusUpdate.deleteMany({
+        where: { houseId, AND: [{ NOT: { id: newStatus.id } }] },
+        limit: statusCount - limit,
+      })
+    }
+
     this.emitter.emit(HouseStatusUpdatedEvent.event, new HouseStatusUpdatedEvent({
       houseId,
-      territoryId: newStatus.house.street.territoryId,
+      streetId: newStatus.house.street.id,
+      territoryId: newStatus.house.street.territory.id,
+      territoryNumber: newStatus.house.street.territory.number,
       status: omit(newStatus, 'house'),
     }))
 

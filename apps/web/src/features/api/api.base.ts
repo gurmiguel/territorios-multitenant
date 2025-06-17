@@ -6,7 +6,23 @@ export abstract class ApiClientBase {
   protected accessToken?: string
   protected refreshToken?: string
 
-  public async fetch<T>(url: string, options: RequestInit = {}): Promise<T> {
+  public async query<T>(url: string, options: RequestInit = {}): Promise<T> {
+    const response = await this.fetch(url, options)
+
+    return response.json()
+  }
+
+  public async mutate<T>(url: string, data: any, options?: RequestInit): Promise<T> {
+    const response = await this.fetch(url, {
+      method: 'POST',
+      body: JSON.stringify(data),
+      ...options,
+    })
+
+    return response.json()
+  }
+
+  public async fetch(url: string, options: RequestInit = {}) {
     await this.loadAuthTokens()
 
     options.headers ??= {}
@@ -29,18 +45,10 @@ export abstract class ApiClientBase {
     if (!response.ok)
       throw new Error(`HTTP error! status: ${response.status}`)
 
-    return response.json()
+    return response
   }
 
-  public async mutate<T>(url: string, data: any, options?: RequestInit): Promise<T> {
-    return this.fetch(url, {
-      method: 'POST',
-      body: JSON.stringify(data),
-      ...options,
-    })
-  }
-
-  protected buildUrl(url: string) {
+  public buildUrl(url: string) {
     if (!url.startsWith('http'))
       url = [this.baseUrl, url.replace(/^\//, '')].join('/')
 

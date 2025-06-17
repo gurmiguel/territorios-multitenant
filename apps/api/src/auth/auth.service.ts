@@ -122,7 +122,7 @@ export class AuthService {
 
       return this.buildUser(user)
     } catch (e) {
-      this.logger.error(e)
+      this.logger.debug(e instanceof Error ? `${e.name}: ${e.message}` : e)
       throw e instanceof UnauthorizedException ? e : new UnauthorizedException()
     }
   }
@@ -133,7 +133,7 @@ export class AuthService {
       iss: user.congregation.slug,
     }
     return {
-      access_token: await this.jwtService.signAsync({ ...payload, type: 'access_token', username: user.email } satisfies AccessTokenPayload, { expiresIn: '1h' }),
+      access_token: await this.jwtService.signAsync({ ...payload, type: 'access_token', username: user.email } satisfies AccessTokenPayload, { expiresIn: '1 hour' }),
       refresh_token: await this.jwtService.signAsync({ ...payload, type: 'refresh_token' } satisfies RefreshTokenPayload, { expiresIn: '60 days' }),
     }
   }

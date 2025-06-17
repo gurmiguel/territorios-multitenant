@@ -1,4 +1,4 @@
-import { House, StatusUpdate, Territory } from '~/generated/prisma'
+import { House, StatusUpdate, Street, Territory } from '~/generated/prisma'
 import { EventData, EventRecord } from '~/utils/event'
 
 export class HouseStatusUpdatedEvent extends EventRecord<HouseStatusUpdatedEvent> implements EventData {
@@ -6,5 +6,7 @@ export class HouseStatusUpdatedEvent extends EventRecord<HouseStatusUpdatedEvent
 
   public readonly territoryId!: Territory['id']
   public readonly houseId!: House['id']
+  public readonly streetId!: Street['id']
+  public readonly territoryNumber!: Territory['number']
   public readonly status!: StatusUpdate
 }

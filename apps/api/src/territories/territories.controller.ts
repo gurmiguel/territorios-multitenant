@@ -1,6 +1,6 @@
 import { Controller, Delete, Get, Param, Patch, Post, Request, Sse } from '@nestjs/common'
 import { EventEmitter2 } from '@nestjs/event-emitter'
-import { pick } from 'lodash-es'
+import { omit } from 'lodash-es'
 import { filter, map, merge } from 'rxjs'
 
 import { Allow } from '~/auth/decorators/allow.decorator'
@@ -83,7 +83,7 @@ export class TerritoriesController {
         .pipe(map(e => new MessageEvent(e.event, { data: e.id }))),
       // used to update main territory last updated at label
       fromTypedEvent(this.emitter, HouseStatusUpdatedEvent)
-        .pipe(map(e => new MessageEvent(e.event, { data: pick(e, 'houseId', 'status') }))),
+        .pipe(map(e => new MessageEvent(e.event, { data: omit(e, 'territoryId') }))),
     )
   }
 
@@ -121,7 +121,7 @@ export class TerritoriesController {
       // updates
       fromTypedEvent(this.emitter, HouseStatusUpdatedEvent)
         .pipe(filter(e => e.territoryId === id))
-        .pipe(map(e => new MessageEvent(e.event, { data: pick(e, 'houseId', 'status') }))),
+        .pipe(map(e => new MessageEvent(e.event, { data: omit(e, 'territoryId') }))),
     )
   }
 }

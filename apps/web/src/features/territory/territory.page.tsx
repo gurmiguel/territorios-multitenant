@@ -1,20 +1,30 @@
 'use client'
 
-import { useQuery } from '@tanstack/react-query'
+import { Accordion } from '@repo/ui/components/ui/accordion'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import Image from 'next/image'
 import { useParams } from 'next/navigation'
 
 import Loading from '~/app/loading'
 import territoryImageFallback from '~/assets/territory.png'
 
-import { ApiClient } from '../api/api.client'
+import { StreetItem } from './street-item'
+import TerritoryEvents from './territory.events'
+import { Territory } from './types'
+import { useEventStream } from '../events/events.hooks'
 
 export default function TerritoryPage() {
+  const queryClient = useQueryClient()
+
   const { number } = useParams()
-  const { data: territory, isLoading } = useQuery({
-    queryKey: ['territory', number],
-    queryFn: () => ApiClient.getInstance()
-      .fetch<{ imageUrl: string }>(`/territories/${number}`),
+
+  const { data: territory, isLoading } = useQuery<Territory>({
+    queryKey: ['territories', String(number)],
+  })
+
+  useEventStream(`territories/${territory?.id}/updates`, {
+    handler: new TerritoryEvents(queryClient),
+    enabled: !!territory,
   })
 
   if (isLoading) return <Loading />
@@ -25,7 +35,9 @@ export default function TerritoryPage() {
         width={365} height={365}
         className="mb-4 mx-auto"
       />
-      <pre className="w-full whitespace-pre overflow-x-auto">{JSON.stringify(territory ?? null, null, 2)}</pre>
+      <Accordion type="single" className="w-full" collapsible>
+        {territory?.streets.map(street => <StreetItem key={street.id} street={street} />)}
+      </Accordion>
     </div>
   )
 }

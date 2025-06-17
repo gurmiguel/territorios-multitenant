@@ -10,7 +10,10 @@
   },
   "dependencies": {
     "@repo/ui": "*",
+    "@repo/utils": "*",
     "@tanstack/react-query": "^5.80.6",
+    "date-fns": "^4.1.0",
+    "immer": "^10.1.1",
     "jose": "^6.0.11",
     "js-cookie": "^3.0.5",
     "next": "15.3.3",

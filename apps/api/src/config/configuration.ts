@@ -18,6 +18,7 @@ function configuration() {
     constants: {
       /** Amount of time a status update will override the previous one instead of creating a new one */
       statusThreshold: '1 minute',
+      statusBleedingLimit: 3,
     },
     s3: {
       accountId: process.env.S3_ACCOUNT_ID!,
