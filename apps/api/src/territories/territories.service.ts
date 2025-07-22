@@ -387,7 +387,7 @@ export class TerritoriesService {
       status: omit(newStatus, 'house'),
     }))
 
-    return newStatus.date
+    return omit(newStatus, ['house'])
   }
   // #endregion status
 }

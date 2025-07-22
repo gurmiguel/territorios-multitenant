@@ -17,7 +17,11 @@ export async function generateMetadata({ params }: { params: Promise<{ number: s
 }
 
 const fetchTerritory = cache(async (number: string) => {
-  const territory = await ServerApiClient.getInstance().query<Territory>(`/territories/${number}`)
+  const territory = await ServerApiClient.getInstance().query<Territory>(`/territories/${number}`, {
+    next: {
+      revalidate: 86400, // 1 day
+    },
+  })
 
   return territory
 })

@@ -36,7 +36,7 @@ export default function TerritoryPage() {
         className="mb-4 mx-auto"
       />
       <Accordion type="single" className="w-full" collapsible>
-        {territory?.streets.map(street => <StreetItem key={street.id} street={street} />)}
+        {territory?.streets.map(street => <StreetItem key={street.id} territoryId={territory.id} territoryNumber={territory.number} street={street} />)}
       </Accordion>
     </div>
   )

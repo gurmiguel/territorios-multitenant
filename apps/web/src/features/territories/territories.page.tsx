@@ -1,6 +1,5 @@
-import { TerritoryListItem } from '@repo/ui/components/territory-list-item'
-
 import { fetchTerritories } from './territories.data'
+import { TerritoryListItem } from './territory-list-item'
 
 export async function TerritoriesPage() {
   const { territories } = await fetchTerritories()
