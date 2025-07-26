@@ -6,6 +6,7 @@ import { PhoneOffIcon } from 'lucide-react'
 import { useState } from 'react'
 
 import { AddHistoryDialog } from './dialogs/add-history.dialog'
+import { DeleteHouseDialog } from './dialogs/delete-house-dialog'
 import { House } from './types'
 
 interface Props {
@@ -16,14 +17,14 @@ interface Props {
 }
 
 export function HouseItem({ house, territoryId, territoryNumber, streetId }: Props) {
-  const [openAddRegistry, setOpenAddRegistry] = useState(false)
+  const [openDialog, setOpenDialog] = useState<'add-registry' | 'delete-house' | 'edit-house' | null>(null)
 
   return (
     <>
       <button
         type="button"
         className="flex items-center w-full py-2.5 px-5 font-normal text-left hover:bg-gray-100/50 active:bg-gray-200 transition-colors"
-        onClick={() => setOpenAddRegistry(true)}
+        onClick={() => setOpenDialog('add-registry')}
       >
         <span className="flex items-center mr-auto">
           {formatHouseNumber(house)}
@@ -33,11 +34,17 @@ export function HouseItem({ house, territoryId, territoryNumber, streetId }: Pro
       </button>
 
       <AddHistoryDialog
-        open={openAddRegistry}
+        open={openDialog === 'add-registry'}
         context={{ territoryId, territoryNumber, houseId: house.id, streetId, phones: house.phones }}
-        onClose={() => setOpenAddRegistry(false)}
-        onOpenDelete={() => alert('[Delete Dialog] Still under development')}
-        onOpenEdit={() => alert('[Edit Dialog] Still under development')}
+        onClose={() => setOpenDialog(null)}
+        onOpenDelete={() => setOpenDialog('delete-house')}
+        onOpenEdit={() => setOpenDialog('edit-house')}
+      />
+
+      <DeleteHouseDialog
+        open={openDialog === 'delete-house'}
+        context={{ territoryId, territoryNumber, streetId, houseId: house.id }}
+        onClose={() => setOpenDialog(null)}
       />
     </>
   )

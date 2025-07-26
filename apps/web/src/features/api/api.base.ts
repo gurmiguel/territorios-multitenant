@@ -15,7 +15,7 @@ export abstract class ApiClientBase {
   public async mutate<T>(url: string, data: any, options?: RequestInit): Promise<T> {
     const response = await this.fetch(url, {
       method: 'POST',
-      body: JSON.stringify(data),
+      body: data && JSON.stringify(data),
       ...options,
     })
 

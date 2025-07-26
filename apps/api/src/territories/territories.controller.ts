@@ -117,7 +117,7 @@ export class TerritoriesController {
         .pipe(filter(e => e.territoryId === id))
         .pipe(map(e => new MessageEvent(e.event, { data: e.house }))),
       fromTypedEvent(this.emitter, HouseDeletedEvent)
-        .pipe(map(e => new MessageEvent(e.event, { data: e.id }))),
+        .pipe(map(e => new MessageEvent(e.event, { data: e }))),
       // updates
       fromTypedEvent(this.emitter, HouseStatusUpdatedEvent)
         .pipe(filter(e => e.territoryId === id))

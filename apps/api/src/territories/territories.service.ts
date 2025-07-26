@@ -266,7 +266,7 @@ export class TerritoriesService {
   }
 
   async deleteHouse(id: number) {
-    await this.prisma.house.delete({
+    const res = await this.prisma.house.delete({
       where: {
         id,
         street: {
@@ -275,10 +275,18 @@ export class TerritoriesService {
           },
         },
       },
+      select: {
+        street: {
+          select: {
+            territory: { select: { number: true } },
+          },
+        },
+      },
     })
 
     this.emitter.emit(HouseDeletedEvent.event, new HouseDeletedEvent({
       id,
+      territoryNumber: res.street.territory.number,
     }))
 
     return true

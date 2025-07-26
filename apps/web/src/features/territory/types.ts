@@ -9,3 +9,8 @@ export interface HouseUpdateEvent {
   streetId: string
   status: StatusUpdate
 }
+
+export interface HouseDeletedEvent {
+  id: number
+  territoryNumber: string
+}

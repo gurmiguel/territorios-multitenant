@@ -75,9 +75,9 @@ model StatusUpdate {
   /// ["OK" | "Fail"]
   status String
 
-  user    User   @relation(fields: [userId], references: [id])
+  user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId  String
-  house   House  @relation(fields: [houseId], references: [id])
+  house   House  @relation(fields: [houseId], references: [id], onDelete: Cascade)
   houseId Int
 }
 
@@ -90,7 +90,7 @@ model AccountProvider {
   isSafe    Boolean
   createdAt DateTime @default(now())
 
-  user   User   @relation(fields: [userId], references: [id])
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId String
 
   @@unique([provider, userId])
@@ -104,7 +104,7 @@ model User {
   createdAt   DateTime @default(now())
   roles       String[] @default(["user"])
 
-  congregation   Congregation @relation(fields: [congregationId], references: [id])
+  congregation   Congregation @relation(fields: [congregationId], references: [id], onDelete: Cascade)
   congregationId Int
 
   providers      AccountProvider[]
@@ -123,9 +123,9 @@ model Asset {
   metadata    Json      @default("{}")
   createdAt   DateTime  @default(now())
 
-  uploader       User         @relation(fields: [uploaderId], references: [id])
-  uploaderId     String
-  congregation   Congregation @relation(fields: [congregationId], references: [id])
+  uploader       User?        @relation(fields: [uploaderId], references: [id], onDelete: SetNull)
+  uploaderId     String?
+  congregation   Congregation @relation(fields: [congregationId], references: [id], onDelete: Cascade)
   congregationId Int
   territory      Territory?
 }
