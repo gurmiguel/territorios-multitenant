@@ -1,5 +1,6 @@
 import { Button } from '@repo/ui/components/ui/button'
 import { Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@repo/ui/components/ui/dialog'
+import { toast } from '@repo/ui/components/ui/sonner'
 import { useQueryClient } from '@tanstack/react-query'
 import { FormEvent } from 'react'
 
@@ -29,6 +30,8 @@ export function DeleteHouseDialog({ open, onClose, context }: Props) {
     const eventHandler = new TerritoryEvents(queryClient)
 
     eventHandler['house.deleted']({ id: context.houseId, territoryNumber: context.territoryNumber })
+
+    toast.success('Registro removido')
   }
 
   return (

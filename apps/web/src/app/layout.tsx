@@ -1,5 +1,6 @@
 import './globals.css'
 
+import { Toaster } from '@repo/ui/components/ui/sonner'
 import { headers } from 'next/headers'
 
 import { QueryProvider } from '~/features/api/query-provider'
@@ -24,6 +25,7 @@ export default function RootLayout({
               </main>
             </HeaderProvider>
           </QueryProvider>
+          <Toaster position="bottom-center" richColors closeButton />
         </ThemeProvider>
       </body>
     </html>

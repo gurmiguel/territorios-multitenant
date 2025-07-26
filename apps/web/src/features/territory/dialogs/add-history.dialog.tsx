@@ -2,6 +2,7 @@ import { Button } from '@repo/ui/components/ui/button'
 import { Checkbox } from '@repo/ui/components/ui/checkbox'
 import { Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@repo/ui/components/ui/dialog'
 import { PhoneIcon } from '@repo/ui/components/ui/icons'
+import { toast } from '@repo/ui/components/ui/sonner'
 import { formatPhoneNumber } from '@repo/utils/phone'
 import { useQueryClient } from '@tanstack/react-query'
 import { FormEvent } from 'react'
@@ -49,6 +50,8 @@ export function AddHistoryDialog({ open, onClose, context, onOpenDelete, onOpenE
         territoryNumber: context.territoryNumber,
         status,
       })
+
+      toast.success('Registro adicionado')
     }
 
     onClose()

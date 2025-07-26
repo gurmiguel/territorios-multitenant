@@ -26,7 +26,7 @@ export function HouseItem({ house, territoryId, territoryNumber, streetId }: Pro
         className="flex items-center w-full py-2.5 px-5 font-normal text-left hover:bg-gray-100/50 active:bg-gray-200 transition-colors"
         onClick={() => setOpenDialog('add-registry')}
       >
-        <span className="flex items-center mr-auto">
+        <span className="flex items-center mr-auto font-semibold tracking-tight">
           {formatHouseNumber(house)}
           {!house.phones.length && <PhoneOffIcon size={14} className="ml-3 text-muted-foreground" />}
         </span>
@@ -46,6 +46,8 @@ export function HouseItem({ house, territoryId, territoryNumber, streetId }: Pro
         context={{ territoryId, territoryNumber, streetId, houseId: house.id }}
         onClose={() => setOpenDialog(null)}
       />
+
+      {/* TODO: implement house edit */}
     </>
   )
 }

@@ -1,5 +1,6 @@
 'use client'
 
+import { Button } from '@repo/ui/components/ui/button'
 import { cn } from '@repo/ui/lib/utils'
 import { ChevronLeftIcon, MapIcon } from 'lucide-react'
 import Link from 'next/link'
@@ -29,19 +30,30 @@ export function Header() {
     <div className="bg-primary text-primary-foreground shadow-md">
       <nav className="container py-0 h-16 flex items-center justify-end">
         <h1 className="flex items-center mr-auto ml-0 text-xl font-semibold">
-          <Link href={'/'} className="flex items-center" onClick={handleBackClick}>
-            <ChevronLeftIcon
-              className={cn(!shouldShowBackButton && 'w-0 opacity-0', 'h-5 mt-0.5 -ml-2 mr-2 transition-all')}
-              strokeWidth={2.5}
-            />
-          </Link>
+          <Button
+            variant="ghost"
+            className={cn(
+              '-ml-2 rounded-full text-primary-foreground hover:text-primary-foreground active:text-primary-foreground/70 w-12 h-12 p-0! transition-all',
+              !shouldShowBackButton && 'w-0 mr-2 opacity-0 pointer-events-none',
+            )}
+            asChild
+          >
+            <Link href={'/'} className="flex items-center" onClick={handleBackClick}>
+              <ChevronLeftIcon
+                className="h-5 mt-0.5 size-6"
+                strokeWidth={2.5}
+              />
+            </Link>
+          </Button>
           {title}
         </h1>
 
         {!!shouldShowMapButton && (
-          <Link href="/mapa-completo">
-            <MapIcon className="mr-4" size={24} />
-          </Link>
+          <Button variant="ghost" className="mr-4 rounded-full text-primary-foreground hover:text-primary-foreground active:text-primary-foreground/70 size-12" asChild>
+            <Link href="/mapa-completo">
+              <MapIcon className="size-6" />
+            </Link>
+          </Button>
         )}
       </nav>
     </div>
