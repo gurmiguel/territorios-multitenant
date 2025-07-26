@@ -6,4 +6,5 @@ export class HouseUpdatedEvent extends EventRecord<HouseUpdatedEvent> implements
 
   public readonly house!: House
   public readonly territoryId!: Territory['id']
+  public readonly territoryNumber!: Territory['number']
 }

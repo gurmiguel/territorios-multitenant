@@ -5,4 +5,5 @@ export class TerritoryDeletedEvent extends EventRecord<TerritoryDeletedEvent> im
   public static readonly event = 'territory.deleted'
 
   public readonly id!: Territory['id']
+  public readonly territoryNumber!: Territory['number']
 }

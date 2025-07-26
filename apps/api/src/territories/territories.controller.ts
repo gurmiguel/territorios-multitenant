@@ -96,32 +96,32 @@ export class TerritoriesController {
       // territory
       fromTypedEvent(this.emitter, TerritoryUpdatedEvent)
         .pipe(filter(e => e.territory.id === id))
-        .pipe(map(e => new MessageEvent(e.event, { data: e.territory }))),
+        .pipe(map(e => new MessageEvent(e.event, { data: e }))),
       fromTypedEvent(this.emitter, TerritoryDeletedEvent)
         .pipe(filter(e => e.id === id))
-        .pipe(map(e => new MessageEvent(e.event, { data: e.id }))),
+        .pipe(map(e => new MessageEvent(e.event, { data: e }))),
       // streets
       fromTypedEvent(this.emitter, StreetCreatedEvent)
         .pipe(filter(e => e.street.territoryId === id))
-        .pipe(map(e => new MessageEvent(e.event, { data: e.street }))),
+        .pipe(map(e => new MessageEvent(e.event, { data: e }))),
       fromTypedEvent(this.emitter, StreetUpdatedEvent)
         .pipe(filter(e => e.street.territoryId === id))
-        .pipe(map(e => new MessageEvent(e.event, { data: e.street }))),
+        .pipe(map(e => new MessageEvent(e.event, { data: e }))),
       fromTypedEvent(this.emitter, StreetDeletedEvent)
-        .pipe(map(e => new MessageEvent(e.event, { data: e.id }))),
+        .pipe(map(e => new MessageEvent(e.event, { data: e }))),
       // houses
       fromTypedEvent(this.emitter, HouseCreatedEvent)
         .pipe(filter(e => e.territoryId === id))
-        .pipe(map(e => new MessageEvent(e.event, { data: e.house }))),
+        .pipe(map(e => new MessageEvent(e.event, { data: e }))),
       fromTypedEvent(this.emitter, HouseUpdatedEvent)
         .pipe(filter(e => e.territoryId === id))
-        .pipe(map(e => new MessageEvent(e.event, { data: e.house }))),
+        .pipe(map(e => new MessageEvent(e.event, { data: e }))),
       fromTypedEvent(this.emitter, HouseDeletedEvent)
         .pipe(map(e => new MessageEvent(e.event, { data: e }))),
       // updates
       fromTypedEvent(this.emitter, HouseStatusUpdatedEvent)
         .pipe(filter(e => e.territoryId === id))
-        .pipe(map(e => new MessageEvent(e.event, { data: omit(e, 'territoryId') }))),
+        .pipe(map(e => new MessageEvent(e.event, { data: e }))),
     )
   }
 }

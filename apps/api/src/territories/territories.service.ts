@@ -121,10 +121,16 @@ export class TerritoriesService {
   }
 
   async deleteTerritory(id: number) {
-    await this.prisma.territory.delete({ where: { id, congregation: { id: this.congregationId } } })
+    const res = await this.prisma.territory.delete({
+      where: { id, congregation: { id: this.congregationId } },
+      select: {
+        number: true,
+      },
+    })
 
     this.emitter.emit(TerritoryDeletedEvent.event, new TerritoryDeletedEvent({
       id,
+      territoryNumber: res.number,
     }))
 
     return true
@@ -146,10 +152,14 @@ export class TerritoriesService {
         },
         ...parsed,
       },
+      include: {
+        territory: { select: { number: true } },
+      },
     })
 
     this.emitter.emit(StreetCreatedEvent.event, new StreetCreatedEvent({
       street,
+      territoryNumber: street.territory.number,
     }))
 
     return street
@@ -171,27 +181,35 @@ export class TerritoriesService {
       data: {
         ...parsed,
       },
+      include: {
+        territory: { select: { number: true } },
+      },
     })
 
     this.emitter.emit(StreetUpdatedEvent.event, new StreetUpdatedEvent({
       street,
+      territoryNumber: street.territory.number,
     }))
 
     return street
   }
 
   async deleteStreet(id: number) {
-    await this.prisma.street.delete({
+    const res = await this.prisma.street.delete({
       where: {
         id,
         territory: {
           congregation: { id: this.congregationId },
         },
       },
+      select: {
+        territory: { select: { number: true } },
+      },
     })
 
     this.emitter.emit(StreetDeletedEvent.event, new StreetDeletedEvent({
       id,
+      territoryNumber: res.territory.number,
     }))
 
     return true
@@ -219,7 +237,7 @@ export class TerritoriesService {
       include: {
         street: {
           select: {
-            territoryId: true,
+            territory: { select: { id: true, number: true } },
           },
         },
       },
@@ -227,7 +245,8 @@ export class TerritoriesService {
 
     this.emitter.emit(HouseCreatedEvent.event, new HouseCreatedEvent({
       house,
-      territoryId: house.street.territoryId,
+      territoryId: house.street.territory.id,
+      territoryNumber: house.street.territory.number,
     }))
 
     return omit(house, ['street'])
@@ -251,7 +270,7 @@ export class TerritoriesService {
       include: {
         street: {
           select: {
-            territoryId: true,
+            territory: { select: { id: true, number: true } },
           },
         },
       },
@@ -259,7 +278,8 @@ export class TerritoriesService {
 
     this.emitter.emit(HouseUpdatedEvent.event, new HouseUpdatedEvent({
       house,
-      territoryId: house.street.territoryId,
+      territoryId: house.street.territory.id,
+      territoryNumber: house.street.territory.number,
     }))
 
     return omit(house, ['street'])
