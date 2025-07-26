@@ -12,6 +12,7 @@ import { StreetItem } from './street-item'
 import TerritoryEvents from './territory.events'
 import { Territory } from './types'
 import { useEventStream } from '../events/events.hooks'
+import { HeaderConfig } from '../header/context'
 
 export default function TerritoryPage() {
   const queryClient = useQueryClient()
@@ -27,17 +28,20 @@ export default function TerritoryPage() {
     enabled: !!territory,
   })
 
-  if (isLoading) return <Loading />
-
   return (
-    <div className="flex flex-col items-center">
-      <Image src={territory?.imageUrl ?? territoryImageFallback} alt=""
-        width={365} height={365}
-        className="mb-4 mx-auto"
-      />
-      <Accordion type="single" className="w-full" collapsible>
-        {territory?.streets.map(street => <StreetItem key={street.id} territoryId={territory.id} territoryNumber={territory.number} street={street} />)}
-      </Accordion>
+    <div className="flex flex-col flex-1 items-center">
+      <HeaderConfig title={`Território ${number}`} backRoute="/territorios" showMap />
+      {isLoading ? <Loading /> : (
+        <>
+          <Image src={territory?.imageUrl ?? territoryImageFallback} alt=""
+            width={365} height={365}
+            className="mb-4 mx-auto"
+          />
+          <Accordion type="single" className="w-full" collapsible>
+            {territory?.streets.map(street => <StreetItem key={street.id} territoryId={territory.id} territoryNumber={territory.number} street={street} />)}
+          </Accordion>
+        </>
+      )}
     </div>
   )
 }

@@ -1,9 +1,10 @@
 import './globals.css'
 
-import { Header } from '@repo/ui/components/header'
 import { headers } from 'next/headers'
 
 import { QueryProvider } from '~/features/api/query-provider'
+import { HeaderProvider } from '~/features/header/context'
+import { Header } from '~/features/header/header'
 import { ThemeProvider } from '~/features/theme/theme.provider'
 
 export default function RootLayout({
@@ -14,12 +15,14 @@ export default function RootLayout({
   return (
     <html lang="pt-BR" suppressHydrationWarning>
       <body>
-        <Header />
         <ThemeProvider>
           <QueryProvider>
-            <main className="flex flex-col flex-1 container">
-              {children}
-            </main>
+            <HeaderProvider>
+              <Header />
+              <main className="flex flex-col flex-1 container">
+                {children}
+              </main>
+            </HeaderProvider>
           </QueryProvider>
         </ThemeProvider>
       </body>

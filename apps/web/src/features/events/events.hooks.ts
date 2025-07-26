@@ -1,7 +1,7 @@
 import { delay } from '@repo/utils/delay'
 import { useEffect } from 'react'
 
-import { patchCache } from '~/cache/api'
+import { patchCache } from '~/client-cache/api'
 
 import { ApiClient } from '../api/api.client'
 

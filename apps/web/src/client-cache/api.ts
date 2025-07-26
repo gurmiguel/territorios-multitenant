@@ -6,7 +6,6 @@ import { CACHE_API_KEY } from './constants'
 
 export async function getCache<T = any>(key: string): Promise<T | null> {
   key = getApiCacheKey(key)
-  console.log(key)
   const cache = await caches.open(CACHE_API_KEY)
   const response = await cache.match(key)
   return response ? response.json() : null

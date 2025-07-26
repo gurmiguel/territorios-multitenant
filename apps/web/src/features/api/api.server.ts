@@ -38,17 +38,21 @@ export class ServerApiClient extends ApiClientBase {
   protected async setAuthCookies(refreshToken?: string, accessToken?: string) {
     const cookieStore = await cookies()
 
-    if (accessToken)
-      cookieStore.set(ACCESS_TOKEN_COOKIE_NAME, accessToken, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        maxAge: parseDuration('1 hour')!,
-      })
+    try {
+      if (accessToken)
+        cookieStore.set(ACCESS_TOKEN_COOKIE_NAME, accessToken, {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === 'production',
+          maxAge: parseDuration('1 hour')!,
+        })
 
-    if (refreshToken)
-      cookieStore.set(REFRESH_TOKEN_COOKIE_NAME, refreshToken, this.refreshTokenCookieSharedOptions)
-    else
-      cookieStore.delete(REFRESH_TOKEN_COOKIE_NAME)
+      if (refreshToken)
+        cookieStore.set(REFRESH_TOKEN_COOKIE_NAME, refreshToken, this.refreshTokenCookieSharedOptions)
+      else
+        cookieStore.delete(REFRESH_TOKEN_COOKIE_NAME)
+    } catch {
+      // ignore not being able to set cookies in RSC
+    }
   }
 
   protected async clearAuthCookies() {

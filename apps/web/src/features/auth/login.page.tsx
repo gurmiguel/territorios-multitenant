@@ -7,10 +7,12 @@ import { MailIcon } from 'lucide-react'
 import GoogleIcon from '~/assets/google-icon.svg'
 
 import { emailLogin, initGoogleSignIn } from './login.actions'
+import { HeaderConfig } from '../header/context'
 
 export default function LoginPage() {
   return (
     <div className="absolute-fill flex flex-col items-center justify-center bg-black/50">
+      <HeaderConfig title="Login" />
       <div className="flex flex-col bg-background p-4 shadow-xl rounded-lg">
         <h2 className="text-xl font-semibold mb-4 text-primary">Acesse com seu e-mail</h2>
 
