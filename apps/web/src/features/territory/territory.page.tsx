@@ -39,6 +39,8 @@ export default function TerritoryPage() {
           />
           <Accordion type="single" className="w-full" collapsible>
             {territory?.streets.map(street => <StreetItem key={street.id} territoryId={territory.id} territoryNumber={territory.number} street={street} />)}
+
+            {/* TODO: implement street add */}
           </Accordion>
         </>
       )}

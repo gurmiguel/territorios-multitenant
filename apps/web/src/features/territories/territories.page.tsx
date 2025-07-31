@@ -13,6 +13,7 @@ export async function TerritoriesPage() {
           <TerritoryListItem key={territory.id}
             territory={territory} />
         ))}
+        {/* TODO: implement territory add */}
       </ul>
     </div>
   )

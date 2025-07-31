@@ -24,7 +24,7 @@ export function StreetItem({ territoryId, territoryNumber, street }: Props) {
   return (
     <AccordionItem value={street.id.toString()}>
       <AccordionTrigger className="py-3 px-4 text-md font-normal" iconless>
-        <span className="ml-0">{street.name}</span>
+        <span className="ml-0 tracking-tight">{street.name}</span>
         {lastUpdate && <span className="text-right"><StatusUpdateComponent status={lastUpdate} hideIcon /></span>}
       </AccordionTrigger>
       <AccordionContent>
@@ -34,6 +34,8 @@ export function StreetItem({ territoryId, territoryNumber, street }: Props) {
             <span className="block h-[0.5px] w-95/100 bg-gray-300/80 mx-auto" />
           </div>
         ))}
+
+        {/* TODO: implement house add */}
       </AccordionContent>
     </AccordionItem>
   )

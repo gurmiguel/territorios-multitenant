@@ -7,6 +7,7 @@ import { useState } from 'react'
 
 import { AddHistoryDialog } from './dialogs/add-history.dialog'
 import { DeleteHouseDialog } from './dialogs/delete-house-dialog'
+import { EditHouseDialog } from './dialogs/edit-house-dialog'
 import { House } from './types'
 
 interface Props {
@@ -47,7 +48,11 @@ export function HouseItem({ house, territoryId, territoryNumber, streetId }: Pro
         onClose={() => setOpenDialog(null)}
       />
 
-      {/* TODO: implement house edit */}
+      <EditHouseDialog
+        open={openDialog === 'edit-house'}
+        context={{ territoryId, territoryNumber, streetId, house }}
+        onClose={() => setOpenDialog(null)}
+      />
     </>
   )
 }
