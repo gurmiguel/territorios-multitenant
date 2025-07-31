@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@hookform/resolvers": "^5.2.1",
     "@repo/ui": "*",
     "@repo/utils": "*",
     "@tanstack/react-query": "^5.80.6",
@@ -21,10 +22,11 @@
     "parse-duration": "^2.1.4",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "react-spinners": "^0.17.0",
+    "react-hook-form": "^7.61.1",
     "tailwind-merge": "^3.3.0",
     "tailwindcss": "^4.1.8",
-    "tw-animate-css": "^1.2.8"
+    "tw-animate-css": "^1.2.8",
+    "zod": "^4.0.14"
   },
   "devDependencies": {
     "@repo/eslint-config": "*",

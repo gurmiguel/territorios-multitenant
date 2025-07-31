@@ -17,7 +17,7 @@ function Input({ className, type, label, leftIcon, rightIcon, ...props }: Overri
         type={type}
         data-slot="input"
         className={cn(
-          'peer file:text-foreground placeholder-transparent selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-8 w-full min-w-0 border-b border-b-foreground bg-transparent pl-1 pr-3 py-1 text-base transition-[color] outline-none file:inline-flex file:h-7 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm',
+          'peer file:text-foreground placeholder-transparent selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-8 w-full min-w-0 border-b border-b-foreground bg-transparent pl-1 pr-3 py-1 text-base transition-[color] outline-none file:inline-flex file:h-7 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 disabled:select-none md:text-sm',
           'focus-visible:ring-0',
           'user-invalid:border-b-destructive',
           leftIcon && 'pl-6',
@@ -39,6 +39,7 @@ function Input({ className, type, label, leftIcon, rightIcon, ...props }: Overri
         'absolute z-1 -bottom-0.25 left-1/2 -translate-x-1/2 w-full h-0.5 bg-foreground/80 transition-transform scale-x-0',
         'peer-focus:scale-x-100 peer-hover:scale-x-100',
         'peer-user-invalid:bg-destructive',
+        'peer-disabled:scale-x-0',
       ])} />
       <span
         className={cn([
@@ -49,6 +50,7 @@ function Input({ className, type, label, leftIcon, rightIcon, ...props }: Overri
           leftIcon && 'peer-placeholder-shown:translate-x-6',
           'transition-transform duration-250',
           'peer-user-invalid:text-destructive',
+          'peer-disabled:opacity-50 peer-disabled:select-none',
         ])}
       >{label}</span>
     </label>

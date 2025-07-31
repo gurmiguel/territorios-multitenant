@@ -3,6 +3,7 @@ import './globals.css'
 import { Toaster } from '@repo/ui/components/ui/sonner'
 import { headers } from 'next/headers'
 
+import ZodProvider from '~/features/adapters/zod-provider'
 import { QueryProvider } from '~/features/api/query-provider'
 import { HeaderProvider } from '~/features/header/context'
 import { Header } from '~/features/header/header'
@@ -17,15 +18,17 @@ export default function RootLayout({
     <html lang="pt-BR" suppressHydrationWarning>
       <body>
         <ThemeProvider>
-          <QueryProvider>
-            <HeaderProvider>
-              <Header />
-              <main className="flex flex-col flex-1 container">
-                {children}
-              </main>
-            </HeaderProvider>
-          </QueryProvider>
-          <Toaster position="bottom-center" richColors closeButton />
+          <ZodProvider>
+            <QueryProvider>
+              <HeaderProvider>
+                <Header />
+                <main className="flex flex-col flex-1 container">
+                  {children}
+                </main>
+              </HeaderProvider>
+            </QueryProvider>
+            <Toaster position="bottom-center" closeButton={true} richColors />
+          </ZodProvider>
         </ThemeProvider>
       </body>
     </html>

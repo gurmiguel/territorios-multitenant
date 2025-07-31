@@ -3,11 +3,17 @@ export interface Street { id: string, name: string, houses: House[] }
 export interface House { id: number, type: string, number: string, complement: string, observation: string, phones: string[], updates: StatusUpdate[] }
 export interface StatusUpdate { id: string, date: string, status: string, userId: string }
 
-export interface HouseUpdateEvent {
+export interface HouseStatusUpdateEvent {
   houseId: number
   territoryNumber: string
   streetId: string
   status: StatusUpdate
+}
+
+export interface HouseUpdatedEvent {
+  territoryNumber: string
+  streetId: string
+  house: House
 }
 
 export interface HouseDeletedEvent {

@@ -1,10 +1,11 @@
 import { Injectable } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { EventEmitter2 } from '@nestjs/event-emitter'
+import { HouseTypes } from '@repo/utils/types'
 import { subMilliseconds } from 'date-fns'
 import { omit } from 'lodash-es'
 import parseDuration from 'parse-duration'
-import z from 'zod'
+import { z } from 'zod'
 
 import { Configuration } from '~/config/configuration'
 import { PrismaService } from '~/db/prisma.service'
@@ -22,7 +23,6 @@ import { StreetUpdatedEvent } from './events/streets/street-updated.event'
 import { TerritoryCreatedEvent } from './events/territory/territory-created.event'
 import { TerritoryDeletedEvent } from './events/territory/territory-deleted.event'
 import { TerritoryUpdatedEvent } from './events/territory/territory-updated.event'
-import { HouseTypes } from './house-types'
 
 @Injectable()
 export class TerritoriesService {
@@ -30,7 +30,7 @@ export class TerritoriesService {
     number: z.string(),
     color: z.string().regex(/^#([0-9a-f]{3}){1,2}/i),
     hidden: z.boolean(),
-    map: z.string().url().nullable(),
+    map: z.url().nullable(),
   })
 
   protected readonly streetSchema = z.object({
@@ -38,7 +38,7 @@ export class TerritoriesService {
   })
 
   protected houseSchema = z.object({
-    type: z.string().refine(string => string in HouseTypes),
+    type: z.enum(HouseTypes),
     number: z.string().min(1).regex(/(\d|S\/N)/i),
     phones: z.array(z.string().regex(/\d{2} 9?\d{4}\-\d{4}/))
       .transform(arr => arr.map(s => s.replace(/\D/g, ''))),
@@ -85,7 +85,7 @@ export class TerritoriesService {
   }
 
   async createTerritory(data: Omit<Territory, 'id' | 'congregationId'>) {
-    const { error, data: parsed } = this.territorySchema.safeParse(data)
+    const { error, data: parsed } = await this.territorySchema.safeParseAsync(data)
 
     if (error) throw new ValidationException(error)
 
@@ -104,7 +104,7 @@ export class TerritoriesService {
   }
 
   async updateTerritory(id: Territory['id'], data: Partial<Omit<Territory, 'id' | 'congregationId'>>) {
-    const { error, data: parsed } = this.territorySchema.partial().safeParse(data)
+    const { error, data: parsed } = await this.territorySchema.partial().safeParseAsync(data)
 
     if (error) throw new ValidationException(error)
 
@@ -138,7 +138,7 @@ export class TerritoriesService {
 
   // #region streets
   async addStreet(territoryId: number, streetData: Omit<Street, 'id' | 'territoryId'>) {
-    const { error, data: parsed } = this.streetSchema.safeParse(streetData)
+    const { error, data: parsed } = await this.streetSchema.safeParseAsync(streetData)
 
     if (error) throw new ValidationException(error)
 
@@ -166,7 +166,7 @@ export class TerritoriesService {
   }
 
   async updateStreet(territoryId: number, id: number, streetData: Partial<Omit<Street, 'id' | 'territoryId'>>) {
-    const { error, data: parsed } = this.streetSchema.partial().safeParse(streetData)
+    const { error, data: parsed } = await this.streetSchema.partial().safeParseAsync(streetData)
 
     if (error) throw new ValidationException(error)
 
@@ -218,7 +218,7 @@ export class TerritoriesService {
 
   // #region houses
   async addHouse(streetId: number, data: Omit<House, 'id' | 'street' | 'streetId' | 'updates'>) {
-    const { error, data: parsed } = this.houseSchema.safeParse(data)
+    const { error, data: parsed } = await this.houseSchema.safeParseAsync(data)
 
     if (error) throw new ValidationException(error)
 
@@ -253,7 +253,7 @@ export class TerritoriesService {
   }
 
   async updateHouse(houseId: number, data: Partial<Omit<House, 'id' | 'street' | 'streetId' | 'updates'>>) {
-    const { error, data: parsed } = this.houseSchema.partial().safeParse(data)
+    const { error, data: parsed } = await this.houseSchema.partial().safeParseAsync(data)
 
     if (error) throw new ValidationException(error)
 

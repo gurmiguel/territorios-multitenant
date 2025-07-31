@@ -1,3 +1,4 @@
+import { OverlayLoading } from '@repo/ui/components/loading'
 import { Button } from '@repo/ui/components/ui/button'
 import { Checkbox } from '@repo/ui/components/ui/checkbox'
 import { Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@repo/ui/components/ui/dialog'
@@ -5,7 +6,7 @@ import { PhoneIcon } from '@repo/ui/components/ui/icons'
 import { toast } from '@repo/ui/components/ui/sonner'
 import { formatPhoneNumber } from '@repo/utils/phone'
 import { useQueryClient } from '@tanstack/react-query'
-import { FormEvent } from 'react'
+import { FormEvent, useState } from 'react'
 
 import { ApiClient } from '~/features/api/api.client'
 
@@ -29,38 +30,47 @@ interface Props {
 export function AddHistoryDialog({ open, onClose, context, onOpenDelete, onOpenEdit }: Props) {
   const queryClient = useQueryClient()
 
+  const [isSubmitting, setIsSubmitting] = useState(false)
+
   async function addHistory(e: FormEvent<HTMLFormElement>) {
     e.preventDefault()
 
-    const formData = new FormData(e.currentTarget)
-    const statusOk = formData.get('status-ok') === 'on'
-    const statusFail = formData.get('status-fail') === 'on'
+    setIsSubmitting(true)
+    try {
+      const formData = new FormData(e.currentTarget)
+      const statusOk = formData.get('status-ok') === 'on'
+      const statusFail = formData.get('status-fail') === 'on'
 
-    if (statusOk || statusFail) {
-      const status = await ApiClient.getInstance().mutate<StatusUpdate>(`/territories/${context.territoryId}/streets/${context.streetId}/houses/${context.houseId}/status`, {
-        status: statusFail ? 'Fail' : 'OK',
-        date: new Date().toISOString(),
-      })
+      if (statusOk || statusFail) {
+        const status = await ApiClient.getInstance().mutate<StatusUpdate>(`/territories/${context.territoryId}/streets/${context.streetId}/houses/${context.houseId}/status`, {
+          status: statusFail ? 'Fail' : 'OK',
+          date: new Date().toISOString(),
+        })
 
-      const eventHandler = new TerritoryEvents(queryClient)
+        const eventHandler = new TerritoryEvents(queryClient)
 
-      eventHandler['house.status.updated']({
-        houseId: context.houseId,
-        streetId: context.streetId,
-        territoryNumber: context.territoryNumber,
-        status,
-      })
+        eventHandler['house.status.updated']({
+          houseId: context.houseId,
+          streetId: context.streetId,
+          territoryNumber: context.territoryNumber,
+          status,
+        })
 
-      toast.success('Registro adicionado')
+        toast.success('Registro adicionado')
+      }
+
+      onClose()
+    } finally {
+      setIsSubmitting(false)
     }
-
-    onClose()
   }
 
   return (
     <Dialog open={open} onOpenChange={state => !state && onClose()}>
       <DialogContent className="max-w-3xs" asChild>
         <form onSubmit={addHistory}>
+          {isSubmitting && <OverlayLoading />}
+
           <DialogHeader>
             <DialogTitle>Adicionar Registro</DialogTitle>
           </DialogHeader>
