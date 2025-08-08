@@ -1,7 +1,7 @@
 import { Input } from '@repo/ui/components/ui/input'
 import { Override } from '@repo/utils/types'
 import { ComponentPropsWithRef } from 'react'
-import { RegisterOptions, useFormContext } from 'react-hook-form'
+import { get, RegisterOptions, useFormContext, useFormState } from 'react-hook-form'
 
 interface Props {
   name: string
@@ -10,6 +10,9 @@ interface Props {
 
 export function TextInput({ registerOptions, ...props }: Override<ComponentPropsWithRef<typeof Input>, Props>) {
   const { register } = useFormContext()
+  const { errors } = useFormState()
 
-  return <Input {...props} {...register(props.name, registerOptions)} />
+  const error = get(errors, props.name)
+
+  return <Input {...props} {...register(props.name, registerOptions)} errored={!!error} />
 }

@@ -5,6 +5,7 @@
   "exports": {
     "./lib/*": "./src/lib/*.ts",
     "./components/*": "./src/components/*.tsx",
+    "./hooks/*": "./src/hooks/*.tsx",
     "./postcss.config": "./postcss.config.mjs",
     "./globals.css": "./src/globals.css"
   },

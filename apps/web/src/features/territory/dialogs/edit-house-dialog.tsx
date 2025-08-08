@@ -34,7 +34,10 @@ export function EditHouseDialog({ open, onClose, context }: Props) {
   } = useUpsertHouseForm(context.house)
 
   const onValidSubmit: SubmitHandler<HouseFormData> = async data => {
-    const house = await ApiClient.getInstance().mutate<House>(`territories/${context.territoryId}/streets/${context.streetId}/houses/${context.house.id}`, data, {
+    const house = await ApiClient.getInstance().mutate<House>(`territories/${context.territoryId}/streets/${context.streetId}/houses/${context.house.id}`, {
+      ...data,
+      phones: data.phones.map(phone => phone.number),
+    }, {
       method: 'PATCH',
     })
 

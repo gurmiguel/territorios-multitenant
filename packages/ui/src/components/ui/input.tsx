@@ -3,17 +3,31 @@
 import { cn } from '@repo/ui/lib/utils'
 import { Override } from '@repo/utils/index'
 import * as React from 'react'
+import { useLayoutEffect, useRef } from 'react'
+
+import { useMergeRefs } from '../../hooks/useMergeRefs'
 
 interface Props {
+  wrapperClassName?: string
   label: string
   leftIcon?: React.ReactElement<{size?: number, className?: string}>
   rightIcon?: React.ReactElement<{size?: number, className?: string}>
+  errored?: boolean
 }
 
-function Input({ className, type, label, leftIcon, rightIcon, ...props }: Override<React.ComponentProps<'input'>, Props>) {
+function Input({ className, wrapperClassName, type, label, leftIcon, rightIcon, errored, ref, ...props }: Override<React.ComponentProps<'input'>, Props>) {
+  const input = useRef<HTMLInputElement>(null)
+
+  useLayoutEffect(() => {
+    if (!input.current) return
+    // trigger default html5 validity control without popover message
+    input.current.setCustomValidity(errored ? ' ' : '')
+  }, [errored])
+
   return (
-    <label className="relative flex flex-col pt-3" data-slot="label">
+    <label className={cn('relative flex flex-col pt-3', wrapperClassName)} data-slot="label">
       <input
+        ref={useMergeRefs(input, ref)}
         type={type}
         data-slot="input"
         className={cn(
