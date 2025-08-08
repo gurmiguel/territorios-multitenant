@@ -5,6 +5,7 @@ import { Override } from '@repo/utils/index'
 import * as React from 'react'
 import { useLayoutEffect, useRef } from 'react'
 
+import { FloatingLabel } from './floating-label'
 import { useMergeRefs } from '../../hooks/useMergeRefs'
 
 interface Props {
@@ -55,18 +56,7 @@ function Input({ className, wrapperClassName, type, label, leftIcon, rightIcon, 
         'peer-user-invalid:bg-destructive',
         'peer-disabled:scale-x-0',
       ])} />
-      <span
-        className={cn([
-          'absolute left-0 top-0 text-md leading-3 text-muted-foreground origin-top-left pointer-events-none',
-          'scale-65 translate-0',
-          'peer-focus:scale-65 peer-focus:translate-0',
-          'peer-placeholder-shown:translate-y-5 peer-placeholder-shown:translate-x-1 peer-placeholder-shown:scale-100',
-          leftIcon && 'peer-placeholder-shown:translate-x-6',
-          'transition-transform duration-250',
-          'peer-user-invalid:text-destructive',
-          'peer-disabled:opacity-50 peer-disabled:select-none',
-        ])}
-      >{label}</span>
+      <FloatingLabel className={cn(leftIcon && 'peer-placeholder-shown:translate-x-6')}>{label}</FloatingLabel>
     </label>
   )
 }

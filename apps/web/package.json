@@ -22,7 +22,7 @@
     "parse-duration": "^2.1.4",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "react-hook-form": "^7.61.1",
+    "react-hook-form": "^7.62.0",
     "tailwind-merge": "^3.3.0",
     "tailwindcss": "^4.1.8",
     "tw-animate-css": "^1.2.8",
