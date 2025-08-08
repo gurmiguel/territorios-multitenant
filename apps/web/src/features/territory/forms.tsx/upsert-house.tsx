@@ -40,7 +40,7 @@ export function useUpsertHouseForm(house?: House) {
   const getDefaultValue = (house?: House) => ({
     number: house?.number ?? '',
     noNumber: house?.number === 'S/N',
-    type: house?.type ?? '',
+    type: house?.type ?? 'Casa',
     complement: house?.complement ?? '',
     phones: house?.phones.map(p => ({ number: p.replace(/(\d{2})(9?\d{4})(\d{4})/, '$1 $2-$3') })) ?? [],
     observation: house?.observation ?? '',
@@ -111,7 +111,7 @@ export function useUpsertHouseForm(house?: House) {
         ))}
         <div className="flex items-center">
           {phones.length === 0 && <span className="flex-1 mr-2 text-sm text-muted-foreground italic text-center">Sem telefones</span>}
-          <Button className="ml-auto uppercase text-xs" onClick={handleAddPhone}>Adicionar Telefone</Button>
+          <Button variant="outline" className="ml-auto uppercase text-xs" onClick={handleAddPhone}>Adicionar Telefone</Button>
         </div>
       </fieldset>
       <TextInput name="observation" registerOptions={{ deps: ['number', 'noNumber'] }} label="Observações" />

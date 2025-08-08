@@ -31,7 +31,7 @@ export function HouseItem({ house, territoryId, territoryNumber, streetId }: Pro
           {formatHouseNumber(house)}
           {!house.phones.length && <PhoneOffIcon size={14} className="ml-3 text-muted-foreground" />}
         </span>
-        {house.updates[0] && <span className="ml-auto text-right"><StatusUpdateComponent status={house.updates[0]} /></span>}
+        {house.updates?.[0] && <span className="ml-auto text-right"><StatusUpdateComponent status={house.updates[0]} /></span>}
       </button>
 
       <AddHistoryDialog
