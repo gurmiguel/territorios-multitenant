@@ -58,9 +58,9 @@ export function DeleteHouseDialog({ open, onClose, context }: Props) {
 
           <DialogFooter className="mx-auto">
             <DialogClose asChild>
-              <Button variant="ghost" className="uppercase">Não</Button>
+              <Button variant="ghost" color="muted" className="uppercase">Não</Button>
             </DialogClose>
-            <Button type="submit" className="bg-destructive/80 text-destructive-foreground hover:bg-destructive/90 active:bg-destructive uppercase">Sim</Button>
+            <Button type="submit" className="bg-destructive/80 accessible-text-destructive-foreground hover:bg-destructive/90 active:bg-destructive uppercase">Sim</Button>
           </DialogFooter>
         </form>
       </DialogContent>

@@ -10,16 +10,25 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default:
-          'bg-primary text-primary-foreground shadow-xs hover:bg-primary/90',
+          'bg-primary accessible-text-primary-foreground shadow-xs hover:bg-primary/90',
         outline:
-          'border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50',
+          'border bg-background shadow-xs hover:bg-accent accessible-text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50',
         secondary:
-          'bg-secondary text-secondary-foreground shadow-xs hover:bg-secondary/80',
+          'bg-secondary accessible-text-secondary-foreground shadow-xs hover:bg-secondary/80',
         ghost:
-          'text-primary/80 hover:bg-accent-foreground/10 active:bg-accent-foreground/20 hover:text-primary active:text-primary dark:hover:bg-accent/50',
+          'accessible-text-primary hover:bg-accent-foreground/10 active:bg-accent-foreground/20 dark:hover:bg-accent/50',
         destructive:
-          'text-destructive/70 hover:text-destructive hover:bg-accent-foreground/10 active:bg-accent-foreground/20 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40',
+          'accessible-text-destructive hover:bg-accent-foreground/10 active:bg-accent-foreground/20 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40',
         link: 'text-primary underline-offset-4 hover:underline',
+      },
+      color: {
+        primary: 'accessible-text-primary',
+        secondary: 'accessible-text-secondary',
+        muted: 'accessible-text-muted-foreground',
+        accent: 'accessible-text-accent-foreground',
+        destructive: 'accessible-text-destructive',
+        warning: 'accessible-text-warning',
+        success: 'accessible-text-success',
       },
       size: {
         default: 'h-9 px-4 py-2 has-[>svg]:px-3',
@@ -39,6 +48,7 @@ function Button({
   className,
   variant,
   size,
+  color,
   asChild = false,
   type = 'button',
   ...props
@@ -49,7 +59,7 @@ function Button({
     <Comp
       type={type}
       data-slot="button"
-      className={cn(buttonVariants({ variant, size, className }))}
+      className={cn(buttonVariants({ variant, size, color, className }))}
       {...props}
     />
   )

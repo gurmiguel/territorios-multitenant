@@ -112,7 +112,7 @@ export function AddHistoryDialog({ open, onClose, context, onOpenDelete, onOpenE
 
           <DialogFooter>
             <DialogClose asChild>
-              <Button variant="ghost" className="text-muted-foreground hover:text-muted-foreground active:text-muted-foreground uppercase">Cancelar</Button>
+              <Button variant="ghost" color="muted" className="uppercase">Cancelar</Button>
             </DialogClose>
             <Button type="submit" variant="ghost">OK</Button>
           </DialogFooter>

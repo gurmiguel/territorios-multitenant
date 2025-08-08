@@ -33,7 +33,7 @@ export function Header() {
           <Button
             variant="ghost"
             className={cn(
-              '-ml-2 rounded-full text-primary-foreground hover:text-primary-foreground active:text-primary-foreground/70 w-12 h-12 p-0! transition-all',
+              '-ml-2 rounded-full accessible-text-primary-foreground w-12 h-12 p-0! transition-all',
               !shouldShowBackButton && 'w-0 mr-2 opacity-0 pointer-events-none',
             )}
             asChild
@@ -49,7 +49,7 @@ export function Header() {
         </h1>
 
         {!!shouldShowMapButton && (
-          <Button variant="ghost" className="mr-4 rounded-full text-primary-foreground hover:text-primary-foreground active:text-primary-foreground/70 size-12" asChild>
+          <Button variant="ghost" className="rounded-full accessible-text-primary-foreground size-12" asChild>
             <Link href="/mapa-completo">
               <MapIcon className="size-6" />
             </Link>

@@ -1,6 +1,7 @@
 import { standardSchemaResolver } from '@hookform/resolvers/standard-schema'
 import { Button } from '@repo/ui/components/ui/button'
 import { DeleteIcon, PhoneIcon } from '@repo/ui/components/ui/icons'
+import { cn } from '@repo/ui/lib/utils'
 import { HouseTypes } from '@repo/utils/types'
 import { useRef } from 'react'
 import { useFieldArray, useForm } from 'react-hook-form'
@@ -89,7 +90,7 @@ export function useUpsertHouseForm(house?: House) {
       <ErrorMessage field="type" />
       <TextInput name="complement" label="Complemento" />
       <ErrorMessage field="complement" />
-      <fieldset className="flex flex-col mt-1.5 -mx-2 p-2 pt-4 border border-muted-foreground">
+      <fieldset className={cn('flex flex-col mt-1.5 -mx-2 p-2 border border-muted-foreground', !phones.length && 'pt-0')}>
         <legend className="text-xs px-2">Telefones</legend>
         {phones.map(({ id }, i) => (
           <div key={id} className="-mt-1.5 mb-2">
@@ -98,14 +99,20 @@ export function useUpsertHouseForm(house?: House) {
                 wrapperClassName="flex-1"
                 label="Telefone"
                 leftIcon={<PhoneIcon />} />
-              <Button variant="ghost" className="rounded-full text-destructive hover:text-destructive active:text-destructive p-0 size-9" onClick={() => remove(i)}>
+              <Button variant="ghost" size="icon"
+                color="destructive" className="rounded-full p-0 size-9"
+                onClick={() => remove(i)}
+              >
                 <DeleteIcon className="size-4" />
               </Button>
             </div>
             <ErrorMessage field={`phones.${i}.number`} />
           </div>
         ))}
-        <Button className="ml-auto uppercase text-xs" onClick={handleAddPhone}>Adicionar Telefone</Button>
+        <div className="flex items-center">
+          {phones.length === 0 && <span className="flex-1 mr-2 text-sm text-muted-foreground italic text-center">Sem telefones</span>}
+          <Button className="ml-auto uppercase text-xs" onClick={handleAddPhone}>Adicionar Telefone</Button>
+        </div>
       </fieldset>
       <TextInput name="observation" registerOptions={{ deps: ['number', 'noNumber'] }} label="Observações" />
       <ErrorMessage field="observation" />

@@ -75,7 +75,7 @@ export function EditHouseDialog({ open, onClose, context }: Props) {
 
             <DialogFooter>
               <DialogClose asChild>
-                <Button variant="ghost" className="uppercase">Cancelar</Button>
+                <Button variant="ghost" color="muted" className="uppercase">Cancelar</Button>
               </DialogClose>
               <Button type="submit">OK</Button>
             </DialogFooter>

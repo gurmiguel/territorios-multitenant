@@ -226,3 +226,13 @@
   width: 100%;
   height: 100%;
 }
+
+@utility accessible-text-* {
+  color: --value(--color-*);
+  @variant hover {
+    color: color-mix(in oklab, --value(--color-*) 90%, transparent);
+  }
+  @variant active {
+    color: color-mix(in oklab, --value(--color-*) 95%, transparent);
+  }
+}
