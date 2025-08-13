@@ -22,6 +22,8 @@ export function TerritoryListItem({ territory }: { territory: { number: string, 
             <DotIcon className="-mx-1" size={48} color={territory.color} />
           </span>
           Território {territory.number}
+
+          {/* TODO: implement missing houses counter */}
         </h2>
       </Link>
     </li>

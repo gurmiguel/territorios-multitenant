@@ -26,6 +26,8 @@
   --warning-foreground: oklch(1.0000 0 0);
   --success: oklch(0.6731 0.1624 144.21);
   --success-foreground: oklch(1.0000 0 0);
+  --whatsapp: oklch(0.7731 0.1975 146.1);
+  --whatsapp-foreground: oklch(1.0000 0 0);
   --border: oklch(1.0000 0 0);
   --input: oklch(1.0000 0 0);
   --ring: oklch(0.7276 0.1315 259.9090);
@@ -141,6 +143,8 @@
   --color-warning-foreground: var(--warning-foreground);
   --color-success: var(--success);
   --color-success-foreground: var(--success-foreground);
+  --color-whatsapp: var(--whatsapp);
+  --color-whatsapp-foreground: var(--whatsapp-foreground);
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
@@ -214,9 +218,8 @@
 
 @utility container {
   max-width: 444px;
-  margin-left: auto;
-  margin-right: auto;
-  padding: 1.5rem;
+
+  @apply mx-auto py-6 px-3 sm:px-6;
 }
 
 @utility absolute-fill {
@@ -234,5 +237,15 @@
   }
   @variant active {
     color: color-mix(in oklab, --value(--color-*) 95%, transparent);
+  }
+}
+
+@utility accessible-bg-* {
+  background-color: --value(--color-*);
+  @variant hover {
+    background-color: color-mix(in oklab, --value(--color-*) 90%, transparent);
+  }
+  @variant active {
+    background-color: color-mix(in oklab, --value(--color-*) 95%, transparent);
   }
 }
