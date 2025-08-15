@@ -154,6 +154,7 @@ export class TerritoriesService {
       },
       include: {
         territory: { select: { number: true } },
+        houses: true,
       },
     })
 

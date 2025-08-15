@@ -9,38 +9,34 @@ import { FormProvider, SubmitHandler } from 'react-hook-form'
 
 import { ApiClient } from '~/features/api/api.client'
 
-import { HouseFormData, useUpsertHouseForm } from '../forms.tsx/upsert-house'
-import TerritoryEvents from '../territory.events'
-import { House } from '../types'
 import { CustomDialogProps } from './types'
+import { StreetFormData, useUpsertStreetForm } from '../forms.tsx/upsert-street'
+import TerritoryEvents from '../territory.events'
+import { Street } from '../types'
 
 type Props = CustomDialogProps<{
   territoryId: string
   territoryNumber: string
-  streetId: string
 }>
 
-export function AddHouseDialog({ open, onClose, context }: Props) {
+export function AddStreetDialog({ open, onClose, context }: Props) {
   const queryClient = useQueryClient()
   const {
     form,
     fields,
     getDefaultValue,
-  } = useUpsertHouseForm()
+  } = useUpsertStreetForm()
 
-  const onValidSubmit: SubmitHandler<HouseFormData> = async data => {
-    const house = await ApiClient.getInstance().mutate<House>(`territories/${context.territoryId}/streets/${context.streetId}/houses`, {
-      ...data,
-      phones: data.phones.map(phone => phone.number),
-    }, {
+  const onValidSubmit: SubmitHandler<StreetFormData> = async data => {
+    const street = await ApiClient.getInstance().mutate<Street>(`territories/${context.territoryId}/streets`, data, {
       method: 'POST',
     })
 
     const eventHandler = new TerritoryEvents(queryClient)
 
-    eventHandler['house.created']({
+    eventHandler['street.created']({
       ...context,
-      house,
+      street,
     })
 
     toast.success('Registro adicionado')
@@ -59,7 +55,7 @@ export function AddHouseDialog({ open, onClose, context }: Props) {
         {form.formState.isSubmitting && <OverlayLoading />}
 
         <DialogHeader>
-          <DialogTitle>Adicionar Casa</DialogTitle>
+          <DialogTitle>Adicionar Rua</DialogTitle>
         </DialogHeader>
 
         <FormProvider {...form}>

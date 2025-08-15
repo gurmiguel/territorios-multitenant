@@ -2,12 +2,12 @@
 
 import { Accordion } from '@repo/ui/components/ui/accordion'
 import { Button } from '@repo/ui/components/ui/button'
-import { MapIcon } from '@repo/ui/components/ui/icons'
+import { MapIcon, PlusIcon } from '@repo/ui/components/ui/icons'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { subMonths } from 'date-fns'
 import Image from 'next/image'
 import { useParams } from 'next/navigation'
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 
 import Loading from '~/app/loading'
 import territoryImageFallback from '~/assets/territory.png'
@@ -18,6 +18,7 @@ import TerritoryEvents from './territory.events'
 import { Territory } from './types'
 import { useEventStream } from '../events/events.hooks'
 import { HeaderConfig } from '../header/context'
+import { AddStreetDialog } from './dialogs/add-street.dialog'
 
 export default function TerritoryPage() {
   const queryClient = useQueryClient()
@@ -32,6 +33,8 @@ export default function TerritoryPage() {
     handler: new TerritoryEvents(queryClient),
     enabled: !!territory,
   })
+
+  const [openDialog, setOpenDialog] = useState<'add-street' | null>(null)
 
   const missingHouses = useMemo(() => {
     let total = 0
@@ -56,9 +59,11 @@ export default function TerritoryPage() {
     <div className="flex flex-col flex-1 items-center">
       <HeaderConfig title={`Território ${number}`} backRoute="/territorios" showMap />
 
-      {isLoading ? <Loading /> : (
+      {isLoading && <Loading />}
+
+      {!!territory && (
         <>
-          <Image src={territory?.imageUrl ?? territoryImageFallback} alt=""
+          <Image src={territory.imageUrl ?? territoryImageFallback} alt=""
             width={365} height={365}
             className="mb-4 mx-auto"
           />
@@ -77,10 +82,25 @@ export default function TerritoryPage() {
           </div>
 
           <Accordion type="single" className="w-full" collapsible>
-            {territory?.streets.map(street => <StreetItem key={street.id} territoryId={territory.id} territoryNumber={territory.number} street={street} />)}
+            {territory.streets.map(street => <StreetItem key={street.id} territoryId={territory.id} territoryNumber={territory.number} street={street} />)}
 
-            {/* TODO: implement street add */}
+            <button
+              type="button"
+              className="flex items-center w-full py-2.5 pl-1 pr-4 font-normal text-left hover:bg-gray-100/50 active:bg-gray-200 transition-colors uppercase"
+              onClick={() => setOpenDialog('add-street')}
+            >
+              <PlusIcon size={14} />
+              <span className="flex items-center ml-1 font-semibold tracking-tight text-sm">
+                Adicionar Rua
+              </span>
+            </button>
           </Accordion>
+
+          <AddStreetDialog
+            open={openDialog === 'add-street'}
+            context={{ territoryId: territory.id, territoryNumber: territory.number }}
+            onClose={() => setOpenDialog(null)}
+          />
         </>
       )}
     </div>

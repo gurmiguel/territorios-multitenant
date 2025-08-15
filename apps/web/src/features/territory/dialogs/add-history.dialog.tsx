@@ -12,17 +12,15 @@ import { ApiClient } from '~/features/api/api.client'
 
 import TerritoryEvents from '../territory.events'
 import { StatusUpdate } from '../types'
+import { CustomDialogProps } from './types'
 
-interface Props {
-  context: {
-    territoryNumber: string
-    territoryId: string
-    streetId: string
-    houseId: number
-    phones: string[]
-  },
-  open: boolean
-  onClose: ()=> void
+type Props = CustomDialogProps<{
+  territoryNumber: string
+  territoryId: string
+  streetId: string
+  houseId: number
+  phones: string[]
+}> & {
   onOpenDelete: ()=> void
   onOpenEdit: ()=> void
 }

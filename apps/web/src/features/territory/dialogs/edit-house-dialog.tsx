@@ -12,24 +12,20 @@ import { ApiClient } from '~/features/api/api.client'
 import { HouseFormData, useUpsertHouseForm } from '../forms.tsx/upsert-house'
 import TerritoryEvents from '../territory.events'
 import { House } from '../types'
+import { CustomDialogProps } from './types'
 
-interface Props {
-  context: {
-    territoryId: string
-    territoryNumber: string
-    streetId: string
-    house: House
-  }
-  open: boolean
-  onClose: ()=> void
-}
+type Props = CustomDialogProps<{
+  territoryId: string
+  territoryNumber: string
+  streetId: string
+  house: House
+}>
 
 export function EditHouseDialog({ open, onClose, context }: Props) {
   const queryClient = useQueryClient()
   const {
     form,
     fields,
-    handleSubmit,
     getDefaultValue,
   } = useUpsertHouseForm(context.house)
 
@@ -68,7 +64,7 @@ export function EditHouseDialog({ open, onClose, context }: Props) {
         </DialogHeader>
 
         <FormProvider {...form}>
-          <form onSubmit={handleSubmit(onValidSubmit)}>
+          <form onSubmit={form.handleSubmit(onValidSubmit)}>
             <div className="flex flex-col mb-4">
               {fields}
             </div>

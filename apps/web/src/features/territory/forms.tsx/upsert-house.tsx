@@ -62,11 +62,6 @@ export function useUpsertHouseForm(house?: House) {
     progressive: true,
   })
 
-  const {
-    handleSubmit,
-    watch,
-  } = form
-
   const lastNumber = useRef(house?.number ?? '')
 
   const { append, fields: phones, remove } = useFieldArray({
@@ -82,7 +77,7 @@ export function useUpsertHouseForm(house?: House) {
     <div className="flex flex-col space-y-1">
       <div className="flex justify-between items-start space-x-2">
         <label className="block flex-1">
-          <TextInput name="number" label="N° da casa" registerOptions={{ deps: ['noNumber'] }} disabled={watch('noNumber')} />
+          <TextInput name="number" label="N° da casa" registerOptions={{ deps: ['noNumber'] }} disabled={form.watch('noNumber')} />
           <ErrorMessage field="number" />
         </label>
         <label className="flex items-center space-x-1 shrink-0 mt-2 -mb-1 py-2">
@@ -150,7 +145,6 @@ export function useUpsertHouseForm(house?: House) {
   return {
     form,
     fields,
-    handleSubmit,
     getDefaultValue,
   }
 }

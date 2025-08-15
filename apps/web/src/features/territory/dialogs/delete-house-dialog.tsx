@@ -8,17 +8,14 @@ import { FormEvent, useState } from 'react'
 import { ApiClient } from '~/features/api/api.client'
 
 import TerritoryEvents from '../territory.events'
+import { CustomDialogProps } from './types'
 
-interface Props {
-  context: {
-    territoryId: string
-    territoryNumber: string
-    streetId: string
-    houseId: number
-  }
-  open: boolean
-  onClose: ()=> void
-}
+type Props = CustomDialogProps<{
+  territoryId: string
+  territoryNumber: string
+  streetId: string
+  houseId: number
+}>
 
 export function DeleteHouseDialog({ open, onClose, context }: Props) {
   const queryClient = useQueryClient()
