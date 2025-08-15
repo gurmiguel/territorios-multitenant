@@ -16,8 +16,8 @@ import { CustomDialogProps } from './types'
 
 type Props = CustomDialogProps<{
   territoryNumber: string
-  territoryId: string
-  streetId: string
+  territoryId: number
+  streetId: number
   houseId: number
   phones: string[]
 }> & {
@@ -45,7 +45,7 @@ export function AddHistoryDialog({ open, onClose, context, onOpenDelete, onOpenE
           date: new Date().toISOString(),
         })
 
-        const eventHandler = new TerritoryEvents(queryClient)
+        const eventHandler = new TerritoryEvents(queryClient, true)
 
         eventHandler['house.status.updated']({
           houseId: context.houseId,

@@ -2,20 +2,21 @@ import { StatusUpdate as StatusUpdateComponent } from '@repo/ui/components/statu
 import { AccordionContent, AccordionItem, AccordionTrigger } from '@repo/ui/components/ui/accordion'
 import { PlusIcon } from '@repo/ui/components/ui/icons'
 import { sortHouses } from '@repo/utils/house'
-import { useMemo, useState } from 'react'
+import { MouseEvent, useMemo, useState } from 'react'
 
 import { AddHouseDialog } from './dialogs/add-house-dialog'
+import { DeleteStreetDialog } from './dialogs/delete-street.dialog'
 import { HouseItem } from './house-item'
 import { StatusUpdate, Street } from './types'
 
 interface Props {
-  territoryId: string
+  territoryId: number
   territoryNumber: string
   street: Street
 }
 
 export function StreetItem({ territoryId, territoryNumber, street }: Props) {
-  const [openDialog, setOpenDialog] = useState<'add-house' | null>(null)
+  const [openDialog, setOpenDialog] = useState<'add-house' | 'delete-street' | null>(null)
 
   const houses = useMemo(() => sortHouses(street.houses), [street.houses])
   const lastUpdate = useMemo(() => street.houses.reduce<StatusUpdate | null>((acc, house) => {
@@ -25,10 +26,16 @@ export function StreetItem({ territoryId, territoryNumber, street }: Props) {
     return update && new Date(update.date) > new Date(acc.date) ? update : acc
   }, null), [street.houses])
 
+  function handleContextMenuOpen(e: MouseEvent<HTMLButtonElement>) {
+    e.preventDefault()
+
+    setOpenDialog('delete-street')
+  }
+
   return (
     <>
       <AccordionItem value={street.id.toString()}>
-        <AccordionTrigger className="py-3 px-4 text-md font-normal" iconless>
+        <AccordionTrigger className="py-3 px-4 text-md font-normal" iconless onContextMenu={handleContextMenuOpen}>
           <span className="ml-0 tracking-tight">{street.name}</span>
           {lastUpdate && <span className="text-right"><StatusUpdateComponent status={lastUpdate} hideIcon /></span>}
         </AccordionTrigger>
@@ -60,6 +67,12 @@ export function StreetItem({ territoryId, territoryNumber, street }: Props) {
           territoryNumber,
           streetId: street.id,
         }}
+        onClose={() => setOpenDialog(null)}
+      />
+
+      <DeleteStreetDialog
+        open={openDialog === 'delete-street'}
+        context={{ territoryId: territoryId, territoryNumber: territoryNumber, streetId: street.id, streetName: street.name }}
         onClose={() => setOpenDialog(null)}
       />
     </>

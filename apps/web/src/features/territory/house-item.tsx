@@ -12,9 +12,9 @@ import { House } from './types'
 
 interface Props {
   house: House
-  territoryId: string
+  territoryId: number
   territoryNumber: string
-  streetId: string
+  streetId: number
 }
 
 export function HouseItem({ house, territoryId, territoryNumber, streetId }: Props) {

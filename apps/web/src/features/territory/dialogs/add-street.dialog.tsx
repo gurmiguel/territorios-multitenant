@@ -15,7 +15,7 @@ import TerritoryEvents from '../territory.events'
 import { Street } from '../types'
 
 type Props = CustomDialogProps<{
-  territoryId: string
+  territoryId: number
   territoryNumber: string
 }>
 
@@ -32,7 +32,7 @@ export function AddStreetDialog({ open, onClose, context }: Props) {
       method: 'POST',
     })
 
-    const eventHandler = new TerritoryEvents(queryClient)
+    const eventHandler = new TerritoryEvents(queryClient, true)
 
     eventHandler['street.created']({
       ...context,

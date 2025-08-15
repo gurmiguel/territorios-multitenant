@@ -1,17 +1,33 @@
 import { QueryClient } from '@tanstack/react-query'
 import { produce } from 'immer'
 
-import { HouseCreatedEvent, HouseDeletedEvent, HouseStatusUpdateEvent, HouseUpdatedEvent, StreetCreatedEvent, Territory } from './types'
+import { HouseCreatedEvent, HouseDeletedEvent, HouseStatusUpdateEvent, HouseUpdatedEvent, StreetCreatedEvent, StreetDeletedEvent, Territory } from './types'
 import { EventsHandler } from '../events/events.hooks'
 
 export default class TerritoryEvents implements EventsHandler<TerritoryEvents> {
   constructor(
     protected readonly queryClient: QueryClient,
+    protected readonly offlineOnly = false,
   ) {}
 
   // TODO: add missing event handlers
 
+  ['street.deleted'](data: StreetDeletedEvent) {
+    if (!this.shouldUpdate()) return null
+    return [
+      `territories/${data.territoryNumber}`,
+      this.queryClient.setQueryData<Territory>(['territories', data.territoryNumber], produce(territory => {
+        const index = territory?.streets.findIndex(s => s.id === data.id) ?? -1
+
+        if (index === -1) return
+
+        territory?.streets.splice(index, 1)
+      })),
+    ] as const
+  }
+
   ['street.created'](data: StreetCreatedEvent) {
+    if (!this.shouldUpdate()) return null
     return [
       `territories/${data.territoryNumber}`,
       this.queryClient.setQueryData<Territory>(['territories', data.territoryNumber], produce(territory => {
@@ -23,6 +39,7 @@ export default class TerritoryEvents implements EventsHandler<TerritoryEvents> {
   }
 
   ['house.status.updated'](data: HouseStatusUpdateEvent) {
+    if (!this.shouldUpdate()) return null
     return [
       `territories/${data.territoryNumber}`,
       this.queryClient.setQueryData<Territory>(['territories', data.territoryNumber], produce(territory => {
@@ -37,6 +54,7 @@ export default class TerritoryEvents implements EventsHandler<TerritoryEvents> {
   }
 
   ['house.created'](data: HouseCreatedEvent) {
+    if (!this.shouldUpdate()) return null
     return [
       `territories/${data.territoryNumber}`,
       this.queryClient.setQueryData<Territory>(['territories', data.territoryNumber], produce(territory => {
@@ -50,6 +68,7 @@ export default class TerritoryEvents implements EventsHandler<TerritoryEvents> {
   }
 
   ['house.updated'](data: HouseUpdatedEvent) {
+    if (!this.shouldUpdate()) return null
     return [
       `territories/${data.territoryNumber}`,
       this.queryClient.setQueryData<Territory>(['territories', data.territoryNumber], produce(territory => {
@@ -69,14 +88,24 @@ export default class TerritoryEvents implements EventsHandler<TerritoryEvents> {
   }
 
   ['house.deleted'](data: HouseDeletedEvent) {
+    if (!this.shouldUpdate()) return null
     return [
       `territories/${data.territoryNumber}`,
       this.queryClient.setQueryData<Territory>(['territories', data.territoryNumber], produce(territory => {
         const $street = territory?.streets?.find(street => street.houses.some(h => h.id === data.id))
 
-        if ($street)
-          $street.houses.splice($street.houses.findIndex(house => house.id === data.id), 1)
+        if (!$street) return
+
+        const index = $street.houses.findIndex(house => house.id === data.id)
+
+        if (index === -1) return
+
+        $street.houses.splice(index, 1)
       })),
     ] as const
+  }
+
+  private shouldUpdate() {
+    return !this.offlineOnly || navigator.onLine
   }
 }

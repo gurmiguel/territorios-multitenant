@@ -8,7 +8,7 @@ import { ApiClient } from '../api/api.client'
 type HandlerResult = readonly [string, any] | readonly [string, any, (current: any | undefined)=> Promise<any> | any]
 
 export type EventsHandler<T> = {
-  [k in keyof T]: (data: any)=> Promise<HandlerResult> | HandlerResult
+  [k in keyof T]: (data: any)=> Promise<HandlerResult> | HandlerResult | null
 }
 
 interface Options<T extends EventsHandler<T>> {

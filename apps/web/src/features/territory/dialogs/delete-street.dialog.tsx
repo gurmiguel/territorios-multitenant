@@ -11,13 +11,13 @@ import TerritoryEvents from '../territory.events'
 import { CustomDialogProps } from './types'
 
 type Props = CustomDialogProps<{
+  streetName: string
   territoryId: number
   territoryNumber: string
   streetId: number
-  houseId: number
 }>
 
-export function DeleteHouseDialog({ open, onClose, context }: Props) {
+export function DeleteStreetDialog({ open, onClose, context }: Props) {
   const queryClient = useQueryClient()
 
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -27,11 +27,11 @@ export function DeleteHouseDialog({ open, onClose, context }: Props) {
 
     setIsSubmitting(true)
     try {
-      await ApiClient.getInstance().mutate(`/territories/${context.territoryId}/streets/${context.streetId}/houses/${context.houseId}`, null, { method: 'DELETE' })
+      await ApiClient.getInstance().mutate(`/territories/${context.territoryId}/streets/${context.streetId}`, null, { method: 'DELETE' })
 
       const eventHandler = new TerritoryEvents(queryClient, true)
 
-      eventHandler['house.deleted']({ id: context.houseId, territoryNumber: context.territoryNumber })
+      eventHandler['street.deleted']({ id: context.streetId, territoryNumber: context.territoryNumber })
 
       toast.success('Registro removido')
     } finally {
@@ -46,11 +46,11 @@ export function DeleteHouseDialog({ open, onClose, context }: Props) {
           {isSubmitting && <OverlayLoading />}
 
           <DialogHeader>
-            <DialogTitle>Remover Casa</DialogTitle>
+            <DialogTitle>Remover Rua</DialogTitle>
           </DialogHeader>
 
           <div className="flex flex-col text-center">
-            <p>Deseja realmente remover esta casa do registro?</p>
+            <p>Deseja realmente remover <strong>&ldquo;{context.streetName}&rdquo;</strong> do registro?</p>
           </div>
 
           <DialogFooter className="mx-auto">

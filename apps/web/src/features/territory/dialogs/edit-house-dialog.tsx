@@ -15,9 +15,9 @@ import { House } from '../types'
 import { CustomDialogProps } from './types'
 
 type Props = CustomDialogProps<{
-  territoryId: string
+  territoryId: number
   territoryNumber: string
-  streetId: string
+  streetId: number
   house: House
 }>
 
@@ -37,7 +37,7 @@ export function EditHouseDialog({ open, onClose, context }: Props) {
       method: 'PATCH',
     })
 
-    const eventHandler = new TerritoryEvents(queryClient)
+    const eventHandler = new TerritoryEvents(queryClient, true)
 
     eventHandler['house.updated']({
       ...context,

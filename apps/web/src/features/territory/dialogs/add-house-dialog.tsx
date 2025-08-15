@@ -15,9 +15,9 @@ import { House } from '../types'
 import { CustomDialogProps } from './types'
 
 type Props = CustomDialogProps<{
-  territoryId: string
+  territoryId: number
   territoryNumber: string
-  streetId: string
+  streetId: number
 }>
 
 export function AddHouseDialog({ open, onClose, context }: Props) {
@@ -36,7 +36,7 @@ export function AddHouseDialog({ open, onClose, context }: Props) {
       method: 'POST',
     })
 
-    const eventHandler = new TerritoryEvents(queryClient)
+    const eventHandler = new TerritoryEvents(queryClient, true)
 
     eventHandler['house.created']({
       ...context,
