@@ -67,6 +67,7 @@ export default function TerritoryPage() {
             width={365} height={365}
             className="mb-4 mx-auto"
           />
+          {/* TODO: implement image change UI controls */}
 
           <div className="w-full flex justify-between items-center mb-3">
             <p className="text-sm text-left">A Trabalhar: <strong className="text-lg align-[-0.075em]">{missingHouses}</strong></p>

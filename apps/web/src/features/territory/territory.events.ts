@@ -1,7 +1,7 @@
 import { QueryClient } from '@tanstack/react-query'
 import { produce } from 'immer'
 
-import { HouseCreatedEvent, HouseDeletedEvent, HouseStatusUpdateEvent, HouseUpdatedEvent, StreetCreatedEvent, StreetDeletedEvent, Territory } from './types'
+import { HouseCreatedEvent, HouseDeletedEvent, HouseStatusUpdateEvent, HouseUpdatedEvent, StreetCreatedEvent, StreetDeletedEvent, Territory, TerritoryCreatedEvent } from './types'
 import { EventsHandler } from '../events/events.hooks'
 
 export default class TerritoryEvents implements EventsHandler<TerritoryEvents> {
@@ -11,6 +11,18 @@ export default class TerritoryEvents implements EventsHandler<TerritoryEvents> {
   ) {}
 
   // TODO: add missing event handlers
+
+  ['territory.created'](data: TerritoryCreatedEvent) {
+    if (!this.shouldUpdate()) return null
+    return [
+      'territories',
+      this.queryClient.setQueryData<{items: Territory[]}>(['territories'], produce(response => {
+        if (!response) return
+        response.items.push(data.territory)
+        response.items.sort((a, b) => Number(a.number) - Number(b.number))
+      })),
+    ] as const
+  }
 
   ['street.deleted'](data: StreetDeletedEvent) {
     if (!this.shouldUpdate()) return null

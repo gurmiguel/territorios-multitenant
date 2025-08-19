@@ -6,12 +6,11 @@ import Link from 'next/link'
 
 export function TerritoryListItem({ territory }: { territory: { number: string, color: string } }) {
   return (
-    <li key={territory.number} className="mb-4">
+    <li key={territory.number}>
       <Link
         href={`/territorios/${territory.number}`}
         className={cn([
-          'focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]',
-          'hover:bg-gray-100',
+          'hover:bg-gray-100 focus-visible:bg-gray-100',
           'active:bg-gray-200/80',
           'disabled:pointer-events-none disabled:opacity-50',
           'flex flex-1 items-center justify-between rounded-0 text-left bg-white transition-all outline-none',
