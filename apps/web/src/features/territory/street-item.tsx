@@ -72,7 +72,13 @@ export function StreetItem({ territoryId, territoryNumber, street }: Props) {
 
       <DeleteStreetDialog
         open={openDialog === 'delete-street'}
-        context={{ territoryId: territoryId, territoryNumber: territoryNumber, streetId: street.id, streetName: street.name }}
+        context={{
+          territoryId: territoryId,
+          territoryNumber: territoryNumber,
+          streetId: street.id,
+          streetName: street.name,
+          hasHouses: street.houses.length > 0,
+        }}
         onClose={() => setOpenDialog(null)}
       />
     </>
