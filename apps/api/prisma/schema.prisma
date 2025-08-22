@@ -37,7 +37,7 @@ model Territory {
   image   Asset?  @relation(fields: [imageId], references: [id])
   imageId String? @unique
 
-  congregation   Congregation @relation(fields: [congregationId], references: [id])
+  congregation   Congregation @relation(fields: [congregationId], references: [id], onDelete: Cascade)
   congregationId Int
 
   streets Street[]
@@ -47,7 +47,7 @@ model Street {
   id   Int    @id @default(autoincrement())
   name String
 
-  territory   Territory @relation(fields: [territoryId], references: [id])
+  territory   Territory @relation(fields: [territoryId], references: [id], onDelete: Cascade)
   territoryId Int
 
   houses House[]
@@ -61,7 +61,7 @@ model House {
   observation String
   phones      String[] @default([])
 
-  street   Street @relation(fields: [streetId], references: [id])
+  street   Street @relation(fields: [streetId], references: [id], onDelete: Cascade)
   streetId Int
 
   updates StatusUpdate[]
