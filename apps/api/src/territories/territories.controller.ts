@@ -1,11 +1,10 @@
 import { Controller, Delete, Get, Param, Patch, Post, Request, Sse } from '@nestjs/common'
 import { EventEmitter2 } from '@nestjs/event-emitter'
+import { Action, Area } from '@repo/utils/permissions/index'
 import { omit } from 'lodash-es'
 import { filter, map, merge } from 'rxjs'
 
 import { Allow } from '~/auth/decorators/allow.decorator'
-import { Action } from '~/auth/permissions/action.enum'
-import { Area } from '~/auth/permissions/area.enum'
 import { fromTypedEvent } from '~/utils/event'
 
 import { HouseCreatedEvent } from './events/houses/house-created.event'

@@ -8,6 +8,7 @@ import { AddHouseDialog } from './dialogs/add-house-dialog'
 import { DeleteStreetDialog } from './dialogs/delete-street.dialog'
 import { HouseItem } from './house-item'
 import { StatusUpdate, Street } from './types'
+import { useAuth } from '../auth/auth.context'
 
 interface Props {
   territoryId: number
@@ -16,6 +17,8 @@ interface Props {
 }
 
 export function StreetItem({ territoryId, territoryNumber, street }: Props) {
+  const { can } = useAuth()
+
   const [openDialog, setOpenDialog] = useState<'add-house' | 'delete-street' | null>(null)
 
   const houses = useMemo(() => sortHouses(street.houses), [street.houses])
@@ -27,6 +30,8 @@ export function StreetItem({ territoryId, territoryNumber, street }: Props) {
   }, null), [street.houses])
 
   function handleContextMenuOpen(e: MouseEvent<HTMLButtonElement>) {
+    if (!can('streets:delete')) return
+
     e.preventDefault()
 
     setOpenDialog('delete-street')
@@ -47,16 +52,18 @@ export function StreetItem({ territoryId, territoryNumber, street }: Props) {
             </div>
           ))}
 
-          <button
-            type="button"
-            className="flex items-center w-full py-2.5 px-5 font-normal text-left hover:bg-gray-100/50 active:bg-gray-200 transition-colors uppercase"
-            onClick={() => setOpenDialog('add-house')}
-          >
-            <PlusIcon size={14} />
-            <span className="flex items-center ml-1 font-semibold tracking-tight">
-              Adicionar Casa
-            </span>
-          </button>
+          {can('houses:write') && (
+            <button
+              type="button"
+              className="flex items-center w-full py-2.5 px-5 font-normal text-left hover:bg-gray-100/50 active:bg-gray-200 transition-colors uppercase"
+              onClick={() => setOpenDialog('add-house')}
+            >
+              <PlusIcon size={14} />
+              <span className="flex items-center ml-1 font-semibold tracking-tight">
+                Adicionar Casa
+              </span>
+            </button>
+          )}
         </AccordionContent>
       </AccordionItem>
 

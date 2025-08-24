@@ -2,9 +2,9 @@ import { Controller, Param, ParseFilePipeBuilder, Post, Request, UploadedFile, U
 import { FileInterceptor } from '@nestjs/platform-express'
 
 import { Allow } from '~/auth/decorators/allow.decorator'
-import { Action } from '~/auth/permissions/action.enum'
-import { Area } from '~/auth/permissions/area.enum'
-import { PermissionMode } from '~/auth/permissions/permission-mode.enum'
+import { Action } from '@repo/utils/permissions/index'
+import { Area } from '@repo/utils/permissions/index'
+import { PermissionMode } from '@repo/utils/permissions/index'
 
 import { AssetsService } from './assets.service'
 

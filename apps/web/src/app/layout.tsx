@@ -5,6 +5,7 @@ import { headers } from 'next/headers'
 
 import ZodProvider from '~/features/adapters/zod-provider'
 import { QueryProvider } from '~/features/api/query-provider'
+import { AuthProvider } from '~/features/auth/auth.context'
 import { HeaderProvider } from '~/features/header/context'
 import { Header } from '~/features/header/header'
 import { ThemeProvider } from '~/features/theme/theme.provider'
@@ -18,17 +19,19 @@ export default function RootLayout({
     <html lang="pt-BR" suppressHydrationWarning>
       <body>
         <ThemeProvider>
-          <ZodProvider>
-            <QueryProvider>
-              <HeaderProvider>
-                <Header />
-                <main className="flex flex-col flex-1 container">
-                  {children}
-                </main>
-              </HeaderProvider>
-            </QueryProvider>
-            <Toaster position="bottom-center" closeButton={true} richColors />
-          </ZodProvider>
+          <AuthProvider>
+            <ZodProvider>
+              <QueryProvider>
+                <HeaderProvider>
+                  <Header />
+                  <main className="flex flex-col flex-1 container">
+                    {children}
+                  </main>
+                </HeaderProvider>
+              </QueryProvider>
+              <Toaster position="bottom-center" closeButton={true} richColors />
+            </ZodProvider>
+          </AuthProvider>
         </ThemeProvider>
       </body>
     </html>

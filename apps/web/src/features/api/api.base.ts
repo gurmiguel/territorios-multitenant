@@ -119,6 +119,6 @@ export abstract class ApiClientBase {
 
   protected refreshTokenCookieSharedOptions = {
     secure: process.env.NODE_ENV === 'production',
-    maxAge: parseDuration('60 days')!,
+    expires: new Date(Date.now() + parseDuration('60 days')!),
   }
 }

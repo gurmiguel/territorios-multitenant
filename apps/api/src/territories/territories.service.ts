@@ -64,6 +64,7 @@ export class TerritoriesService {
   async getTerritories() {
     return await this.prisma.territory.findMany({
       where: { congregation: { id: this.congregationId } },
+      orderBy: [{ number: 'asc' }],
     })
   }
 

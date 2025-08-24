@@ -1,11 +1,5 @@
 import { applyDecorators, SetMetadata } from '@nestjs/common'
-
-import { Action } from '../permissions/action.enum'
-import { Area } from '../permissions/area.enum'
-import { PermissionMode } from '../permissions/permission-mode.enum'
-
-export type IPermission = `${Action}:${Area}` | [Area, Action]
-export type IPermissionStr = Extract<IPermission, string>
+import { IPermission, PermissionMode } from '@repo/utils/permissions/index'
 
 const DEFAULT_MODE: PermissionMode = PermissionMode.ANY
 

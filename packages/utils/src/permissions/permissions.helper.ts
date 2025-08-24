@@ -1,6 +1,6 @@
 import { Action } from './action.enum'
 import { Area } from './area.enum'
-import { IPermission, IPermissionStr } from '../decorators/allow.decorator'
+import { IPermission, IPermissionStr } from './types'
 
 export const Permissions = new class PermissionsHelper {
   getAllPermissions(areas?: Area[], exclude?: Action[]): IPermissionStr[] {

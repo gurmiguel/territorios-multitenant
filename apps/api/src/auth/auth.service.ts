@@ -3,16 +3,12 @@ import { promisify } from 'node:util'
 import { Injectable, Logger, UnauthorizedException } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { JwtService } from '@nestjs/jwt'
+import { Action, Area, Permissions, Role } from '@repo/utils/permissions/index'
 import bcrypt from 'bcrypt'
 
 import { Configuration } from '~/config/configuration'
 import { Congregation, User as PrismaUser } from '~/generated/prisma'
 import { UsersService } from '~/users/users.service'
-
-import { Action } from './permissions/action.enum'
-import { Area } from './permissions/area.enum'
-import { Permissions } from './permissions/permissions.helper'
-import { Role } from './permissions/role.enum'
 
 @Injectable()
 export class AuthService {
@@ -128,13 +124,17 @@ export class AuthService {
   }
 
   async signin(user: User) {
-    const payload: TokenPayload = {
+    const basePayload: TokenPayload = {
       sub: user.id,
       iss: user.congregation.slug,
     }
+    const payload = {
+      username: user.email,
+      permissions: user.permissions,
+    }
     return {
-      access_token: await this.jwtService.signAsync({ ...payload, type: 'access_token', username: user.email } satisfies AccessTokenPayload, { expiresIn: '1 hour' }),
-      refresh_token: await this.jwtService.signAsync({ ...payload, type: 'refresh_token' } satisfies RefreshTokenPayload, { expiresIn: '60 days' }),
+      access_token: await this.jwtService.signAsync({ ...basePayload, ...payload, type: 'access_token' } satisfies AccessTokenPayload, { expiresIn: '1 hour' }),
+      refresh_token: await this.jwtService.signAsync({ ...basePayload, type: 'refresh_token' } satisfies RefreshTokenPayload, { expiresIn: '60 days' }),
     }
   }
 

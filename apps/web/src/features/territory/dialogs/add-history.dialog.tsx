@@ -9,6 +9,7 @@ import { useQueryClient } from '@tanstack/react-query'
 import { FormEvent, useState } from 'react'
 
 import { ApiClient } from '~/features/api/api.client'
+import { useAuth } from '~/features/auth/auth.context'
 
 import TerritoryEvents from '../territory.events'
 import { StatusUpdate } from '../types'
@@ -27,6 +28,7 @@ type Props = CustomDialogProps<{
 
 export function AddHistoryDialog({ open, onClose, context, onOpenDelete, onOpenEdit }: Props) {
   const queryClient = useQueryClient()
+  const { can } = useAuth()
 
   const [isSubmitting, setIsSubmitting] = useState(false)
 
@@ -63,6 +65,9 @@ export function AddHistoryDialog({ open, onClose, context, onOpenDelete, onOpenE
     }
   }
 
+  const canDelete = can('houses:delete')
+  const canEdit = can('houses:write')
+
   return (
     <Dialog open={open} onOpenChange={state => !state && onClose()}>
       <DialogContent className="max-w-3xs" asChild>
@@ -74,10 +79,12 @@ export function AddHistoryDialog({ open, onClose, context, onOpenDelete, onOpenE
           </DialogHeader>
 
           <div className="flex flex-col">
-            <div className="flex gap-1 mx-auto mb-2">
-              <Button variant="destructive" className="uppercase" onClick={onOpenDelete}>Deletar</Button>
-              <Button variant="ghost" className="uppercase" onClick={onOpenEdit}>Editar</Button>
-            </div>
+            {(canDelete || canEdit) && (
+              <div className="flex gap-1 mx-auto mb-2">
+                {canDelete && <Button variant="destructive" className="uppercase" onClick={onOpenDelete}>Deletar</Button>}
+                {canEdit && <Button variant="ghost" className="uppercase" onClick={onOpenEdit}>Editar</Button>}
+              </div>
+            )}
 
             {context.phones.length > 0 && (
               <div className="flex flex-col gap-1 mt-1 mb-3">

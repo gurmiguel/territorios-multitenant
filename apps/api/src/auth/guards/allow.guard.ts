@@ -1,9 +1,8 @@
 import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from '@nestjs/common'
 import { Reflector } from '@nestjs/core'
+import { IPermission, Permission, PermissionMode } from '@repo/utils/permissions/index'
 
-import { IPermission, PERMISSIONS_KEY, PERMISSIONS_MODE_KEY } from '../decorators/allow.decorator'
-import { PermissionMode } from '../permissions/permission-mode.enum'
-import { Permission } from '../permissions/permissions.helper'
+import { PERMISSIONS_KEY, PERMISSIONS_MODE_KEY } from '../decorators/allow.decorator'
 
 @Injectable()
 export class AllowGuard implements CanActivate {
