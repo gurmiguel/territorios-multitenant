@@ -1,9 +1,14 @@
-export interface Territory { id: number, number: string, color: string, imageUrl: string, streets: Street[] }
+export interface Territory { id: number, number: string, color: string, imageUrl: string, streets: Street[], map: string | null }
 export interface Street { id: number, name: string, houses: House[] }
 export interface House { id: number, type: string, number: string, complement: string, observation: string, phones: string[], updates?: StatusUpdate[] }
 export interface StatusUpdate { id: string, date: string, status: string, userId: string }
 
 export interface TerritoryCreatedEvent {
+  territory: Territory
+}
+
+export interface TerritoryUpdatedEvent {
+  territoryNumber: string
   territory: Territory
 }
 

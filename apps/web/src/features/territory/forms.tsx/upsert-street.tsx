@@ -13,13 +13,13 @@ const schema = z.object({
 
 export type StreetFormData = z.infer<typeof schema>
 
-export function useUpsertStreetForm() {
+export function useUpsertStreetForm(street?: Street) {
   const getDefaultValue = (street?: Street) => ({
     name: street?.name ?? '',
   } as StreetFormData)
 
   const form = useForm<StreetFormData>({
-    defaultValues: getDefaultValue(),
+    defaultValues: getDefaultValue(street),
     resolver: standardSchemaResolver(schema),
     mode: 'onSubmit',
     progressive: true,

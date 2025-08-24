@@ -30,7 +30,11 @@ export class TerritoriesService {
     number: z.string(),
     color: z.string().regex(/^#([0-9a-f]{3}){1,2}/i),
     hidden: z.boolean(),
-    map: z.url().nullable(),
+    map: z.string()
+      .refine(v => v.startsWith('http'), {
+        error: 'Invalid URL',
+        when: ({ value }) => typeof value === 'string' && value.length > 0,
+      }),
   })
 
   protected readonly streetSchema = z.object({

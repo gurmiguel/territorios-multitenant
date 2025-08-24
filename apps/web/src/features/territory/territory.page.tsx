@@ -19,6 +19,7 @@ import { Territory } from './types'
 import { useEventStream } from '../events/events.hooks'
 import { HeaderConfig } from '../header/context'
 import { AddStreetDialog } from './dialogs/add-street.dialog'
+import { MapLinkDialog } from './dialogs/map-link.dialog'
 
 export default function TerritoryPage() {
   const queryClient = useQueryClient()
@@ -34,7 +35,7 @@ export default function TerritoryPage() {
     enabled: !!territory,
   })
 
-  const [openDialog, setOpenDialog] = useState<'add-street' | null>(null)
+  const [openDialog, setOpenDialog] = useState<'add-street' | 'map-link' | null>(null)
 
   const missingHouses = useMemo(() => {
     let total = 0
@@ -72,9 +73,9 @@ export default function TerritoryPage() {
           <div className="w-full flex justify-between items-center mb-3">
             <p className="text-sm text-left">A Trabalhar: <strong className="text-lg align-[-0.075em]">{missingHouses}</strong></p>
             <div className="flex items-center space-x-2 ml-auto">
-              <Button variant="default" className="rounded-full size-12 px-0! py-0 accessible-bg-secondary-foreground">
+              {/* TODO: control behavior based on user permissions */}
+              <Button variant="default" className="rounded-full size-12 px-0! py-0 accessible-bg-secondary-foreground" onClick={() => setOpenDialog('map-link')}>
                 <MapIcon className="size-5" />
-                {/* TODO: implement map dialog/link */}
               </Button>
               <Button variant="default" className="rounded-full size-12 px-0! py-0 accessible-bg-whatsapp" onClick={handleWhatsappClick}>
                 <WhatsappIcon className="size-5" fill="var(--color-white)" />
@@ -100,6 +101,12 @@ export default function TerritoryPage() {
           <AddStreetDialog
             open={openDialog === 'add-street'}
             context={{ territoryId: territory.id, territoryNumber: territory.number }}
+            onClose={() => setOpenDialog(null)}
+          />
+
+          <MapLinkDialog
+            open={openDialog === 'map-link'}
+            context={{ territoryId: territory.id, territoryNumber: territory.number, map: territory.map }}
             onClose={() => setOpenDialog(null)}
           />
         </>

@@ -22,6 +22,7 @@ const buttonVariants = cva(
         link: 'text-primary underline-offset-4 hover:underline',
       },
       color: {
+        foreground: 'accessible-text-foreground',
         primary: 'accessible-text-primary',
         secondary: 'accessible-text-secondary',
         muted: 'accessible-text-muted-foreground',
