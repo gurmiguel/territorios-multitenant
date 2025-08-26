@@ -1,10 +1,8 @@
 import { Controller, Param, ParseFilePipeBuilder, Post, Request, UploadedFile, UseInterceptors } from '@nestjs/common'
 import { FileInterceptor } from '@nestjs/platform-express'
+import { Action, Area, PermissionMode } from '@repo/utils/permissions/index'
 
 import { Allow } from '~/auth/decorators/allow.decorator'
-import { Action } from '@repo/utils/permissions/index'
-import { Area } from '@repo/utils/permissions/index'
-import { PermissionMode } from '@repo/utils/permissions/index'
 
 import { AssetsService } from './assets.service'
 
@@ -30,7 +28,7 @@ export class AssetsController {
   ) {
     const asset = await this.assetsService.updateMap(req.user!.id, file)
 
-    return asset.publicUrl
+    return { publicUrl: asset.publicUrl }
   }
 
   @Allow(PermissionMode.ALL, [Area.ASSETS, Action.WRITE], [Area.TERRITORIES, Action.WRITE])
@@ -45,6 +43,6 @@ export class AssetsController {
 
     const asset = await this.assetsService.updateTerritoryImage(user.id, parseInt(territoryId), file)
 
-    return asset.publicUrl
+    return { publicUrl: asset.publicUrl }
   }
 }

@@ -17,7 +17,7 @@
     "next-env.d.ts",
     "next.config.js",
     ".next/types/**/*.ts"
-  ],
+, "src/features/territory/forms"  ],
   "exclude": [
     "node_modules"
   ]

@@ -16,7 +16,7 @@ interface Props {
   errored?: boolean
 }
 
-function Input({ className, wrapperClassName, type, label, leftIcon, rightIcon, errored, ref, ...props }: Override<React.ComponentProps<'input'>, Props>) {
+function Input({ className, wrapperClassName, type, label, leftIcon, rightIcon, errored, ref, children, ...props }: Override<React.ComponentProps<'input'>, Props>) {
   const input = useRef<HTMLInputElement>(null)
 
   useLayoutEffect(() => {
@@ -38,6 +38,7 @@ function Input({ className, wrapperClassName, type, label, leftIcon, rightIcon, 
           leftIcon && 'pl-6',
           className,
         )}
+        id={props.name}
         {...props}
         placeholder={props.placeholder ?? label}
       />
@@ -57,6 +58,8 @@ function Input({ className, wrapperClassName, type, label, leftIcon, rightIcon, 
         'peer-disabled:scale-x-0',
       ])} />
       <FloatingLabel className={cn(leftIcon && 'peer-placeholder-shown:translate-x-6')}>{label}</FloatingLabel>
+
+      {children}
     </label>
   )
 }

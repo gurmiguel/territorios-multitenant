@@ -15,7 +15,7 @@ export abstract class ApiClientBase {
   public async mutate<T>(url: string, data: any, options?: RequestInit): Promise<T> {
     const response = await this.fetch(url, {
       method: 'POST',
-      body: data && JSON.stringify(data),
+      body: data instanceof FormData ? data : data && JSON.stringify(data),
       ...options,
     })
 
@@ -26,7 +26,8 @@ export abstract class ApiClientBase {
     await this.loadAuthTokens()
 
     options.headers ??= {}
-    options.headers['Content-Type'] ??= 'application/json'
+    if (typeof options.body === 'string')
+      options.headers['Content-Type'] ??= 'application/json'
 
     if (this.accessToken) {
       options.headers['Authorization'] = `Bearer ${this.accessToken}`
@@ -43,7 +44,7 @@ export abstract class ApiClientBase {
     }
 
     if (!response.ok)
-      throw new Error(`HTTP error! status: ${response.status}`)
+      throw new Error(`HTTP error! status: ${response.status}`, { cause: await response.json() })
 
     return response
   }

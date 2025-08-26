@@ -56,12 +56,12 @@ export function AuthProvider({ children }: PropsWithChildren) {
     dispatch({ type: 'logout', payload: undefined })
   }, [dispatch])
 
-  const can = useCallback<AuthContext['can']>(permission => {
-    return state.user?.permissions?.includes(Permission(permission)) || false
+  const can = useCallback<AuthContext['can']>((...permissions) => {
+    return permissions.some(permission => state.user?.permissions?.includes(Permission(permission))) || false
   }, [state])
 
-  const cannot = useCallback<AuthContext['cannot']>(permission => {
-    return (state.user?.permissions?.includes(Permission(permission)) ?? true) === false
+  const cannot = useCallback<AuthContext['cannot']>((...permissions) => {
+    return permissions.every(permission => state.user?.permissions?.includes(Permission(permission)) ?? true) === false
   }, [state])
 
   return (

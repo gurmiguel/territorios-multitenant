@@ -10,7 +10,7 @@ import { FormProvider, SubmitHandler } from 'react-hook-form'
 import { ApiClient } from '~/features/api/api.client'
 
 import { CustomDialogProps } from './types'
-import { StreetFormData, useUpsertStreetForm } from '../forms.tsx/upsert-street'
+import { StreetFormData, useUpsertStreetForm } from '../forms/upsert-street'
 import TerritoryEvents from '../territory.events'
 import { Street } from '../types'
 

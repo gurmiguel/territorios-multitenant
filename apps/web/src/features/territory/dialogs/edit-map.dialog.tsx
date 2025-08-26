@@ -9,7 +9,7 @@ import { FormProvider, SubmitHandler } from 'react-hook-form'
 
 import { ApiClient } from '~/features/api/api.client'
 
-import { UpdateMapFormData, useUpdateMap } from '../forms.tsx/update-map'
+import { UpdateMapFormData, useUpdateMap } from '../forms/update-map'
 import TerritoryEvents from '../territory.events'
 import { Territory } from '../types'
 import { CustomDialogProps } from './types'

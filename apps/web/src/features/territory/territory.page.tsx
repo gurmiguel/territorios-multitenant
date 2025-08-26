@@ -2,7 +2,7 @@
 
 import { Accordion } from '@repo/ui/components/ui/accordion'
 import { Button } from '@repo/ui/components/ui/button'
-import { MapIcon, PlusIcon } from '@repo/ui/components/ui/icons'
+import { MapIcon, PencilIcon, PlusIcon } from '@repo/ui/components/ui/icons'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { subMonths } from 'date-fns'
 import Image from 'next/image'
@@ -21,6 +21,7 @@ import { HeaderConfig } from '../header/context'
 import { AddStreetDialog } from './dialogs/add-street.dialog'
 import { MapLinkDialog } from './dialogs/map-link.dialog'
 import { useAuth } from '../auth/auth.context'
+import { EditImageDialog } from './dialogs/edit-image.dialog'
 
 export default function TerritoryPage() {
   const queryClient = useQueryClient()
@@ -38,7 +39,7 @@ export default function TerritoryPage() {
     enabled: !!territory,
   })
 
-  const [openDialog, setOpenDialog] = useState<'add-street' | 'map-link' | null>(null)
+  const [openDialog, setOpenDialog] = useState<'add-street' | 'map-link' | 'edit-image' | null>(null)
 
   const missingHouses = useMemo(() => {
     let total = 0
@@ -76,14 +77,23 @@ export default function TerritoryPage() {
 
       {!!territory && (
         <>
-          <Image src={territory.imageUrl ?? territoryImageFallback} alt=""
-            width={365} height={365}
-            className="mb-4 mx-auto"
-          />
-          {/* TODO: implement image change UI controls */}
+          <div className="relative w-full">
+            <Image src={territory.imageUrl ?? territoryImageFallback} alt=""
+              width={365} height={365}
+              className="mb-4 mx-auto"
+            />
+            {can('assets:write') && can('territories:write') && (
+              <Button variant="ghost" color="foreground"
+                className="absolute top-3 right-2 rounded-full size-12 p-0!"
+                onClick={() => setOpenDialog('edit-image')}
+              >
+                <PencilIcon className="size-5" />
+              </Button>
+            )}
+          </div>
 
           <div className="w-full flex justify-between items-center mb-3">
-            <p className="text-sm text-left">A Trabalhar: <strong className="text-lg align-[-0.075em]">{missingHouses}</strong></p>
+            {territory.streets.length > 0 && <p className="text-sm text-left">A Trabalhar: <strong className="text-lg align-[-0.075em]">{missingHouses}</strong></p>}
             <div className="flex items-center space-x-2 ml-auto">
               {(can('territories:write') || !!territory.map) && (
                 <Button variant="default"
@@ -125,6 +135,12 @@ export default function TerritoryPage() {
           <MapLinkDialog
             open={openDialog === 'map-link'}
             context={{ territoryId: territory.id, territoryNumber: territory.number, map: territory.map }}
+            onClose={() => setOpenDialog(null)}
+          />
+
+          <EditImageDialog
+            open={openDialog === 'edit-image'}
+            context={{ territoryId: territory.id, territoryNumber: territory.number, imageUrl: territory.imageUrl }}
             onClose={() => setOpenDialog(null)}
           />
         </>

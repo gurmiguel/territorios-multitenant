@@ -9,7 +9,7 @@ import { FormProvider, SubmitHandler } from 'react-hook-form'
 
 import { ApiClient } from '~/features/api/api.client'
 
-import { HouseFormData, useUpsertHouseForm } from '../forms.tsx/upsert-house'
+import { HouseFormData, useUpsertHouseForm } from '../forms/upsert-house'
 import TerritoryEvents from '../territory.events'
 import { House } from '../types'
 import { CustomDialogProps } from './types'

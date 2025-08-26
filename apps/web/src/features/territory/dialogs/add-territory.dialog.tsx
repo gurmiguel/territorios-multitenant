@@ -11,7 +11,7 @@ import { FormProvider, SubmitHandler } from 'react-hook-form'
 import { ApiClient } from '~/features/api/api.client'
 
 import { CustomDialogProps } from './types'
-import { TerritoryFormData, useUpsertTerritory } from '../forms.tsx/upsert-territory'
+import { TerritoryFormData, useUpsertTerritory } from '../forms/upsert-territory'
 import TerritoryEvents from '../territory.events'
 import { Territory } from '../types'
 

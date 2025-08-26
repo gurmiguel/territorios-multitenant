@@ -35,6 +35,7 @@ export class TerritoriesService {
         error: 'Invalid URL',
         when: ({ value }) => typeof value === 'string' && value.length > 0,
       }),
+    removeImage: z.boolean().optional(),
   })
 
   protected readonly streetSchema = z.object({
@@ -109,13 +110,15 @@ export class TerritoriesService {
   }
 
   async updateTerritory(id: Territory['id'], data: Partial<Omit<Territory, 'id' | 'congregationId'>>) {
-    const { error, data: parsed } = await this.territorySchema.partial().safeParseAsync(data)
+    const { error, data: { removeImage = false, ...parsed } = {} } = await this.territorySchema.partial().safeParseAsync(data)
 
     if (error) throw new ValidationException(error)
 
     const territory = await this.prisma.territory.update({
       where: { id, congregation: { id: this.congregationId } },
-      data: parsed,
+      data: removeImage
+        ? { ...parsed, image: { delete: true } }
+        : parsed,
     })
 
     this.emitter.emit(TerritoryUpdatedEvent.event, new TerritoryUpdatedEvent({

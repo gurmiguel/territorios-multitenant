@@ -16,8 +16,8 @@ const schema = z.object({
 
 export type UpdateMapFormData = z.infer<typeof schema>
 
-export function useUpdateMap(data?: Pick<Territory, 'map'>) {
-  const getDefaultValue = (data?: Pick<Territory, 'map'>) => ({
+export function useUpdateMap(data: Pick<Territory, 'map'>) {
+  const getDefaultValue = (data: Pick<Territory, 'map'>) => ({
     map: data?.map ?? '',
   } as UpdateMapFormData)
 
