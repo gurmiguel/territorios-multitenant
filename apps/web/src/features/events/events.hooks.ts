@@ -8,7 +8,7 @@ import { ApiClient } from '../api/api.client'
 type HandlerResult = readonly [string, any] | readonly [string, any, (current: any | undefined)=> Promise<any> | any]
 
 export type EventsHandler<T> = {
-  [k in keyof T]: (data: any)=> Promise<HandlerResult> | HandlerResult | null
+  [k in keyof T]: (data: any)=> Promise<HandlerResult[]> | HandlerResult[] | null
 }
 
 interface Options<T extends EventsHandler<T>> {
@@ -51,9 +51,10 @@ export function useEventStream<T extends EventsHandler<T>>(endpoint: string, { h
 
           if (!event || !handler[event]) continue
 
-          const [cacheKey, updated, patcher = () => updated] = await handler[event](data)
+          const updates = await handler[event](data)
 
-          await patchCache(cacheKey, patcher)
+          for (const [cacheKey, updated, patcher = () => updated] of updates)
+            await patchCache(cacheKey, patcher)
         }
       } catch (ex) {
         if (ex instanceof DOMException && ex.name === 'AbortError')

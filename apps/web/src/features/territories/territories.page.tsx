@@ -32,9 +32,9 @@ export function TerritoriesPage() {
         <ul className="flex-1">
           {data?.items?.map(territory => (
             <TerritoryListItem key={territory.id}
-              territory={territory} />
+              territory={territory}
+            />
           ))}
-          {/* TODO: implement edit/delete territory */}
 
           {can('territories:write') && (
             <li>

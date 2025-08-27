@@ -34,7 +34,8 @@ export class TerritoriesService {
       .refine(v => v.startsWith('http'), {
         error: 'Invalid URL',
         when: ({ value }) => typeof value === 'string' && value.length > 0,
-      }),
+      })
+      .nullable(),
     removeImage: z.boolean().optional(),
   })
 
