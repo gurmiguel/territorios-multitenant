@@ -1,15 +1,16 @@
 'use client'
 
+import { StatusUpdate } from '@repo/ui/components/status-update'
 import { cn } from '@repo/ui/lib/utils'
 import { DotIcon } from 'lucide-react'
 import Link from 'next/link'
 import { useState } from 'react'
 
 import { EditTerritoryDialog } from '../territory/dialogs/edit-territory.dialog'
-import { Territory } from '../territory/types'
+import { TerritoryListItem as ITerritoryListItem } from '../territory/types'
 
 interface Props {
-  territory: Territory
+  territory: ITerritoryListItem
 }
 
 export function TerritoryListItem({ territory }: Props) {
@@ -34,13 +35,15 @@ export function TerritoryListItem({ territory }: Props) {
           ])}
           onContextMenu={handleOpenEditDialog}
         >
-          <h2 className="flex items-center text-base font-semibold uppercase tracking-tight py-3.5">
+          <h2 className="flex-1 flex items-center text-base font-semibold uppercase tracking-tight py-3.5 pr-4">
             <span className="flex items-center h-0 align-middle">
               <DotIcon className="-mx-1" size={48} color={territory.color} />
             </span>
             Território {territory.number}
 
-            {/* TODO: implement missing houses counter */}
+            <span className="ml-auto text-right">
+              <StatusUpdate count={territory.pendingHouses} hideIcon />
+            </span>
           </h2>
         </Link>
       </li>

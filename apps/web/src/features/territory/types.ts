@@ -1,4 +1,5 @@
 export interface Territory { id: number, number: string, color: string, hidden: boolean, imageUrl: string | null, streets: Street[], map: string | null }
+export interface TerritoryListItem extends Omit<Territory, 'street'> { pendingHouses: number }
 export interface Street { id: number, name: string, houses: House[] }
 export interface House { id: number, type: string, number: string, complement: string, observation: string, phones: string[], updates?: StatusUpdate[] }
 export interface StatusUpdate { id: string, date: string, status: string, userId: string }

@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { EventEmitter2 } from '@nestjs/event-emitter'
 import { HouseTypes } from '@repo/utils/types'
-import { subMilliseconds } from 'date-fns'
+import { subMilliseconds, subMonths } from 'date-fns'
 import { omit } from 'lodash-es'
 import parseDuration from 'parse-duration'
 import { z } from 'zod'
@@ -11,6 +11,7 @@ import { Configuration } from '~/config/configuration'
 import { PrismaService } from '~/db/prisma.service'
 import { ValidationException } from '~/exceptions/application-exception/validation-exception'
 import { House, StatusUpdate, Street, Territory } from '~/generated/prisma'
+import { getTerritoriesWithPendingHouses } from '~/generated/prisma/sql'
 import { TenantHolderService } from '~/tenants/tenant-holder.service'
 
 import { HouseCreatedEvent } from './events/houses/house-created.event'
@@ -26,6 +27,8 @@ import { TerritoryUpdatedEvent } from './events/territory/territory-updated.even
 
 @Injectable()
 export class TerritoriesService {
+  protected static readonly monthsToExpireStatus = 4
+
   protected readonly territorySchema = z.object({
     number: z.string(),
     color: z.string().regex(/^#([0-9a-f]{3}){1,2}/i),
@@ -64,10 +67,7 @@ export class TerritoriesService {
   }
 
   async getTerritories() {
-    return await this.prisma.territory.findMany({
-      where: { congregation: { id: this.congregationId } },
-      orderBy: [{ number: 'asc' }],
-    })
+    return await this.prisma.$queryRawTyped(getTerritoriesWithPendingHouses(this.congregationId, subMonths(new Date(), TerritoriesService.monthsToExpireStatus)))
   }
 
   async getTerritory(number: string) {

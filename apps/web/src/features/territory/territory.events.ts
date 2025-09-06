@@ -10,8 +10,6 @@ export default class TerritoryEvents implements EventsHandler<TerritoryEvents> {
     protected readonly offlineOnly = false,
   ) {}
 
-  // TODO: add missing event handlers
-
   ['territory.updated'](data: TerritoryUpdatedEvent) {
     if (!this.shouldUpdate()) return null
     return [

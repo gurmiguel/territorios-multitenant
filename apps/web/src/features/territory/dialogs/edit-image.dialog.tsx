@@ -17,7 +17,7 @@ import { CustomDialogProps } from './types'
 type Props = CustomDialogProps<{
   territoryId: number
   territoryNumber: string
-  imageUrl: string
+  imageUrl: string | null
 }>
 
 export function EditImageDialog({ open, onClose, context }: Props) {

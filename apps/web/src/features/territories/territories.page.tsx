@@ -11,12 +11,12 @@ import { TerritoryListItem } from './territory-list-item'
 import { useAuth } from '../auth/auth.context'
 import { HeaderConfig } from '../header/context'
 import { AddTerritoryDialog } from '../territory/dialogs/add-territory.dialog'
-import { Territory } from '../territory/types'
+import { TerritoryListItem as ITerritoryListItem } from '../territory/types'
 
 export function TerritoriesPage() {
   const { can } = useAuth()
 
-  const { data, isLoading } = useQuery<{items: Territory[]}>({
+  const { data, isLoading } = useQuery<{items: ITerritoryListItem[]}>({
     queryKey: ['territories'],
   })
 

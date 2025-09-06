@@ -1,24 +1,51 @@
 import { differenceInMonths, format as formatDate } from 'date-fns'
 import { CheckIcon, XIcon } from 'lucide-react'
+import { useMemo } from 'react'
 
 import { cn } from '../lib/utils'
 
-interface Props {
+type Props = {
   hideIcon?: boolean
+} & ({
   status: {
     date: string
     status: string
   }
-}
+  count?: never
+} | {
+  status?: never
+  count: number
+})
 
-export function StatusUpdate({ status, hideIcon = false }: Props) {
-  const date = new Date(status.date)
+export const MONTHS_TO_EXPIRE_STATUS = 4
 
-  const IconComponent = status.status === 'OK' ? CheckIcon : XIcon
+export function StatusUpdate({ status, count, hideIcon = false }: Props) {
+  const { text, color } = useMemo(() => {
+    switch (true) {
+      case typeof count === 'number':
+        // COUNT MODE
+        if (count > 0)
+          return { text: `(${count})`, color: 'text-warning' }
+        else
+          return { text: <CheckIcon size={18} className="-mr-0.5 text-success" strokeWidth={3} /> }
 
-  const color = status.status === 'OK'
-    ? differenceInMonths(new Date(), date) >= 4 ? 'text-warning' : 'text-success'
-    : 'text-destructive'
+      case typeof status === 'object':
+        // STATUS MODE
+        const date = new Date(status.date)
+
+        const color = status.status === 'OK'
+          ? differenceInMonths(new Date(), date) >= MONTHS_TO_EXPIRE_STATUS ? 'text-warning' : 'text-success'
+          : 'text-destructive'
+
+        const text = formatDate(date, 'dd/MM/yyyy')
+
+        return { text, color }
+
+      default: throw new Error('Invalid parameters')
+    }
+  }, [count, status])
+
+  const IconComponent = status?.status === 'OK' ? CheckIcon : XIcon
 
   return (
     <span className={cn([
@@ -26,7 +53,7 @@ export function StatusUpdate({ status, hideIcon = false }: Props) {
       color,
     ])}>
       {!hideIcon && <IconComponent size={12} className={cn('-mb-0.5', color)} />}
-      {formatDate(date, 'dd/MM/yyyy')}
+      {text}
     </span>
   )
 }
