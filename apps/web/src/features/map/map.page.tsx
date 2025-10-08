@@ -1,3 +1,4 @@
+import { ImageZoom } from '@repo/ui/components/image-zoom'
 import Image from 'next/image'
 
 import { getMapUrl } from './map.data'
@@ -10,7 +11,9 @@ export async function MapPage() {
     <div className="flex flex-col">
       <HeaderConfig title="Mapa Completo" showMap backRoute />
       <div className="relative w-full aspect-[3/4]">
-        <Image src={mapUrl} alt="" layout="fill" objectFit="contain" />
+        <ImageZoom src={mapUrl}>
+          <Image src={mapUrl} alt="" layout="fill" objectFit="contain" />
+        </ImageZoom>
       </div>
     </div>
   )
