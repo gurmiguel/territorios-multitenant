@@ -1,10 +1,10 @@
 import './globals.css'
 
 import { Toaster } from '@repo/ui/components/ui/sonner'
-import { headers } from 'next/headers'
 
 import ZodProvider from '~/features/adapters/zod-provider'
 import { QueryProvider } from '~/features/api/query-provider'
+import { getTenant } from '~/features/api/utils.server'
 import { AuthProvider } from '~/features/auth/auth.context'
 import { HeaderProvider } from '~/features/header/context'
 import { Header } from '~/features/header/header'
@@ -39,12 +39,9 @@ export default function RootLayout({
 }
 
 export async function generateMetadata() {
-  const headersList = await headers()
-  const host = headersList.get('host') ?? ''
-
   const response = await fetch('http://localhost:3333/congregations', {
     headers: {
-      'X-Tenant-Id': process.env.NODE_ENV === 'production' ? host : 'alemanha',
+      'X-Tenant-Id': process.env.NODE_ENV === 'production' ? await getTenant() : 'alemanha',
     },
   })
   const data = await response.json()
