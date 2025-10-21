@@ -48,7 +48,7 @@ export class ServerApiClient extends ApiClientBase {
 
       if (refreshToken)
         cookieStore.set(REFRESH_TOKEN_COOKIE_NAME, refreshToken, this.refreshTokenCookieSharedOptions)
-      else
+      else if (cookieStore.has(REFRESH_TOKEN_COOKIE_NAME))
         cookieStore.delete(REFRESH_TOKEN_COOKIE_NAME)
     } catch {
       // ignore not being able to set cookies in RSC

@@ -1,8 +1,10 @@
 import { Controller, Get, Post, Request, UnauthorizedException, UseGuards } from '@nestjs/common'
 
+import { TenantHolderService } from '~/tenants/tenant-holder.service'
 import { ByPassTenant } from '~/tenants/tenants.interceptor'
 
 import { AuthService } from './auth.service'
+import { AllowAnonymous } from './decorators/allow-anonymous.decorator'
 import { GoogleAuthGuard } from './guards/google.guard'
 import { LocalAuthGuard } from './guards/local.guard'
 import { RefreshTokenAuthGuard } from './guards/refresh-token.guard'
@@ -11,6 +13,7 @@ import { RefreshTokenAuthGuard } from './guards/refresh-token.guard'
 export class AuthController {
   constructor(
     private readonly authService: AuthService,
+    private readonly tenantHolder: TenantHolderService,
   ) {}
 
   @UseGuards(LocalAuthGuard)
@@ -18,6 +21,12 @@ export class AuthController {
   @Post('/login')
   async login(@Request() req: Application.Request) {
     return await this.authService.signin(req.user!)
+  }
+
+  @Post('/signup')
+  @AllowAnonymous()
+  async signup(@Request() req: Application.Request) {
+    return await this.authService.signup(req.body, this.tenantHolder.getTenant())
   }
 
   @UseGuards(GoogleAuthGuard)

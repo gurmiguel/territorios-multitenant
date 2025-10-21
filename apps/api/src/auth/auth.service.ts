@@ -1,10 +1,11 @@
 import { promisify } from 'node:util'
 
-import { Injectable, Logger, UnauthorizedException } from '@nestjs/common'
+import { BadRequestException, Injectable, Logger, UnauthorizedException } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { JwtService } from '@nestjs/jwt'
 import { Action, Area, Permissions, Role } from '@repo/utils/permissions/index'
 import bcrypt from 'bcrypt'
+import z from 'zod'
 
 import { Configuration } from '~/config/configuration'
 import { Congregation, User as PrismaUser } from '~/generated/prisma'
@@ -21,6 +22,10 @@ export class AuthService {
   ) {}
 
   async validateUserLocal(tenantId: string, username: string, password: string): Promise<User | null> {
+    const { success: isValid } = z.object({ username: z.email().nonempty(), password: z.string() }).safeParse({ username, password })
+
+    if (!isValid) return null
+
     const user = await this.usersService.find({
       where: {
         email: username, congregation: { slug: tenantId },
@@ -136,6 +141,24 @@ export class AuthService {
       access_token: await this.jwtService.signAsync({ ...basePayload, ...payload, type: 'access_token' } satisfies AccessTokenPayload, { expiresIn: '1 hour' }),
       refresh_token: await this.jwtService.signAsync({ ...basePayload, type: 'refresh_token' } satisfies RefreshTokenPayload, { expiresIn: '60 days' }),
     }
+  }
+
+  async signup({ email, name }: Pick<User, 'email' | 'name'>, tenant: Congregation) {
+    const { success: isValid } = z.object({ email: z.email().nonempty(), name: z.string() }).safeParse({ email, name })
+
+    if (!isValid) throw new BadRequestException('Invalid email or name')
+
+    const user = await this.usersService.create({
+      data: {
+        email,
+        name,
+        congregationId: tenant.id,
+        permissions: Permissions.getDefaultUserPermissions(),
+      },
+      include: { congregation: true },
+    })
+
+    return this.signin(this.buildUser(user))
   }
 
   async updateAdminsPermissions() {

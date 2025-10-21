@@ -35,7 +35,7 @@ export abstract class ApiClientBase {
 
     let response = await fetch(this.buildUrl(url), options)
 
-    if (response.status === 401 && this.refreshToken) {
+    if (response.status === 403 && this.refreshToken) {
       try {
         response = await this.retryWithRefreshToken(url, options)
       } catch (ex) {
@@ -44,7 +44,7 @@ export abstract class ApiClientBase {
     }
 
     if (!response.ok)
-      throw new Error(`HTTP error! status: ${response.status}`, { cause: await response.json() })
+      throw new ApiError(response.status, response.statusText, { cause: await response.json() })
 
     return response
   }
@@ -121,5 +121,12 @@ export abstract class ApiClientBase {
   protected refreshTokenCookieSharedOptions = {
     secure: process.env.NODE_ENV === 'production',
     expires: new Date(Date.now() + parseDuration('60 days')!),
+  }
+}
+
+export class ApiError extends Error {
+  constructor(public readonly status: number, public readonly statusText: string, options?: ErrorOptions) {
+    super(`${statusText} ${status}`, options)
+    this.name = ApiError.name
   }
 }

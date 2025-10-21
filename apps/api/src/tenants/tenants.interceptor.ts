@@ -3,8 +3,10 @@ import { Reflector } from '@nestjs/core'
 import { tap } from 'rxjs/operators'
 
 import { CongregationsService } from '~/congregations/congregations.service'
+import { Congregation } from '~/generated/prisma'
 
 import { TenantHolderService } from './tenant-holder.service'
+import { TenantsService } from './tenants.service'
 
 const BYPASS_TENANT = Symbol.for('bypass_tenant')
 
@@ -13,6 +15,7 @@ export class TenantsInterceptor implements NestInterceptor {
   constructor(
     protected readonly reflector: Reflector,
     protected readonly tenantHolder: TenantHolderService,
+    protected readonly tenantsService: TenantsService,
     protected readonly congregationsService: CongregationsService,
   ) {}
 
@@ -29,12 +32,19 @@ export class TenantsInterceptor implements NestInterceptor {
 
     const user = request.user
 
-    if (user) {
-      const tenant = await this.congregationsService.find({ where: { id: user.congregationId } })
+    let tenant: Congregation | null = null
 
-      if (tenant)
-        this.tenantHolder.setTenant(tenant)
+    if (user) {
+      tenant = await this.congregationsService.find({ where: { id: user.congregationId } })
+    } else {
+      const tenantId = this.tenantsService.getTenantIdFromRequest(request)
+
+      if (tenantId)
+        tenant = await this.congregationsService.find({ where: { slug: tenantId } })
     }
+
+    if (tenant)
+      this.tenantHolder.setTenant(tenant)
 
     return next.handle()
       .pipe(

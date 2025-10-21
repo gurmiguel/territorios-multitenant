@@ -3,6 +3,13 @@ import { Area } from './area.enum'
 import { IPermission, IPermissionStr } from './types'
 
 export const Permissions = new class PermissionsHelper {
+  getDefaultUserPermissions() {
+    return this.getFor({
+      area: { exclude: [Area.USERS] },
+      action: { include: [Action.READ] },
+    })
+  }
+
   getAllPermissions(areas?: Area[], exclude?: Action[]): IPermissionStr[] {
     return this.getFor({
       area: { include: areas },
