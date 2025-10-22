@@ -1,3 +1,4 @@
+export interface Congregation { id: number, name: string, slug: string, createdAt: Date, map?: { id: string, publicUrl: string } }
 export interface Territory { id: number, number: string, color: string, hidden: boolean, imageUrl: string | null, streets: Street[], map: string | null }
 export interface TerritoryListItem extends Omit<Territory, 'street'> { pendingHouses: number }
 export interface Street { id: number, name: string, houses: House[] }

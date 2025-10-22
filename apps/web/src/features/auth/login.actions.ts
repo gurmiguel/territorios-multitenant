@@ -13,9 +13,7 @@ export async function emailLogin(prevState: ActionResponse, data: FormData): Pro
   const email = data.get('email')?.toString()
   const name = data.get('name')?.toString()
 
-  const tenant = process.env.NODE_ENV === 'production'
-    ? await getTenant()
-    : 'alemanha'
+  const tenant = await getTenant()
 
   try {
     const endpoints = {
@@ -45,9 +43,7 @@ export async function emailLogin(prevState: ActionResponse, data: FormData): Pro
 export async function initGoogleSignIn(returnUrl: string) {
   const api = ServerApiClient.getInstance()
 
-  const tenant = process.env.NODE_ENV === 'production'
-    ? await getTenant()
-    : 'alemanha'
+  const tenant = await getTenant()
 
   redirect(api.buildUrl(`/auth/google?redirectUrl=${returnUrl}&tenant=${tenant}`))
 }

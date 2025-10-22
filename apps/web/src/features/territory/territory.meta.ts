@@ -11,7 +11,7 @@ export async function generateMetadata({ params }: { params: Promise<{ number: s
   return {
     title: `Território ${territory.number}`,
     openGraph: {
-      images: [territory.imageUrl],
+      images: [territory.imageUrl!].filter(Boolean),
     },
   } satisfies Metadata
 }

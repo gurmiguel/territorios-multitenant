@@ -23,19 +23,21 @@ export abstract class ApiClientBase {
   }
 
   public async fetch(url: string, options: RequestInit = {}) {
-    await this.loadAuthTokens()
+    const skipAuth = options.credentials === 'omit'
+    if (skipAuth)
+      await this.loadAuthTokens()
 
     options.headers ??= {}
     if (typeof options.body === 'string')
       options.headers['Content-Type'] ??= 'application/json'
 
-    if (this.accessToken) {
+    if (!skipAuth && this.accessToken) {
       options.headers['Authorization'] = `Bearer ${this.accessToken}`
     }
 
     let response = await fetch(this.buildUrl(url), options)
 
-    if (response.status === 403 && this.refreshToken) {
+    if (!skipAuth && response.status === 403 && this.refreshToken) {
       try {
         response = await this.retryWithRefreshToken(url, options)
       } catch (ex) {

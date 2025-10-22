@@ -17,6 +17,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-BR" suppressHydrationWarning>
+      <head>
+        <link rel="manifest" href="/manifest.webmanifest" />
+      </head>
       <body>
         <ThemeProvider>
           <AuthProvider>
@@ -41,7 +44,7 @@ export default function RootLayout({
 export async function generateMetadata() {
   const response = await fetch('http://localhost:3333/congregations', {
     headers: {
-      'X-Tenant-Id': process.env.NODE_ENV === 'production' ? await getTenant() : 'alemanha',
+      'X-Tenant-Id': await getTenant(),
     },
   })
   const data = await response.json()
