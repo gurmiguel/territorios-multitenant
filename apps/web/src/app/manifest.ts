@@ -5,11 +5,12 @@ import { getTenant } from '~/features/api/utils.server'
 import { Congregation } from '~/features/territory/types'
 
 export default async function manifest(): Promise<MetadataRoute.Manifest> {
-  const tenant = await getTenant()
-
   const congregation = await ServerApiClient.getInstance().query<Congregation>('/congregations', {
-    headers: { 'X-Tenant-ID': tenant },
+    headers: { 'X-Tenant-ID': await getTenant() },
     credentials: 'omit',
+    next: {
+      revalidate: 86400, // 1 day
+    },
   })
 
   return {
@@ -28,19 +29,19 @@ export default async function manifest(): Promise<MetadataRoute.Manifest> {
         type: 'image/x-icon',
       },
       {
-        src: '/min/icon-512x512.png',
+        src: '/assets/min/icon-512x512.png',
         type: 'image/png',
         sizes: '512x512',
       },
       {
-        src: '/min/icon-192x192.png',
+        src: '/assets/min/icon-192x192.png',
         type: 'image/png',
         sizes: '192x192',
       },
     ],
     screenshots: [
       {
-        src: '/screenshot-1.jpg',
+        src: '/assets/screenshot-1.jpg',
         sizes: '370x800',
         type: 'image/jpeg',
         form_factor: 'narrow',

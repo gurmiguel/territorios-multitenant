@@ -9,16 +9,22 @@
     "baseUrl": "src/",
     "paths": {
       "~/*": ["./*"]
-    }
+    },
+    "types": [
+      "@serwist/next/typings"
+    ],
+    "lib": ["es2022", "DOM", "DOM.Iterable", "webworker"]
   },
   "include": [
     "**/*.ts",
     "**/*.tsx",
     "next-env.d.ts",
     "next.config.js",
-    ".next/types/**/*.ts"
-, "src/features/territory/forms"  ],
+    ".next/types/**/*.ts",
+    "src/features/territory/forms"
+  ],
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "public/sw.js"
   ]
 }

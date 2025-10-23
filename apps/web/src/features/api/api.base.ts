@@ -24,7 +24,7 @@ export abstract class ApiClientBase {
 
   public async fetch(url: string, options: RequestInit = {}) {
     const skipAuth = options.credentials === 'omit'
-    if (skipAuth)
+    if (!skipAuth)
       await this.loadAuthTokens()
 
     options.headers ??= {}
@@ -37,7 +37,7 @@ export abstract class ApiClientBase {
 
     let response = await fetch(this.buildUrl(url), options)
 
-    if (!skipAuth && response.status === 403 && this.refreshToken) {
+    if (!skipAuth && response.status === 403 && this.refreshToken && this.shouldRefreshToken()) {
       try {
         response = await this.retryWithRefreshToken(url, options)
       } catch (ex) {
@@ -66,7 +66,7 @@ export abstract class ApiClientBase {
     this.accessToken = accessToken
     this.refreshToken = refreshToken
 
-    if (!accessToken) {
+    if (!accessToken && !!refreshToken && this.shouldRefreshToken()) {
       await this.refreshTokens()
     }
   }
@@ -106,7 +106,13 @@ export abstract class ApiClientBase {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({ refresh_token: this.refreshToken }),
+    }).catch(err => {
+      return Response.json({ error: err }, { status: 499, statusText: 'Client Closed Request' })
     })
+
+    if (!response.ok) {
+      throw new ApiError(response.status, response.statusText, { cause: await response.json() })
+    }
 
     const { access_token, refresh_token } = await response.json()
 
@@ -114,6 +120,10 @@ export abstract class ApiClientBase {
     this.refreshToken = refresh_token
 
     await this.setAuthCookies(refresh_token, access_token)
+  }
+
+  protected shouldRefreshToken() {
+    return true
   }
 
   protected abstract getAuthCookies(): Promise<{ accessToken?: string, refreshToken?: string }>

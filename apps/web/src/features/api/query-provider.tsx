@@ -9,7 +9,6 @@ import { ApiClient } from './api.client'
 const getQueryClient = cache(() => new QueryClient({
   defaultOptions: {
     queries: {
-      networkMode: 'offlineFirst',
       refetchOnWindowFocus: false,
       refetchOnReconnect: true,
       staleTime: 5000,
@@ -17,7 +16,6 @@ const getQueryClient = cache(() => new QueryClient({
         .query(queryKey.join('/'), { signal }),
     },
     mutations: {
-      networkMode: 'offlineFirst',
       mutationFn: variables => {
         const [endpoint, data] = variables as [string, unknown]
         return ApiClient.getInstance()

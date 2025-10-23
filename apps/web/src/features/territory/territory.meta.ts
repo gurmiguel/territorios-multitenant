@@ -3,6 +3,7 @@ import { cache } from 'react'
 
 import { Territory } from './types'
 import { ServerApiClient } from '../api/api.server'
+import { getTenant } from '../api/utils.server'
 
 export async function generateMetadata({ params }: { params: Promise<{ number: string }> }) {
   const { number } = await params
@@ -16,8 +17,22 @@ export async function generateMetadata({ params }: { params: Promise<{ number: s
   } satisfies Metadata
 }
 
-const fetchTerritory = cache(async (number: string) => {
+const fetchTerritory = cache(async (number: string): Promise<Territory> => {
+  if (number === 'offline') {
+    return {
+      id: -1,
+      color: '#ffffff',
+      number,
+      streets: [],
+      hidden: false,
+      imageUrl: null,
+      map: null,
+    }
+  }
+
   const territory = await ServerApiClient.getInstance().query<Territory>(`/territories/${number}`, {
+    credentials: 'omit',
+    headers: { 'X-Tenant-ID': await getTenant() },
     next: {
       revalidate: 86400, // 1 day
     },

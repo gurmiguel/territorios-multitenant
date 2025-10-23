@@ -1,13 +1,16 @@
 import './globals.css'
 
 import { Toaster } from '@repo/ui/components/ui/sonner'
+import { Metadata } from 'next'
 
 import ZodProvider from '~/features/adapters/zod-provider'
+import { ServerApiClient } from '~/features/api/api.server'
 import { QueryProvider } from '~/features/api/query-provider'
 import { getTenant } from '~/features/api/utils.server'
 import { AuthProvider } from '~/features/auth/auth.context'
 import { HeaderProvider } from '~/features/header/context'
 import { Header } from '~/features/header/header'
+import { Congregation } from '~/features/territory/types'
 import { ThemeProvider } from '~/features/theme/theme.provider'
 
 export default function RootLayout({
@@ -17,9 +20,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-BR" suppressHydrationWarning>
-      <head>
-        <link rel="manifest" href="/manifest.webmanifest" />
-      </head>
+      <head/>
       <body>
         <ThemeProvider>
           <AuthProvider>
@@ -41,20 +42,24 @@ export default function RootLayout({
   )
 }
 
-export async function generateMetadata() {
-  const response = await fetch('http://localhost:3333/congregations', {
-    headers: {
-      'X-Tenant-Id': await getTenant(),
-    },
+export async function generateMetadata(): Promise<Metadata> {
+  const congregation = await ServerApiClient.getInstance().query<Congregation>('/congregations', {
+    headers: { 'X-Tenant-ID': await getTenant() },
+    credentials: 'omit',
   })
-  const data = await response.json()
 
-  const title = `Congregação ${data.name}`
+  const title = `Congregação ${congregation.name}`
 
   return {
     title: {
       template: `%s | ${title}`,
       default: `${title}`,
     },
+    appleWebApp: {
+      capable: true,
+      statusBarStyle: 'default',
+      title: `Territórios ${congregation.name}`,
+    },
+    manifest: '/manifest.webmanifest',
   }
 }

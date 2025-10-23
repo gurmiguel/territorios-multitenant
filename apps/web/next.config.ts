@@ -1,4 +1,15 @@
+import withSerwistInit from '@serwist/next'
+
 import type { NextConfig } from 'next'
+
+const withSerwist = withSerwistInit({
+  swSrc: 'src/app/sw.ts',
+  swDest: 'public/sw.js',
+  cacheOnNavigation: true,
+  additionalPrecacheEntries: [{ url: '/territorios/offline' }],
+  register: false,
+  disable: process.env.NODE_ENV !== 'production',
+})
 
 const nextConfig: NextConfig = {
   experimental: {
@@ -11,6 +22,14 @@ const nextConfig: NextConfig = {
         as: '*.js',
       },
     },
+  },
+  webpack(config) {
+    config.module.rules.push({
+      test: /\.svg$/i,
+      use: ['@svgr/webpack'],
+    })
+
+    return config
   },
   images: {
     remotePatterns: [
@@ -33,4 +52,4 @@ const nextConfig: NextConfig = {
   },
 }
 
-export default nextConfig
+export default withSerwist(nextConfig)

@@ -5,12 +5,14 @@ export interface User {
 
 export type ActionResponse = null | {
   success: true
+  data: { access_token: string, refresh_token: string }
   error?: never
   errorType?: never
   persist?: never
 } | {
   success?: false
   error: unknown
+  data?: never
   errorType: AuthErrorType
   persist: {
     email?: string

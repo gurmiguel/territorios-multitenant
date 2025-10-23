@@ -26,12 +26,13 @@ import { EditImageDialog } from './dialogs/edit-image.dialog'
 export default function TerritoryPage() {
   const queryClient = useQueryClient()
 
-  const { number } = useParams()
+  const { number = 'offline' } = useParams()
 
   const { can } = useAuth()
 
   const { data: territory, isLoading } = useQuery<Territory>({
     queryKey: ['territories', String(number)],
+    enabled: number !== 'offline',
   })
 
   useEventStream(`territories/${territory?.id}/updates`, {

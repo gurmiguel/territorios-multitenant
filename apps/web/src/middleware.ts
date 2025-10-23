@@ -1,14 +1,15 @@
-import { decodeJwt } from 'jose'
 import { cookies } from 'next/headers'
 import { NextRequest, NextResponse } from 'next/server'
 
 import { REDIRECT_AFTER_AUTH, REFRESH_TOKEN_COOKIE_NAME } from '~/features/auth/constants'
 
+import { tryDecodeJwt } from './features/auth/token'
+
 export async function middleware(request: NextRequest) {
   const cookieStore = await cookies()
   const token = cookieStore.get(REFRESH_TOKEN_COOKIE_NAME)?.value
 
-  const isTokenValid = !!token && decodeJwt(token).exp! >= Date.now() / 1000
+  const isTokenValid = !!token && (tryDecodeJwt(token)?.exp ?? -1) >= Date.now() / 1000
 
   if (request.nextUrl.pathname.startsWith('/login')) {
     if (isTokenValid) {
@@ -27,6 +28,6 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    '/((?!api|logout|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt|manifest.webmanifest|.well-known).*)',
+    '/((?!api|logout|offline|assets|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt|manifest.webmanifest|.well-known|sw.*.js).*)',
   ],
 }

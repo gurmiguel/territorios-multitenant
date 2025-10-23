@@ -57,10 +57,15 @@ export class ApiClient extends ApiClientBase {
       this.deferredAccessToken.reject()
       this.deferredAccessToken.reset()
     }
-    Cookies.set(REFRESH_TOKEN_COOKIE_NAME, refreshToken, this.refreshTokenCookieSharedOptions)
+    if (refreshToken)
+      Cookies.set(REFRESH_TOKEN_COOKIE_NAME, refreshToken, this.refreshTokenCookieSharedOptions)
   }
 
   protected async clearAuthCookies() {
     Cookies.remove(REFRESH_TOKEN_COOKIE_NAME)
+  }
+
+  protected shouldRefreshToken() {
+    return navigator.onLine === true
   }
 }

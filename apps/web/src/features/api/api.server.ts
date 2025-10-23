@@ -1,4 +1,3 @@
-import { delay } from '@repo/utils/delay'
 import { cookies } from 'next/headers'
 import parseDuration from 'parse-duration'
 
@@ -21,8 +20,6 @@ export class ServerApiClient extends ApiClientBase {
   }
 
   public async authenticate(accessToken: string, refreshToken?: string) {
-    await delay(100)
-
     this.setAuthCookies(refreshToken, accessToken)
   }
 
@@ -50,8 +47,11 @@ export class ServerApiClient extends ApiClientBase {
         cookieStore.set(REFRESH_TOKEN_COOKIE_NAME, refreshToken, this.refreshTokenCookieSharedOptions)
       else if (cookieStore.has(REFRESH_TOKEN_COOKIE_NAME))
         cookieStore.delete(REFRESH_TOKEN_COOKIE_NAME)
-    } catch {
+    } catch (e) {
       // ignore not being able to set cookies in RSC
+      if ((e as Error).message.startsWith('Cookies can only be modified in a Server Action or Route Handler')) return
+
+      console.error('Error setting cookies:', e)
     }
   }
 

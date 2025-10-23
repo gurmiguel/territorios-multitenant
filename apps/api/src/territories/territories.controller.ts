@@ -4,6 +4,7 @@ import { Action, Area } from '@repo/utils/permissions/index'
 import { omit } from 'lodash-es'
 import { filter, map, merge } from 'rxjs'
 
+import { AllowAnonymous } from '~/auth/decorators/allow-anonymous.decorator'
 import { Allow } from '~/auth/decorators/allow.decorator'
 import { fromTypedEvent } from '~/utils/event'
 
@@ -34,7 +35,7 @@ export class TerritoriesController {
     }
   }
 
-  @Allow([Area.TERRITORIES, Action.READ])
+  @AllowAnonymous()
   @Get(':number')
   async get(@Param('number') number: string) {
     const data = await this.territoriesService.getTerritory(number)

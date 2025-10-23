@@ -1,5 +1,6 @@
 'use server'
 
+import { isRedirectError } from 'next/dist/client/components/redirect-error'
 import { redirect } from 'next/navigation'
 
 import { ActionResponse, AuthErrorType, AuthResponse } from './types'
@@ -28,16 +29,18 @@ export async function emailLogin(prevState: ActionResponse, data: FormData): Pro
     const { access_token, refresh_token } = await api.mutate<AuthResponse>(endpoint, { ...payload, tenant })
 
     await api.authenticate(access_token, refresh_token)
+
+    redirect('/')
   } catch (e) {
-    console.error('Error during authentication:', e)
+    if (isRedirectError(e)) throw e
+
     if (e instanceof ApiError && e.status === 401) {
       return { success: false, errorType: AuthErrorType.UserNotExists, error: AuthErrorType.UserNotExists, persist: { email, name } }
     }
 
-    return { errorType: AuthErrorType.Unknown, ...prevState ?? {}, success: false, error: (e as Error).message, persist: { email: email, name } }
+    const keptState = prevState?.success === false ? prevState : null
+    return { errorType: AuthErrorType.Unknown, ...keptState ?? {}, success: false, error: (e as Error).message, persist: { email: email, name } }
   }
-
-  redirect('/')
 }
 
 export async function initGoogleSignIn(returnUrl: string) {
