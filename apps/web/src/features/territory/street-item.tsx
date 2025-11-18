@@ -47,7 +47,11 @@ export function StreetItem({ territoryId, territoryNumber, street }: Props) {
         <AccordionContent>
           {houses.map(house => (
             <div key={house.id}>
-              <HouseItem house={house} territoryId={territoryId} territoryNumber={territoryNumber} streetId={street.id} />
+              <HouseItem house={house}
+                territoryId={territoryId}
+                territoryNumber={territoryNumber}
+                streetId={street.id}
+              />
               <span className="block h-[0.5px] w-95/100 bg-gray-300/80 mx-auto" />
             </div>
           ))}

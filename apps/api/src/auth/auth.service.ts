@@ -1,6 +1,6 @@
 import { promisify } from 'node:util'
 
-import { BadRequestException, Injectable, Logger, UnauthorizedException } from '@nestjs/common'
+import { BadRequestException, ForbiddenException, HttpException, Injectable, Logger, UnauthorizedException } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { JwtService } from '@nestjs/jwt'
 import { Action, Area, Permissions, Role } from '@repo/utils/permissions/index'
@@ -109,9 +109,12 @@ export class AuthService {
   private async validateByToken<T extends AccessTokenPayload | RefreshTokenPayload>(tokenType: T['type'], token: string) {
     try {
       const tokenPayload = await this.jwtService.verifyAsync<T>(token)
+        .catch(error => {
+          throw new ForbiddenException('Invalid token', { cause: error, description: (error as Error).message })
+        })
 
       if (tokenPayload.type !== tokenType)
-        throw new UnauthorizedException(`Token is not a valid ${tokenType}`)
+        throw new ForbiddenException(`Token is not a valid ${tokenType}`)
 
       const user = await this.usersService.find({
         where: { id: tokenPayload.sub, congregation: { slug: tokenPayload.iss } },
@@ -124,7 +127,7 @@ export class AuthService {
       return this.buildUser(user)
     } catch (e) {
       this.logger.debug(e instanceof Error ? `${e.name}: ${e.message}` : e)
-      throw e instanceof UnauthorizedException ? e : new UnauthorizedException()
+      throw e instanceof HttpException ? e : new UnauthorizedException()
     }
   }
 

@@ -37,7 +37,9 @@ export default function AuthLayout({ children }: PropsWithChildren) {
     }
 
     ApiClient.getInstance().getAccessToken()
-      .then(data => login(data.accessToken, data.user))
+      .then(data => {
+        login(data.accessToken, data.user)
+      })
       .then(async () => {
         if (!swRegistered && 'serviceWorker' in navigator && window.serwist !== undefined) {
           swRegistered = true
@@ -68,7 +70,9 @@ export default function AuthLayout({ children }: PropsWithChildren) {
       .catch(err => {
         if (!isReady) return
         console.error('Could not login user', err)
-        if (navigator.onLine && !(err instanceof ApiError && err.status === 499)) {
+        if (!navigator.onLine || err instanceof ApiError && err.status === 499) {
+          setLoading(false)
+        } else {
           logout()
           router.push('/logout')
         }

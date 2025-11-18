@@ -19,8 +19,10 @@ export async function patchCache<T = any>(key: string, handler: (cached: T | nul
     .catch(() => null)
   const response = new Response(JSON.stringify(handler(cached ?? null)), {
     headers: { 'Content-Type': 'application/json' },
+    statusText: 'OK',
     status: 200,
   })
+  console.log('cache updated', { key, response: response.clone() })
   await cache.put(key, response)
 }
 

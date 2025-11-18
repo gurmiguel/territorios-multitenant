@@ -8,6 +8,7 @@ import { formatPhoneNumber } from '@repo/utils/phone'
 import { useQueryClient } from '@tanstack/react-query'
 import { FormEvent, useState } from 'react'
 
+import { ApiError } from '~/features/api/api.base'
 import { ApiClient } from '~/features/api/api.client'
 import { useAuth } from '~/features/auth/auth.context'
 
@@ -60,6 +61,13 @@ export function AddHistoryDialog({ open, onClose, context, onOpenDelete, onOpenE
       }
 
       onClose()
+    } catch (err) {
+      if (err instanceof ApiError && err.status === 499)
+        toast.error('Erro de conexão. Tente novamente mais tarde.')
+      else {
+        toast.error('Ocorreu um erro ao adicionar o registro. Por favor, tente novamente.')
+        console.error(err)
+      }
     } finally {
       setIsSubmitting(false)
     }

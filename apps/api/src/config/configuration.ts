@@ -1,7 +1,9 @@
 import '@nestjs/config'
 
 function configuration() {
-  const host = process.env.HOST ?? 'http://localhost'
+  const host = process.env.HOST ?? (process.env.HTTPS
+    ? 'https://localhost'
+    : 'http://localhost')
   const port = parseInt(process.env.PORT ?? '3333', 10)
   return {
     host,

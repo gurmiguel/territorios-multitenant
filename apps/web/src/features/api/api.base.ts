@@ -36,6 +36,11 @@ export abstract class ApiClientBase {
     }
 
     let response = await fetch(this.buildUrl(url), options)
+      .catch(error => {
+        return Response.json({
+          error,
+        }, { status: 499, statusText: 'Client Closed Request' })
+      })
 
     if (!skipAuth && response.status === 403 && this.refreshToken && this.shouldRefreshToken()) {
       try {
@@ -106,11 +111,15 @@ export abstract class ApiClientBase {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({ refresh_token: this.refreshToken }),
-    }).catch(err => {
-      return Response.json({ error: err }, { status: 499, statusText: 'Client Closed Request' })
+    }).catch(error => {
+      return Response.json({
+        error,
+        access_token: 'offline',
+        refresh_token: this.refreshToken,
+      }, { status: 499, statusText: 'Client Closed Request' })
     })
 
-    if (!response.ok) {
+    if (!response.ok && response.status !== 499) {
       throw new ApiError(response.status, response.statusText, { cause: await response.json() })
     }
 

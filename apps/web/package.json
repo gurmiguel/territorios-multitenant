@@ -4,9 +4,11 @@
   "private": true,
   "scripts": {
     "dev": "start http://localhost:3000 && next dev --turbopack",
+    "dev:https": "start https://localhost:3000 && next dev --experimental-https",
     "build": "next build",
-    "start": "next start",
-    "lint": "next lint"
+    "start": "next start -p 3001",
+    "lint": "next lint",
+    "proxy-ssl": "local-ssl-proxy --source 443 --target 3001 --key certificates/_wildcard.territorios.app+1-key.pem --cert certificates/_wildcard.territorios.app+1.pem"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.1",
@@ -43,6 +45,8 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "babel-plugin-react-compiler": "^19.1.0-rc.2",
+    "cross-env": "^10.1.0",
+    "local-ssl-proxy": "*",
     "serwist": "^9.2.1",
     "typescript": "5.8.2"
   },

@@ -17,7 +17,6 @@ const serwist = new Serwist({
   clientsClaim: true,
   navigationPreload: true,
   runtimeCaching: [
-    ...defaultCache,
     {
       matcher: ({ request, sameOrigin }) =>
         sameOrigin
@@ -104,6 +103,7 @@ const serwist = new Serwist({
         ],
       }),
     },
+    ...defaultCache,
   ],
   fallbacks: {
     entries: [

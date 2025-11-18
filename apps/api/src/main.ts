@@ -1,3 +1,6 @@
+import * as fs from 'node:fs/promises'
+import path from 'node:path'
+
 import { ConfigService } from '@nestjs/config'
 import { NestFactory } from '@nestjs/core'
 import { ExpressAdapter, NestExpressApplication } from '@nestjs/platform-express'
@@ -8,10 +11,15 @@ import { AppModule } from './app.module'
 import { Configuration } from './config/configuration'
 
 async function bootstrap() {
+  const httpsOptions = process.env.HTTPS ? {
+    key: await fs.readFile(path.join(__dirname, '../certificates/localhost-key.pem')),
+    cert: await fs.readFile(path.join(__dirname, '../certificates/localhost.pem')),
+  } : undefined
+
   const app = await NestFactory.create<NestExpressApplication>(
     AppModule,
     new ExpressAdapter(),
-    { abortOnError: false },
+    { abortOnError: false, httpsOptions },
   )
 
   const config = app.get<ConfigService<Configuration, true>>(ConfigService)

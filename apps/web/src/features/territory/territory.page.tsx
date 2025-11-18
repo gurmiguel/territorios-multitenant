@@ -6,7 +6,6 @@ import { MapIcon, PencilIcon, PlusIcon } from '@repo/ui/components/ui/icons'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { subMonths } from 'date-fns'
 import Image from 'next/image'
-import { useParams } from 'next/navigation'
 import { useMemo, useState } from 'react'
 
 import Loading from '~/app/loading'
@@ -22,11 +21,12 @@ import { AddStreetDialog } from './dialogs/add-street.dialog'
 import { MapLinkDialog } from './dialogs/map-link.dialog'
 import { useAuth } from '../auth/auth.context'
 import { EditImageDialog } from './dialogs/edit-image.dialog'
+import { useParams } from '../hooks/use-params'
 
 export default function TerritoryPage() {
   const queryClient = useQueryClient()
 
-  const { number = 'offline' } = useParams()
+  const number = useParams(/territorios\/(\d+)/, 'number') ?? 'offline'
 
   const { can } = useAuth()
 
@@ -111,7 +111,13 @@ export default function TerritoryPage() {
           </div>
 
           <Accordion type="single" className="w-full" collapsible>
-            {territory.streets.map(street => <StreetItem key={street.id} territoryId={territory.id} territoryNumber={territory.number} street={street} />)}
+            {territory.streets.map(street => (
+              <StreetItem key={street.id}
+                territoryId={territory.id}
+                territoryNumber={territory.number}
+                street={street}
+              />
+            ))}
 
             {can('streets:write') && (
               <button

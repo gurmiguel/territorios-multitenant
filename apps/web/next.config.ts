@@ -8,7 +8,7 @@ const withSerwist = withSerwistInit({
   cacheOnNavigation: true,
   additionalPrecacheEntries: [{ url: '/territorios/offline' }],
   register: false,
-  disable: process.env.NODE_ENV !== 'production',
+  disable: process.env.NODE_ENV !== 'production' && !process.argv.includes('--experimental-https'),
 })
 
 const nextConfig: NextConfig = {
