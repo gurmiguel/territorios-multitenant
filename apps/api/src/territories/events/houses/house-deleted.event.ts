@@ -1,4 +1,4 @@
-import { House, Territory } from '~/generated/prisma'
+import { House, Territory } from '~/generated/prisma/client'
 import { EventData, EventRecord } from '~/utils/event'
 
 export class HouseDeletedEvent extends EventRecord<HouseDeletedEvent> implements EventData {

@@ -1,4 +1,4 @@
-import { Street, Territory } from '~/generated/prisma'
+import { Street, Territory } from '~/generated/prisma/client'
 import { EventData, EventRecord } from '~/utils/event'
 
 export class StreetCreatedEvent extends EventRecord<StreetCreatedEvent> implements EventData {

@@ -3,7 +3,7 @@ import { Reflector } from '@nestjs/core'
 import { tap } from 'rxjs/operators'
 
 import { CongregationsService } from '~/congregations/congregations.service'
-import { Congregation } from '~/generated/prisma'
+import { Congregation } from '~/generated/prisma/client'
 
 import { TenantHolderService } from './tenant-holder.service'
 import { TenantsService } from './tenants.service'

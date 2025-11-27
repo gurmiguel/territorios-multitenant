@@ -1,6 +1,6 @@
 import { Global, Injectable, Scope } from '@nestjs/common'
 
-import { Congregation } from '~/generated/prisma'
+import { Congregation } from '~/generated/prisma/client'
 
 @Global()
 @Injectable({ scope: Scope.REQUEST })

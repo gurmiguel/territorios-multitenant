@@ -1,4 +1,4 @@
-import { Territory } from '~/generated/prisma'
+import { Territory } from '~/generated/prisma/client'
 import { EventData, EventRecord } from '~/utils/event'
 
 export class TerritoryDeletedEvent extends EventRecord<TerritoryDeletedEvent> implements EventData {

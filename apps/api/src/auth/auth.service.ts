@@ -8,7 +8,7 @@ import bcrypt from 'bcrypt'
 import z from 'zod'
 
 import { Configuration } from '~/config/configuration'
-import { Congregation, User as PrismaUser } from '~/generated/prisma'
+import { Congregation, User as PrismaUser } from '~/generated/prisma/client'
 import { UsersService } from '~/users/users.service'
 
 @Injectable()

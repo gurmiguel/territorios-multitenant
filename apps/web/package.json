@@ -47,7 +47,7 @@
     "cross-env": "^10.1.0",
     "local-ssl-proxy": "*",
     "serwist": "^9.2.1",
-    "typescript": "5.8.2"
+    "typescript": "~"
   },
   "engines": {
     "node": ">=22"

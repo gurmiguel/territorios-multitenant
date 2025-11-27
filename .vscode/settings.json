@@ -5,8 +5,5 @@
     "editor.formatOnSave": true
   },
   "typescript.tsdk": "node_modules/typescript/lib",
-  "tailwindCSS.experimental.configFile": "packages/ui/src/globals.css",
-  "terminal.integrated.env.windows": {
-    "GIT_EDITOR": "abacusai --wait"
-  }
+  "tailwindCSS.experimental.configFile": "packages/ui/src/globals.css"
 }

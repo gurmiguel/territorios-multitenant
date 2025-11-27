@@ -3,7 +3,7 @@ import { Injectable, Logger } from '@nestjs/common'
 
 import { CongregationsService } from '~/congregations/congregations.service'
 import { PrismaService } from '~/db/prisma.service'
-import { Asset, AssetType, User } from '~/generated/prisma'
+import { Asset, AssetType, User } from '~/generated/prisma/client'
 import { AssetUpdateArgs } from '~/generated/prisma/models'
 import { TenantHolderService } from '~/tenants/tenant-holder.service'
 

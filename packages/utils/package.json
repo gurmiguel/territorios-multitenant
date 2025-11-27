@@ -16,7 +16,7 @@
   "devDependencies": {
     "@repo/eslint-config": "*",
     "@repo/typescript-config": "*",
-    "typescript": "5.8.2"
+    "typescript": "~"
   },
   "dependencies": {
     "zod": "^4.0.14"

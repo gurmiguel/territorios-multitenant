@@ -10,7 +10,7 @@ import { z } from 'zod'
 import { Configuration } from '~/config/configuration'
 import { PrismaService } from '~/db/prisma.service'
 import { ValidationException } from '~/exceptions/application-exception/validation-exception'
-import { House, StatusUpdate, Street, Territory } from '~/generated/prisma'
+import { House, StatusUpdate, Street, Territory } from '~/generated/prisma/client'
 import { getTerritoriesWithPendingHouses } from '~/generated/prisma/sql'
 import { TenantHolderService } from '~/tenants/tenant-holder.service'
 
