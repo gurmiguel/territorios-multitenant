@@ -5,6 +5,7 @@ import { JwtModule } from '@nestjs/jwt'
 import { PassportModule } from '@nestjs/passport'
 
 import { Configuration } from '~/config/configuration'
+import { CongregationsModule } from '~/congregations/congregations.module'
 import { UsersModule } from '~/users/users.module'
 
 import { AuthController } from './auth.controller'
@@ -19,6 +20,7 @@ import { RefreshTokenStrategy } from './strategies/refresh-token.strategy'
 @Module({
   imports: [
     UsersModule,
+    CongregationsModule,
     PassportModule,
     JwtModule.registerAsync({
       inject: [ConfigService],

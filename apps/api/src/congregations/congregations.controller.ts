@@ -15,9 +15,9 @@ export class CongregationsController {
   @AllowAnonymous()
   @Get()
   async get(@Request() req: Application.Request) {
-    const tenantId = this.tenantsService.getTenantIdFromRequest(req) ?? null
+    const tenantHost = this.tenantsService.getTenantIdFromRequest(req) ?? null
 
-    const congregation = tenantId ? await this.congregationsService.find({ where: { slug: tenantId } }) : null
+    const congregation = tenantHost ? await this.congregationsService.find({ where: { domains: { has: tenantHost} } }) : null
 
     if (!congregation)
       throw new NotFoundException('Congregation not found')

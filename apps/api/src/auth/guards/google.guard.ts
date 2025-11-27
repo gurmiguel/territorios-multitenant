@@ -25,7 +25,7 @@ export class GoogleAuthGuard extends AuthGuard('google') {
     const response = context.switchToHttp().getResponse<Application.Response>()
     const { redirectUrl } = request.query
 
-    const tenant = this.tenantsService.getTenantIdFromRequest(request)
+    const tenantHost = this.tenantsService.getTenantIdFromRequest(request)
 
     const sessionKey = (this.strategy as any)._key
 
@@ -35,11 +35,11 @@ export class GoogleAuthGuard extends AuthGuard('google') {
     if (!['state', 'code', 'scope'].every(k => k in request.query)) {
       if (!redirectUrl)
         throw new ForbiddenException('redirectUrl parameter was not provided')
-      if (!tenant)
+      if (!tenantHost)
         throw new MissingTenantException()
 
       session.redirectUrl = redirectUrl
-      session.tenant = tenant
+      session.tenant = tenantHost
     }
 
     const activate = (await super.canActivate(context)) as boolean

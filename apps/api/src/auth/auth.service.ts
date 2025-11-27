@@ -8,6 +8,7 @@ import bcrypt from 'bcrypt'
 import z from 'zod'
 
 import { Configuration } from '~/config/configuration'
+import { CongregationsService } from '~/congregations/congregations.service'
 import { Congregation, User as PrismaUser } from '~/generated/prisma/client'
 import { UsersService } from '~/users/users.service'
 
@@ -16,19 +17,20 @@ export class AuthService {
   protected readonly logger = new Logger(AuthService.name)
 
   constructor(
+    protected readonly congregationsService: CongregationsService,
     protected readonly usersService: UsersService,
     protected readonly jwtService: JwtService,
     private readonly config: ConfigService<Configuration, true>,
   ) {}
 
-  async validateUserLocal(tenantId: string, username: string, password: string): Promise<User | null> {
+  async validateUserLocal(tenantHost: string, username: string, password: string): Promise<User | null> {
     const { success: isValid } = z.object({ username: z.email().nonempty(), password: z.string() }).safeParse({ username, password })
 
     if (!isValid) return null
 
     const user = await this.usersService.find({
       where: {
-        email: username, congregation: { slug: tenantId },
+        email: username, congregation: { domains: {has: tenantHost} },
       },
       include: { congregation: true },
     })
@@ -39,10 +41,14 @@ export class AuthService {
     return this.buildUser(user)
   }
 
-  async validateUserByProvider(tenantId: string, provider: string, uid: string, profile: Pick<User, 'email' | 'name'>): Promise<User | null> {
+  async validateUserByProvider(tenantHost: string, provider: string, uid: string, profile: Pick<User, 'email' | 'name'>): Promise<User | null> {
+    const tenant = await this.congregationsService.find({ where: { domains: { has: tenantHost } } })
+
+    if (!tenant) throw new Error(`Invalid Tenant: ${tenantHost}`)
+
     let user = await this.usersService.find({
       where: {
-        congregation: { slug: tenantId },
+        congregation: { id: tenant.id },
         email: profile.email,
       },
       include: {
@@ -61,14 +67,14 @@ export class AuthService {
     }
 
     if (!user) {
-      const usersCount = await this.usersService.countUsers({ where: { congregation: { slug: tenantId } } })
+      const usersCount = await this.usersService.countUsers({ where: { congregation: { id: tenant.id } } })
       const isFirstUser = usersCount === 0
 
       user = await this.usersService.create({
         data: {
           name: profile.name,
           email: profile.email,
-          congregation: { connect: { slug: tenantId } },
+          congregation: { connect: { id: tenant.id } },
           permissions: isFirstUser
             ? Permissions.getAllPermissions()
             : Permissions.getFor({
@@ -117,7 +123,7 @@ export class AuthService {
         throw new ForbiddenException(`Token is not a valid ${tokenType}`)
 
       const user = await this.usersService.find({
-        where: { id: tokenPayload.sub, congregation: { slug: tokenPayload.iss } },
+        where: { id: tokenPayload.sub, congregation: { domains: { hasSome: String(tokenPayload.iss).split(';') } } },
         include: { congregation: true },
       })
 
@@ -134,7 +140,7 @@ export class AuthService {
   async signin(user: User) {
     const basePayload: TokenPayload = {
       sub: user.id,
-      iss: user.congregation.slug,
+      iss: user.congregation.domains.join(';'),
     }
     const payload = {
       username: user.email,
@@ -215,7 +221,7 @@ type User = Express.User
 
 interface TokenPayload {
   sub: User['id']
-  iss: User['congregation']['slug']
+  iss: string
 }
 
 interface AccessTokenPayload extends TokenPayload {

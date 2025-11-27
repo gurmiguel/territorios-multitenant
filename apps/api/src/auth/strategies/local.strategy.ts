@@ -21,12 +21,14 @@ export class LocalStrategy extends PassportStrategy(Strategy, 'local') {
 
   async validate(req: Application.Request) {
     const { username } = req.body
-    const tenantId = this.tenantsService.getTenantIdFromRequest(req)
+    let tenantHost = req.body.tenant
 
-    if (!tenantId)
+    tenantHost ??= this.tenantsService.getTenantIdFromRequest(req)
+
+    if (!tenantHost)
       throw new MissingTenantException()
 
-    const user = await this.authService.validateUserLocal(tenantId, username, this.config.get('auth', { infer: true }).defaultPassword)
+    const user = await this.authService.validateUserLocal(tenantHost, username, this.config.get('auth', { infer: true }).defaultPassword)
 
     if (!user)
       throw new UnauthorizedException()

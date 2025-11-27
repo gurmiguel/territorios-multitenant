@@ -16,10 +16,11 @@ export async function proxy(request: NextRequest) {
       return NextResponse.redirect(new URL('/', request.url))
     }
   } else if (!isTokenValid) {
-    cookieStore.set(REDIRECT_AFTER_AUTH, request.nextUrl.pathname + request.nextUrl.search, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-    })
+    if (request.nextUrl.pathname !== '/')
+      cookieStore.set(REDIRECT_AFTER_AUTH, request.nextUrl.pathname + request.nextUrl.search, {
+        httpOnly: false,
+        secure: false,
+      })
     return NextResponse.redirect(new URL('/login', request.url))
   }
 

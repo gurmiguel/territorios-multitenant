@@ -32,7 +32,7 @@ const fetchTerritory = cache(async (number: string): Promise<Territory> => {
 
   const territory = await ServerApiClient.getInstance().query<Territory>(`/territories/${number}`, {
     credentials: 'omit',
-    headers: { 'X-Tenant-ID': await getTenant() },
+    headers: { 'X-Forwarded-Host': await getTenant() },
     next: {
       revalidate: 86400, // 1 day
     },

@@ -16,7 +16,7 @@ export default class TerritoryEvents implements EventsHandler<TerritoryEvents> {
       [
         'territories',
         this.queryClient.setQueryData<{items: Partial<Territory>[]}>(['territories'], produce(response => {
-          const $territory = response?.items?.find(t => t.id === data.territoryId)
+          const $territory = response?.items?.find(t => t.id === data.territory.id)
           if (!$territory) return
 
           $territory.color = data.territory.color ?? $territory.color
@@ -25,8 +25,8 @@ export default class TerritoryEvents implements EventsHandler<TerritoryEvents> {
         })),
       ] as const,
       [
-        `territories/${data.territoryNumber}`,
-        this.queryClient.setQueryData<Partial<Territory>>(['territories', data.territoryNumber], territory => {
+        `territories/${data.territory.number}`,
+        this.queryClient.setQueryData<Partial<Territory>>(['territories', data.territory.number], territory => {
           return {
             ...territory,
             ...data.territory,
@@ -127,7 +127,7 @@ export default class TerritoryEvents implements EventsHandler<TerritoryEvents> {
       `territories/${data.territoryNumber}`,
       this.queryClient.setQueryData<Territory>(['territories', data.territoryNumber], produce(territory => {
         const $street = territory?.streets
-          .find(s => s.id === data.streetId)
+          .find(s => s.id === data.house.streetId)
 
         if (!$street) return
 

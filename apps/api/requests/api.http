@@ -1,12 +1,12 @@
 @baseUrl = http://localhost:3333
-@tenant = alemanha
+@tenant = alemanha.territorios.app
 @multipartBoundary = ------WebkitBoundaryBFBB8196D046
 
 ### Metadata
 
 # @name getTenant
 GET {{baseUrl}}/congregations
-X-Tenant-Id: {{tenant}}
+X-Forwarded-Host: {{tenant}}
 
 ### AUTH
 

@@ -2,11 +2,9 @@ import { getTenantFromHost } from '../api/utils'
 import { getTenant } from '../api/utils.server'
 
 export async function getMapUrl() {
-  const response = await fetch('http://localhost:3333/congregations', {
+  const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL!}/congregations`, {
     headers: {
-      'X-Tenant-Id': process.env.NODE_ENV === 'production'
-        ? typeof window === 'undefined' ? await getTenant() : getTenantFromHost(window.location.host)
-        : 'alemanha',
+      'X-Forwarded-Host': typeof window === 'undefined' ? await getTenant() : getTenantFromHost(window.location.host),
     },
   })
   const data = await response.json()

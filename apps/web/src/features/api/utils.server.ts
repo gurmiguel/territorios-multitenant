@@ -9,8 +9,6 @@ export async function getTenant() {
 
   if (process.env.NEXT_PUBLIC_STATIC_TENANT) return process.env.NEXT_PUBLIC_STATIC_TENANT
 
-  if (process.env.NODE_ENV !== 'production') return 'alemanha'
-
   const host = headersList.get('host') ?? ''
 
   return getTenantFromHost(host)

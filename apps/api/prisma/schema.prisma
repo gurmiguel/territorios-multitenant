@@ -19,8 +19,9 @@ datasource db {
 model Congregation {
   id        Int      @id @default(autoincrement())
   name      String
-  slug      String   @unique @default("")
+  domains   String[] @default([])
   createdAt DateTime @default(now())
+  publicId  String   @unique @default(ulid())
 
   users       User[]
   territories Territory[]

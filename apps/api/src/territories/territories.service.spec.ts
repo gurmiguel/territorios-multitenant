@@ -1,10 +1,9 @@
 import { REQUEST } from '@nestjs/core'
 import { Test, TestingModule } from '@nestjs/testing'
+import { Permissions, Role } from '@repo/utils/permissions/index'
 import parseDuration from 'parse-duration'
 
 import { AppModule } from '~/app.module'
-import { Permissions } from '@repo/utils/permissions/index'
-import { Role } from '@repo/utils/permissions/index'
 import configuration from '~/config/configuration'
 import { PrismaService } from '~/db/prisma.service'
 import { ValidationException } from '~/exceptions/application-exception/validation-exception'
@@ -21,7 +20,7 @@ const TEST_USER = {
     id: 1,
     name: 'Test Cong',
     createdAt: new Date(),
-    slug: 'test-cong',
+    domains: ['test-cong.test.app'],
   },
   congregationId: 1,
   createdAt: new Date(),

@@ -1,4 +1,4 @@
-export interface Congregation { id: number, name: string, slug: string, createdAt: Date, map?: { id: string, publicUrl: string } }
+export interface Congregation { id: number, name: string, domains: string[], createdAt: Date, map?: { id: string, publicUrl: string } }
 export interface Territory { id: number, number: string, color: string, hidden: boolean, imageUrl: string | null, streets: Street[], map: string | null }
 export interface TerritoryListItem extends Omit<Territory, 'street'> { pendingHouses: number }
 export interface Street { id: number, name: string, houses: House[] }
@@ -10,9 +10,7 @@ export interface TerritoryCreatedEvent {
 }
 
 export interface TerritoryUpdatedEvent {
-  territoryId: number
-  territoryNumber: string
-  territory: Partial<Territory>
+  territory: Partial<Territory> & Required<Pick<Territory, 'id' | 'number'>>
 }
 
 export interface TerritoryDeletedEvent {
@@ -43,8 +41,7 @@ export interface HouseCreatedEvent {
 
 export interface HouseUpdatedEvent {
   territoryNumber: string
-  streetId: number
-  house: House
+  house: House & { streetId: number }
 }
 
 export interface HouseDeletedEvent {
