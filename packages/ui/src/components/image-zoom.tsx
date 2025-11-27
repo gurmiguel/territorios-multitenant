@@ -1,7 +1,8 @@
 'use client'
 
 import { XIcon, ZoomInIcon, ZoomOutIcon } from 'lucide-react'
-import { MouseEvent, PropsWithChildren, useRef, useState } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
+import { MouseEvent, PropsWithChildren, useCallback, useRef, useState } from 'react'
 import { TransformComponent, TransformWrapper, useControls, useTransformEffect } from 'react-zoom-pan-pinch'
 
 import { Button } from './ui/button'
@@ -11,17 +12,28 @@ interface Props {
 }
 
 export function ImageZoom({ src, children }: PropsWithChildren<Props>) {
-  const [state, setState] = useState<'initial' | 'zoom'>('initial')
+  const router = useRouter()
+  const searchParams = useSearchParams()
+
+  const state = (searchParams.get('state') ?? 'initial') as 'initial' | 'zoom'
+
+  const handleToggleOn = useCallback(() => {
+    router.push('?state=zoom')
+  }, [router])
+
+  const handleToggleOff = useCallback(() => {
+    router.back()
+  }, [router])
 
   return (
     <>
-      <div tabIndex={0} role="button" onClick={() => setState('zoom')}>{children}</div>
+      <div tabIndex={0} role="button" onClick={handleToggleOn}>{children}</div>
 
       {state === 'zoom' && (
         <TransformWrapper>
           <InnerImageZoom
             src={src}
-            onClose={() => setState('initial')}
+            onClose={handleToggleOff}
           />
         </TransformWrapper>
       )}

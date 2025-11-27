@@ -60,7 +60,7 @@ export function TerritoriesPage() {
             />
           ))}
 
-          {can('territories:write') && (
+          {!isLoading && can('territories:write') && (
             <li>
               <button type="button"
                 className={cn([

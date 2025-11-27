@@ -23,7 +23,13 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL('/login', request.url))
   }
 
-  return NextResponse.next()
+  const response = await NextResponse.next()
+
+  if (process.env.NODE_ENV !== 'production') {
+    response.headers.set('x-forwarded-host', 'localhost:3000')
+  }
+
+  return response
 }
 
 export const config = {

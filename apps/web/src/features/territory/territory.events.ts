@@ -110,9 +110,11 @@ export default class TerritoryEvents implements EventsHandler<TerritoryEvents> {
     return [[
       `territories/${data.territoryNumber}`,
       this.queryClient.setQueryData<Territory>(['territories', data.territoryNumber], produce(territory => {
-        const $street = territory?.streets.find(s => s.id === data.streetId)
+        const $street = territory?.streets.find(s => s.id === data.house.streetId)
 
         if (!$street) return
+
+        if ($street.houses.some(h => h.id === data.house.id)) return
 
         $street.houses.push(data.house)
       })),

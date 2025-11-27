@@ -38,8 +38,7 @@ export interface HouseStatusUpdateEvent {
 
 export interface HouseCreatedEvent {
   territoryNumber: string
-  streetId: number
-  house: House
+  house: House & { streetId: number}
 }
 
 export interface HouseUpdatedEvent {

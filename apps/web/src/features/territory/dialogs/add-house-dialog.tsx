@@ -40,7 +40,10 @@ export function AddHouseDialog({ open, onClose, context }: Props) {
 
     eventHandler['house.created']({
       ...context,
-      house,
+      house: {
+        ...house,
+        streetId: context.streetId,
+      },
     })
 
     toast.success('Registro adicionado')
