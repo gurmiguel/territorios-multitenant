@@ -37,6 +37,7 @@ export abstract class ApiClientBase {
 
     let response = await fetch(this.buildUrl(url), options)
       .catch(error => {
+        if (error instanceof Error && error.name === 'AbortError') throw error
         return Response.json({
           error,
         }, { status: 499, statusText: 'Client Closed Request' })

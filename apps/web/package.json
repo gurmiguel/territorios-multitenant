@@ -3,8 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "start http://localhost:3000 && next dev --turbopack -H 0.0.0.0",
-    "dev:https": "start https://localhost:3000 && next dev --experimental-https",
+    "dev": "start http://localhost:3000 && next dev -H 0.0.0.0",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
@@ -20,11 +19,11 @@
     "immer": "^10.1.1",
     "jose": "^6.0.11",
     "js-cookie": "^3.0.5",
-    "next": "15.5.6",
+    "next": "^16.1.0-canary.4",
     "next-themes": "^0.4.6",
     "parse-duration": "^2.1.4",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
     "react-hook-form": "^7.62.0",
     "react-use": "^17.6.0",
     "tailwind-merge": "^3.3.0",
@@ -52,5 +51,10 @@
   },
   "engines": {
     "node": ">=22"
+  },
+  "overrides": {
+    "@serwist/next": {
+      "next": "$next"
+    }
   }
 }

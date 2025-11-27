@@ -5,7 +5,7 @@ import { REDIRECT_AFTER_AUTH, REFRESH_TOKEN_COOKIE_NAME } from '~/features/auth/
 
 import { tryDecodeJwt } from './features/auth/token'
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const cookieStore = await cookies()
   const token = cookieStore.get(REFRESH_TOKEN_COOKIE_NAME)?.value
 

@@ -3,10 +3,11 @@
 import { Accordion } from '@repo/ui/components/ui/accordion'
 import { Button } from '@repo/ui/components/ui/button'
 import { MapIcon, PencilIcon, PlusIcon } from '@repo/ui/components/ui/icons'
+import { formatHouseNumber } from '@repo/utils/house'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { subMonths } from 'date-fns'
 import Image from 'next/image'
-import { useMemo, useState } from 'react'
+import { useEffect, useEffectEvent, useMemo, useState } from 'react'
 
 import Loading from '~/app/loading'
 import territoryImageFallback from '~/assets/territory.png'
@@ -22,6 +23,7 @@ import { MapLinkDialog } from './dialogs/map-link.dialog'
 import { useAuth } from '../auth/auth.context'
 import { EditImageDialog } from './dialogs/edit-image.dialog'
 import { useParams } from '../hooks/use-params'
+import { DontKnockWarningDialog } from './dialogs/dont-knock.dialog'
 
 export default function TerritoryPage() {
   const queryClient = useQueryClient()
@@ -35,12 +37,21 @@ export default function TerritoryPage() {
     enabled: number !== 'offline',
   })
 
+  const dontKnockHouses = useMemo(() => {
+    return territory?.streets.map(street => ({
+      street: street.name,
+      houses: street.houses
+        .filter(house => house.updates?.[0]?.status === 'Fail')
+        .map(formatHouseNumber),
+    })).filter(s => s.houses.length > 0) ?? []
+  }, [territory?.streets])
+
   useEventStream(`territories/${territory?.id}/updates`, {
     handler: new TerritoryEvents(queryClient),
     enabled: !!territory,
   })
 
-  const [openDialog, setOpenDialog] = useState<'add-street' | 'map-link' | 'edit-image' | null>(null)
+  const [openDialog, setOpenDialog] = useState<'add-street' | 'map-link' | 'edit-image' | 'dont-knock' | null>(null)
 
   const missingHouses = useMemo(() => {
     let total = 0
@@ -69,6 +80,17 @@ export default function TerritoryPage() {
 
     window.open(territory.map!, '_blank')
   }
+
+  const onFinishedLoading = useEffectEvent((isLoading: boolean) => {
+    if (isLoading) return
+
+    if (dontKnockHouses.length > 0)
+      setOpenDialog('dont-knock')
+  })
+
+  useEffect(() => {
+    onFinishedLoading(isLoading)
+  }, [isLoading])
 
   return (
     <div className="flex flex-col flex-1 items-center">
@@ -148,6 +170,12 @@ export default function TerritoryPage() {
           <EditImageDialog
             open={openDialog === 'edit-image'}
             context={{ territoryId: territory.id, territoryNumber: territory.number, imageUrl: territory.imageUrl }}
+            onClose={() => setOpenDialog(null)}
+          />
+
+          <DontKnockWarningDialog
+            open={openDialog === 'dont-knock'}
+            context={{ data: dontKnockHouses }}
             onClose={() => setOpenDialog(null)}
           />
         </>

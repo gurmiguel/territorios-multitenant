@@ -12,9 +12,7 @@ const withSerwist = withSerwistInit({
 })
 
 const nextConfig: NextConfig = {
-  experimental: {
-    reactCompiler: true,
-  },
+  reactCompiler: true,
   turbopack: {
     rules: {
       '*.svg': {
@@ -52,4 +50,4 @@ const nextConfig: NextConfig = {
   },
 }
 
-export default withSerwist(nextConfig)
+export default withSerwist(nextConfig as any)
