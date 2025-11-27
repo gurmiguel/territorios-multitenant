@@ -4,7 +4,7 @@ import { getTenant } from '../api/utils.server'
 export async function getMapUrl() {
   const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL!}/congregations`, {
     headers: {
-      'X-Forwarded-Host': typeof window === 'undefined' ? await getTenant() : getTenantFromHost(window.location.host),
+      'x-tenant-host': typeof window === 'undefined' ? await getTenant() : getTenantFromHost(window.location.host),
     },
   })
   const data = await response.json()

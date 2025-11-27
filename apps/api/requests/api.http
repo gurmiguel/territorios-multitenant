@@ -6,7 +6,7 @@
 
 # @name getTenant
 GET {{baseUrl}}/congregations
-X-Forwarded-Host: {{tenant}}
+X-Tenant-Host: {{tenant}}
 
 ### AUTH
 

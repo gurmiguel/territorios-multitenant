@@ -23,8 +23,15 @@ export default function HomePage() {
 
     Cookies.remove(REDIRECT_AFTER_AUTH)
 
-    if (redirectUrl || process.env.NODE_ENV === 'production') // due to StrictMode, this will run twice in dev, causing it to always go to homepage
+    // due to StrictMode, this will run twice in dev, causing it to always go to homepage
+    if (redirectUrl || process.env.NODE_ENV === 'production')
       router.push(redirectUrl ?? '/territorios')
+    else
+      // only going to happen for development
+      setTimeout(() => {
+        if (window.location.pathname === '/')
+          router.push(redirectUrl ?? '/territorios')
+      }, 1000)
   })
 
   useEffect(() => {

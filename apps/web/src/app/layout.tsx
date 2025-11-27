@@ -44,7 +44,7 @@ export default function RootLayout({
 
 export async function generateMetadata(): Promise<Metadata> {
   const congregation = await ServerApiClient.getInstance().query<Congregation>('/congregations', {
-    headers: { 'X-Forwarded-Host': await getTenant() },
+    headers: { 'x-tenant-host': await getTenant() },
     credentials: 'omit',
   })
 
