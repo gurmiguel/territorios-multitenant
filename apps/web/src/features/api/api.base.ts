@@ -12,7 +12,7 @@ export abstract class ApiClientBase {
     return response.json()
   }
 
-  public async mutate<T>(url: string, data: any, options?: RequestInit): Promise<T> {
+  public async mutate<T, Body = any>(url: string, data: Body, options?: RequestInit): Promise<T> {
     const response = await this.fetch(url, {
       method: 'POST',
       body: data instanceof FormData ? data : data && JSON.stringify(data),

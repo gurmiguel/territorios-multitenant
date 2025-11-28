@@ -1,7 +1,7 @@
 import { QueryClient } from '@tanstack/react-query'
 import { produce } from 'immer'
 
-import { HouseCreatedEvent, HouseDeletedEvent, HouseStatusUpdateEvent, HouseUpdatedEvent, StreetCreatedEvent, StreetDeletedEvent, Territory, TerritoryCreatedEvent, TerritoryDeletedEvent, TerritoryUpdatedEvent } from './types'
+import { HouseCreatedEvent, HouseDeletedEvent, HouseStatusUpdateEvent, HouseUpdatedEvent, StreetCreatedEvent, StreetDeletedEvent, Territory, TerritoryCreatedEvent, TerritoryDeletedEvent, TerritoryListItem, TerritoryUpdatedEvent } from './types'
 import { EventsHandler } from '../events/events.hooks'
 
 export default class TerritoryEvents implements EventsHandler<TerritoryEvents> {
@@ -56,8 +56,9 @@ export default class TerritoryEvents implements EventsHandler<TerritoryEvents> {
     if (!this.shouldUpdate()) return null
     return [[
       'territories',
-      this.queryClient.setQueryData<{items: Territory[]}>(['territories'], produce(response => {
+      this.queryClient.setQueryData<{items: TerritoryListItem[]}>(['territories'], produce(response => {
         if (!response) return
+        data.territory.pendingHouses ??= 0
         response.items.push(data.territory)
         response.items.sort((a, b) => Number(a.number) - Number(b.number))
       })),

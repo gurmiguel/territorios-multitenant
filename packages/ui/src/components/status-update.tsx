@@ -20,7 +20,7 @@ type Props = {
 export const MONTHS_TO_EXPIRE_STATUS = 4
 
 export function StatusUpdate({ status, count, hideIcon = false }: Props) {
-  const { text, color } = useMemo(() => {
+  const state = useMemo(() => {
     switch (true) {
       case typeof count === 'number':
         // COUNT MODE
@@ -41,9 +41,15 @@ export function StatusUpdate({ status, count, hideIcon = false }: Props) {
 
         return { text, color }
 
-      default: throw new Error('Invalid parameters')
+      default:
+        console.error('Invalid parameters', { count, status })
+        return null
     }
   }, [count, status])
+
+  if (state === null) return <></>
+
+  const { text, color } = state
 
   const IconComponent = status?.status === 'OK' ? CheckIcon : XIcon
 

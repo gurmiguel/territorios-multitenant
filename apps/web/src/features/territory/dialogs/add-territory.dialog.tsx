@@ -9,11 +9,12 @@ import { useEffect } from 'react'
 import { FormProvider, SubmitHandler } from 'react-hook-form'
 
 import { ApiClient } from '~/features/api/api.client'
+import { invalidateCache } from '~/features/api/utils.server'
 
-import { CustomDialogProps } from './types'
 import { TerritoryFormData, useUpsertTerritory } from '../forms/upsert-territory'
 import TerritoryEvents from '../territory.events'
-import { Territory } from '../types'
+import { Territory, TerritoryListItem } from '../types'
+import { CustomDialogProps } from './types'
 
 type Props = CustomDialogProps
 
@@ -26,14 +27,17 @@ export function AddTerritoryDialog({ open, onClose }: Props) {
   } = useUpsertTerritory()
 
   const onValidSubmit: SubmitHandler<TerritoryFormData> = async data => {
-    const territory = await ApiClient.getInstance().mutate<Territory>('territories', {
+    const territory = await ApiClient.getInstance().mutate<TerritoryListItem, Omit<Territory, 'streets' | 'id'>>('territories', {
       number: data.number,
       color: generateHexColor(Number(data.number)),
       hidden: false,
       map: null,
+      imageUrl: null,
     }, {
       method: 'POST',
     })
+
+    await invalidateCache('territories')
 
     const eventHandler = new TerritoryEvents(queryClient, true)
 

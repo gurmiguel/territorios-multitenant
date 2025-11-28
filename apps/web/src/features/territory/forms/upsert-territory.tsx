@@ -23,8 +23,8 @@ const schema = z.object({
 
 export type TerritoryFormData = z.infer<typeof schema>
 
-export function useUpsertTerritory(territory?: Territory) {
-  const getDefaultValue = (territory?: Territory) => ({
+export function useUpsertTerritory(territory?: Partial<Territory>) {
+  const getDefaultValue = (territory?: Partial<Territory>) => ({
     id: territory?.id,
     number: territory?.number ?? '',
     color: territory?.color,

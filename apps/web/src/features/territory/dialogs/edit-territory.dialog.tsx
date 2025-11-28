@@ -8,14 +8,15 @@ import { useEffect, useState } from 'react'
 import { FormProvider, SubmitHandler } from 'react-hook-form'
 
 import { ApiClient } from '~/features/api/api.client'
+import { invalidateCache } from '~/features/api/utils.server'
 
 import { CustomDialogProps } from './types'
 import { TerritoryFormData, useUpsertTerritory } from '../forms/upsert-territory'
 import TerritoryEvents from '../territory.events'
-import { Territory } from '../types'
+import { Territory, TerritoryListItem } from '../types'
 
 type Props = CustomDialogProps<{
-  territory: Territory
+  territory: TerritoryListItem
 }>
 
 export function EditTerritoryDialog({ open, onClose, context }: Props) {
@@ -36,6 +37,8 @@ export function EditTerritoryDialog({ open, onClose, context }: Props) {
     }, {
       method: 'PATCH',
     })
+
+    await invalidateCache('territories', `territories/${data.number}`)
 
     const eventHandler = new TerritoryEvents(queryClient, true)
 

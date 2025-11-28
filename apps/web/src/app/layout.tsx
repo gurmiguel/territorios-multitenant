@@ -4,13 +4,12 @@ import { Toaster } from '@repo/ui/components/ui/sonner'
 import { Metadata } from 'next'
 
 import ZodProvider from '~/features/adapters/zod-provider'
-import { ServerApiClient } from '~/features/api/api.server'
 import { QueryProvider } from '~/features/api/query-provider'
-import { getTenant } from '~/features/api/utils.server'
+import { DummyAwaiter } from '~/features/api/utils'
 import { AuthProvider } from '~/features/auth/auth.context'
+import { getCongregationData } from '~/features/congregation/congregation.data'
 import { HeaderProvider } from '~/features/header/context'
 import { Header } from '~/features/header/header'
-import { Congregation } from '~/features/territory/types'
 import { ThemeProvider } from '~/features/theme/theme.provider'
 
 export default function RootLayout({
@@ -22,6 +21,7 @@ export default function RootLayout({
     <html lang="pt-BR" suppressHydrationWarning>
       <head/>
       <body>
+        <DummyAwaiter />
         <ThemeProvider>
           <AuthProvider>
             <ZodProvider>
@@ -43,10 +43,7 @@ export default function RootLayout({
 }
 
 export async function generateMetadata(): Promise<Metadata> {
-  const congregation = await ServerApiClient.getInstance().query<Congregation>('/congregations', {
-    headers: { 'x-tenant-host': await getTenant() },
-    credentials: 'omit',
-  })
+  const congregation = await getCongregationData()
 
   const title = `Congregação ${congregation.name}`
 

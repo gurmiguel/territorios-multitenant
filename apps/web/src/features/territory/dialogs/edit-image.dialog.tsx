@@ -8,6 +8,7 @@ import { useEffect, useState } from 'react'
 import { FormProvider, SubmitHandler, useFormContext } from 'react-hook-form'
 
 import { ApiClient } from '~/features/api/api.client'
+import { invalidateCache } from '~/features/api/utils.server'
 
 import { UpdateImageFormData, useUpdateImage } from '../forms/update-image'
 import TerritoryEvents from '../territory.events'
@@ -39,6 +40,8 @@ export function EditImageDialog({ open, onClose, context }: Props) {
     const { publicUrl } = await ApiClient.getInstance().mutate<{publicUrl: string}>(`assets/territory/${context.territoryId}`, formData, {
       method: 'POST',
     })
+
+    await invalidateCache(`territories/${context.territoryNumber}`)
 
     const eventHandler = new TerritoryEvents(queryClient, true)
 
