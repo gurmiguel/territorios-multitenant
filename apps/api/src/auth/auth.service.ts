@@ -3,7 +3,7 @@ import { promisify } from 'node:util'
 import { BadRequestException, ForbiddenException, HttpException, Injectable, Logger, UnauthorizedException } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { JwtService } from '@nestjs/jwt'
-import { Action, Area, Permissions, Role } from '@repo/utils/permissions/index'
+import { Permissions, Role } from '@repo/utils/permissions/index'
 import bcrypt from 'bcrypt'
 import z from 'zod'
 
@@ -66,21 +66,21 @@ export class AuthService {
       isSafe: true,
     }
 
-    if (!user) {
-      const usersCount = await this.usersService.countUsers({ where: { congregation: { id: tenant.id } } })
-      const isFirstUser = usersCount === 0
+    const providerUsersCount = await this.usersService.countUsers({
+      where: {
+        congregation: { id: tenant.id },
+        providers: { some: { id: { not: '' } } },
+      },
+    })
+    const isFirstProviderUser = providerUsersCount === 0
 
+    if (!user) {
       user = await this.usersService.create({
         data: {
           name: profile.name,
           email: profile.email,
           congregation: { connect: { id: tenant.id } },
-          permissions: isFirstUser
-            ? Permissions.getAllPermissions()
-            : Permissions.getFor({
-              area: { exclude: [Area.USERS] },
-              action: { include: [Action.READ] },
-            }),
+          permissions: Permissions.getDefaultUserPermissions(),
           providers: {
             create: providerData,
           },
@@ -90,6 +90,16 @@ export class AuthService {
           providers: {
             where: { provider },
           },
+        },
+      })
+    }
+
+    if (isFirstProviderUser) {
+      this.usersService.update({
+        where: { id: user.id },
+        data: {
+          roles: [Role.ADMIN, Role.USER],
+          permissions: Permissions.getAllPermissions(),
         },
       })
     }

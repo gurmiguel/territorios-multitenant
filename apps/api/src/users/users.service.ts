@@ -25,6 +25,10 @@ export class UsersService {
     return this.prisma.user.updateMany
   }
 
+  get update() {
+    return this.prisma.user.update
+  }
+
   async addProvider(data: Prisma.AccountProviderCreateArgs['data']) {
     await this.prisma.accountProvider.create({ data })
   }

@@ -1,4 +1,5 @@
 @baseUrl = http://localhost:3333
+# @baseUrl = https://api.territorios.app
 @tenant = alemanha.territorios.app
 @multipartBoundary = ------WebkitBoundaryBFBB8196D046
 
@@ -13,8 +14,18 @@ X-Tenant-Host: {{tenant}}
 # @name login
 POST {{baseUrl}}/auth/login
 Content-Type: application/json
+X-Tenant-Host: {{tenant}}
 
-{ "tenant": "{{tenant}}", "username": "gu.rmiguel@gmail.com" }
+{ "username": "gu.rmiguel@gmail.com" }
+
+###
+
+# @name signup
+POST {{baseUrl}}/auth/signup
+Content-Type: application/json
+X-Tenant-Host: {{tenant}}
+
+{ "email": "gu.rmiguel@gmail.com", "name": "Gustavo Raise" }
 
 ###
 @refreshToken = {{login.response.body.$.refresh_token}}

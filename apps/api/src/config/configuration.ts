@@ -1,3 +1,4 @@
+import { LogLevel } from '@nestjs/common'
 import '@nestjs/config'
 
 function configuration() {
@@ -9,6 +10,7 @@ function configuration() {
     host,
     port,
     origin: process.env.PROXY_HOST ?? `${host}${port && port !== 80 ? `:${port}` : ''}`,
+    logLevels: process.env.LOG_LEVELS?.split(',') ?? new Array<LogLevel>('log', 'warn', 'error'),
     auth: {
       secret: process.env.AUTH_SECRET!,
       google: {
