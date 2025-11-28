@@ -24,8 +24,10 @@ export abstract class ApiClientBase {
 
   public async fetch(url: string, options: RequestInit = {}) {
     const skipAuth = options.credentials === 'omit'
-    if (!skipAuth)
+    if (!skipAuth) {
+      delete options.credentials
       await this.loadAuthTokens()
+    }
 
     options.headers ??= {}
     if (typeof options.body === 'string')
