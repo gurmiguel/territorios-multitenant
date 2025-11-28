@@ -45,6 +45,8 @@ export function EditImageDialog({ open, onClose, context }: Props) {
     eventHandler['territory.updated']({
       ...context,
       territory: {
+        id: context.territoryId,
+        number: context.territoryNumber,
         imageUrl: publicUrl,
       },
     })

@@ -40,8 +40,6 @@ export function EditTerritoryDialog({ open, onClose, context }: Props) {
     const eventHandler = new TerritoryEvents(queryClient, true)
 
     eventHandler['territory.updated']({
-      territoryId: territory.id,
-      territoryNumber: territory.number,
       territory,
     })
 

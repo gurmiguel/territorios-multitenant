@@ -41,7 +41,10 @@ export function EditHouseDialog({ open, onClose, context }: Props) {
 
     eventHandler['house.updated']({
       ...context,
-      house,
+      house: {
+        ...house,
+        streetId: context.streetId,
+      },
     })
 
     toast.success('Registro alterado')

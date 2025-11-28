@@ -11,6 +11,7 @@
     "debug": "nest start --debug --watch",
     "preview": "node dist/src/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --max-warnings 0",
+    "check-types": "tsc --noEmit",
     "pretest": "prisma generate",
     "test": "jest",
     "test:watch": "jest --watch",

@@ -21,6 +21,7 @@ const TEST_USER = {
     name: 'Test Cong',
     createdAt: new Date(),
     domains: ['test-cong.test.app'],
+    publicId: 'test-id',
   },
   congregationId: 1,
   createdAt: new Date(),

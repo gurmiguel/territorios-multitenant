@@ -8,6 +8,6 @@ const OriginalService = jest.requireActual('../tenant-holder.service').TenantHol
 export class TenantHolderService extends OriginalService {
   constructor() {
     super()
-    this.tenant = { id: 1, name: 'Test', createdAt: new Date(), domains: ['test.test.app'] }
+    this.tenant = { id: 1, name: 'Test', createdAt: new Date(), domains: ['test.test.app'], publicId: 'test-id' }
   }
 }
