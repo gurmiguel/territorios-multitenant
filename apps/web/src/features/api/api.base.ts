@@ -38,9 +38,8 @@ export abstract class ApiClientBase {
     let response = await fetch(this.buildUrl(url), options)
       .catch(error => {
         if (error instanceof Error && error.name === 'AbortError') throw error
-        return Response.json({
-          error,
-        }, { status: 499, statusText: 'Client Closed Request' })
+        console.error(error)
+        return Response.json({ error, url }, { status: 499, statusText: 'Client Closed Request' })
       })
 
     if (!skipAuth && response.status === 403 && this.refreshToken && this.shouldRefreshToken()) {
@@ -52,7 +51,7 @@ export abstract class ApiClientBase {
     }
 
     if (!response.ok)
-      throw new ApiError(response.status, response.statusText, { cause: await response.json() })
+      throw new ApiError(response.status, response.statusText, {url, ...await response.json()})
 
     return response
   }
@@ -106,7 +105,9 @@ export abstract class ApiClientBase {
   protected async refreshTokens() {
     this.refreshToken ??= (await this.getAuthCookies()).refreshToken
 
-    const response = await fetch(this.buildUrl('/auth/refresh'), {
+    const url = '/auth/refresh'
+
+    const response = await fetch(this.buildUrl(url), {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -121,7 +122,7 @@ export abstract class ApiClientBase {
     })
 
     if (!response.ok && response.status !== 499) {
-      throw new ApiError(response.status, response.statusText, { cause: await response.json() })
+      throw new ApiError(response.status, response.statusText, {url, ...await response.json()})
     }
 
     const { access_token, refresh_token } = await response.json()
@@ -147,8 +148,10 @@ export abstract class ApiClientBase {
 }
 
 export class ApiError extends Error {
-  constructor(public readonly status: number, public readonly statusText: string, options?: ErrorOptions) {
+  public readonly data: string
+  constructor(public readonly status: number, public readonly statusText: string, data: unknown, options?: ErrorOptions) {
     super(`${statusText} ${status}`, options)
+    this.data = typeof data === 'string' ? data : JSON.stringify(data)
     this.name = ApiError.name
   }
 }

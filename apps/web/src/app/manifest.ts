@@ -6,7 +6,7 @@ import { Congregation } from '~/features/territory/types'
 
 export default async function manifest(): Promise<MetadataRoute.Manifest> {
   const congregation = await ServerApiClient.getInstance().query<Congregation>('/congregations', {
-    headers: { 'X-Forwarded-Host': await getTenant() },
+    headers: { 'x-tenant-host': await getTenant() },
     credentials: 'omit',
     next: {
       revalidate: 86400, // 1 day
