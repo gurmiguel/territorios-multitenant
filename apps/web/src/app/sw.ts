@@ -78,7 +78,7 @@ const serwist = new Serwist({
       handler: new NetworkFirst({
         cacheName: 'static-assets',
         matchOptions: {
-          ignoreSearch: true,
+          ignoreSearch: false,
           ignoreVary: true,
         },
         plugins: [

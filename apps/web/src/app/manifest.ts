@@ -1,17 +1,9 @@
 import { MetadataRoute } from 'next'
 
-import { ServerApiClient } from '~/features/api/api.server'
-import { getTenant } from '~/features/api/utils.server'
-import { Congregation } from '~/features/territory/types'
+import { getCongregationData } from '~/features/congregation/congregation.data'
 
 export default async function manifest(): Promise<MetadataRoute.Manifest> {
-  const congregation = await ServerApiClient.getInstance().query<Congregation>('/congregations', {
-    headers: { 'x-tenant-host': await getTenant() },
-    credentials: 'omit',
-    next: {
-      revalidate: 86400, // 1 day
-    },
-  })
+  const congregation = await getCongregationData()
 
   return {
     name: `Territórios ${congregation.name}`,

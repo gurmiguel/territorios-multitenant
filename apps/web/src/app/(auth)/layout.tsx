@@ -32,6 +32,7 @@ export default function AuthLayout({ children }: PropsWithChildren) {
     if (!loading) return
 
     if (!network.online) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setLoading(false)
       return
     }

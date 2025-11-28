@@ -1,5 +1,4 @@
 import { Metadata } from 'next'
-import { cacheTag } from 'next/cache'
 import { cache } from 'react'
 
 import { Territory } from './types'
@@ -7,10 +6,8 @@ import { ServerApiClient } from '../api/api.server'
 import { getTenant } from '../api/utils.server'
 
 export async function generateMetadata({ params }: { params: Promise<{ number: string }> }) {
-  'use cache'
   const { number } = await params
 
-  cacheTag(`territories/${number}`)
   const territory = await fetchTerritory(number)
 
   return {
