@@ -30,7 +30,7 @@ export class MulterConfigService implements MulterOptionsFactory {
           if (!extension)
             return cb(new TypeError(`File ${file.originalname} must have a valid extension`))
 
-          cb(null, `${this.tenantHolder.getTenant().id}/${randomUUID()}.${extension}`)
+          cb(null, `${this.tenantHolder.getTenant().publicId}/${randomUUID()}.${extension}`)
         },
         acl: 'public-read',
         cacheControl: `max-age=${Math.floor(parseDuration('1 month')! / 1000)}`,
