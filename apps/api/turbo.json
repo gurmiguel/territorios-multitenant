@@ -1,0 +1,12 @@
+{
+  "$schema": "https://turborepo.com/schema.json",
+  "extends": ["//"],
+  "tasks": {
+    "build": {
+      "env": ["S3_*", "GOOGLE_*", "DATABASE_URL", "AUTH_SECRET"]
+    },
+    "build:ci": {
+      "env": ["S3_*", "GOOGLE_*", "DATABASE_URL", "AUTH_SECRET"]
+    }
+  }
+}
