@@ -3,10 +3,11 @@
   "extends": ["//"],
   "tasks": {
     "build": {
-      "env": ["S3_*", "GOOGLE_*", "DATABASE_URL", "AUTH_SECRET"]
+      "passThroughEnv": ["S3_*", "GOOGLE_*", "DATABASE_URL", "AUTH_SECRET"]
     },
     "build:ci": {
-      "env": ["S3_*", "GOOGLE_*", "DATABASE_URL", "AUTH_SECRET"]
+      "env": ["DATABASE_URL"],
+      "passThroughEnv": ["S3_*", "GOOGLE_*", "AUTH_SECRET"]
     }
   }
 }

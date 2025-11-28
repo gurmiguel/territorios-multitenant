@@ -22,7 +22,7 @@
       
     },
     "start": {
-      
+      "cache": false
     },
     "proxy-ssl": {
       
