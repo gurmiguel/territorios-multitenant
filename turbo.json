@@ -3,11 +3,13 @@
   "ui": "tui",
   "tasks": {
     "build": {
+      "env": ["S3_*", "GOOGLE_*", "DATABASE_URL", "AUTH_SECRET"],
       "dependsOn": ["^build"],
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
       "outputs": [".next/**", "!.next/cache/**", "dist/**"]
     },
     "build:ci": {
+      "env": ["S3_*", "GOOGLE_*", "DATABASE_URL", "AUTH_SECRET"],
       "dependsOn": ["^build"],
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
       "outputs": [".next/**", "!.next/cache/**", "dist/**"]
