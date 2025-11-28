@@ -10,11 +10,13 @@ export async function MapPage() {
   return (
     <div className="flex flex-col">
       <HeaderConfig title="Mapa Completo" showMap backRoute />
-      <div className="relative w-full aspect-[3/4]">
-        <ImageZoom src={mapUrl}>
-          <Image src={mapUrl} alt="" layout="fill" objectFit="contain" />
-        </ImageZoom>
-      </div>
+      {mapUrl && (
+        <div className="relative w-full aspect-3/4">
+          <ImageZoom src={mapUrl}>
+            <Image src={mapUrl} alt="" layout="fill" objectFit="contain" />
+          </ImageZoom>
+        </div>
+      )}
     </div>
   )
 }

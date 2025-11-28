@@ -74,6 +74,8 @@ export class AuthService {
     })
     const isFirstProviderUser = providerUsersCount === 0
 
+    this.logger.log(`Logging user with provider ${provider}. [isFirstProviderUser=${isFirstProviderUser}]`)
+
     if (!user) {
       user = await this.usersService.create({
         data: {
@@ -95,13 +97,16 @@ export class AuthService {
     }
 
     if (isFirstProviderUser) {
-      this.usersService.update({
-        where: { id: user.id },
-        data: {
-          roles: [Role.ADMIN, Role.USER],
-          permissions: Permissions.getAllPermissions(),
-        },
-      })
+      user = {
+        ...user,
+        ...await this.usersService.update({
+          where: { id: user.id },
+          data: {
+            roles: [Role.ADMIN, Role.USER],
+            permissions: Permissions.getAllPermissions(),
+          },
+        }),
+      }
     }
 
     if (!user.providers.some(p => p.provider === provider)) {
