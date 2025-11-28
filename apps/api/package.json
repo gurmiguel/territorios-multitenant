@@ -6,7 +6,7 @@
   "scripts": {
     "build": "nest build",
     "build:ci": "prisma migrate deploy && prisma generate --sql && nest build",
-    "start": "nest start -b swc",
+    "start": "nest start",
     "dev": "nest start --watch -b swc",
     "dev:https": "cross-env HTTPS=true nest start --watch -b swc",
     "debug": "nest start --debug --watch",
