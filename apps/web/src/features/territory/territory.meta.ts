@@ -13,8 +13,6 @@ export async function generateMetadata({ params }: { params: Promise<{ number: s
 
   const territory = await fetchTerritory(number)
 
-  console.log('Metadata fetch', {territory})
-
   return {
     title: `Território ${territory.number}`,
     openGraph: {
