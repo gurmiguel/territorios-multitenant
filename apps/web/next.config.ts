@@ -32,8 +32,8 @@ const nextConfig: NextConfig = {
   },
   images: {
     remotePatterns: [
-      { hostname: '*.r2.dev' },
-      { hostname: '*.r2.cloudflarestorage.com' },
+      { hostname: '**.r2.dev' },
+      { hostname: '**.r2.cloudflarestorage.com' },
     ],
   },
   async headers() {
