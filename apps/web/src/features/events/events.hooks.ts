@@ -1,3 +1,4 @@
+import { detectCrawler } from '@repo/utils/crawler'
 import { delay } from '@repo/utils/delay'
 import { useEffect } from 'react'
 
@@ -23,6 +24,7 @@ const textDecoder = new TextDecoder('utf-8')
 export function useEventStream<T extends EventsHandler<T>>(endpoint: string, { handler, enabled = true }: Options<T>) {
   useEffect(() => {
     if (!enabled) return
+    if (detectCrawler(navigator.userAgent)) return
 
     let retries = 0
 

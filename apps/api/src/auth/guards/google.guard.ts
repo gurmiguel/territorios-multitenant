@@ -25,7 +25,7 @@ export class GoogleAuthGuard extends AuthGuard('google') {
     const response = context.switchToHttp().getResponse<Application.Response>()
     const { redirectUrl } = request.query
 
-    const tenantHost = this.tenantsService.getTenantIdFromRequest(request)
+    const tenantHost = this.tenantsService.getTenantHostFromRequest(request)
 
     const sessionKey = (this.strategy as any)._key
 

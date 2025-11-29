@@ -4,12 +4,18 @@ import { NextRequest, NextResponse } from 'next/server'
 import { REDIRECT_AFTER_AUTH, REFRESH_TOKEN_COOKIE_NAME } from '~/features/auth/constants'
 
 import { tryDecodeJwt } from './features/auth/token'
+import { detectCrawler, getFakeCrawlerToken } from '../../../packages/utils/src/crawler'
 
 export async function proxy(request: NextRequest) {
   const cookieStore = await cookies()
-  const token = cookieStore.get(REFRESH_TOKEN_COOKIE_NAME)?.value
+  let token = cookieStore.get(REFRESH_TOKEN_COOKIE_NAME)?.value
+  let isTokenValid = !!token && (tryDecodeJwt(token)?.exp ?? -1) >= Date.now() / 1000
 
-  const isTokenValid = !!token && (tryDecodeJwt(token)?.exp ?? -1) >= Date.now() / 1000
+  // bypass authentication for crawlers
+  if (detectCrawler(request.headers.get('user-agent') ?? '')) {
+    token = getFakeCrawlerToken()
+    isTokenValid = true
+  }
 
   if (request.nextUrl.pathname.startsWith('/login')) {
     if (isTokenValid) {

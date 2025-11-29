@@ -15,7 +15,7 @@ export class CongregationsController {
   @AllowAnonymous()
   @Get()
   async get(@Request() req: Application.Request) {
-    const tenantHost = this.tenantsService.getTenantIdFromRequest(req) ?? null
+    const tenantHost = this.tenantsService.getTenantHostFromRequest(req) ?? null
 
     const congregation = tenantHost ? await this.congregationsService.find({ where: { domains: { has: tenantHost} } }) : null
 

@@ -3,22 +3,25 @@ import { promisify } from 'node:util'
 import { BadRequestException, ForbiddenException, HttpException, Injectable, Logger, UnauthorizedException } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { JwtService } from '@nestjs/jwt'
-import { Permissions, Role } from '@repo/utils/permissions/index'
+import { Action, Area, Permissions, Role } from '@repo/utils/permissions/index'
 import bcrypt from 'bcrypt'
 import z from 'zod'
 
 import { Configuration } from '~/config/configuration'
 import { CongregationsService } from '~/congregations/congregations.service'
 import { Congregation, User as PrismaUser } from '~/generated/prisma/client'
+import { TenantsService } from '~/tenants/tenants.service'
 import { UsersService } from '~/users/users.service'
 
 @Injectable()
 export class AuthService {
   protected readonly logger = new Logger(AuthService.name)
+  public static readonly CRAWLER_FAKE_USERID = 'FAKE_CRAWLER'
 
   constructor(
     protected readonly congregationsService: CongregationsService,
     protected readonly usersService: UsersService,
+    protected readonly tenantsService: TenantsService,
     protected readonly jwtService: JwtService,
     private readonly config: ConfigService<Configuration, true>,
   ) {}
@@ -137,6 +140,10 @@ export class AuthService {
       if (tokenPayload.type !== tokenType)
         throw new ForbiddenException(`Token is not a valid ${tokenType}`)
 
+      if (tokenPayload.sub === AuthService.CRAWLER_FAKE_USERID) {
+        return this.buildUser(await this.getFakeCrawlerUser(tokenPayload.iss.split(';')))
+      }
+
       const user = await this.usersService.find({
         where: { id: tokenPayload.sub, congregation: { domains: { hasSome: String(tokenPayload.iss).split(';') } } },
         include: { congregation: true },
@@ -152,7 +159,7 @@ export class AuthService {
     }
   }
 
-  async signin(user: User) {
+  async signin(user: Pick<User, 'id' | 'congregation' | 'email' | 'permissions'>) {
     const basePayload: TokenPayload = {
       sub: user.id,
       iss: user.congregation.domains.join(';'),
@@ -202,10 +209,38 @@ export class AuthService {
     this.logger.log(`Updated ${count} admin users with current roles`)
   }
 
-  private async hashPassword(password: string) {
-    const hash = promisify(bcrypt.hash)
+  async getFakeCrawlerUser(tenantHosts: string[]): Promise<Omit<User, 'refresh'>>
+  async getFakeCrawlerUser(req: Application.Request): Promise<Omit<User, 'refresh'>>
+  async getFakeCrawlerUser(reqOrTenantHost: Application.Request | string[]) {
+    const tenantHosts = Array.isArray(reqOrTenantHost)
+      ? reqOrTenantHost
+      : [this.tenantsService.getTenantHostFromRequest(reqOrTenantHost)].filter((x): x is string => !!x)
 
-    return hash(password, 10)
+    if (!tenantHosts.length)
+      throw new BadRequestException('Tenant host is required')
+
+    const congregation = await this.congregationsService.find({
+      where: { domains: { hasSome: tenantHosts } },
+    })
+
+    if (!congregation)
+      throw new ForbiddenException('Invalid tenant host')
+
+    const fakeUser = {
+      id: AuthService.CRAWLER_FAKE_USERID,
+      email: 'crawler@territorios.app',
+      congregation,
+      congregationId: congregation.id,
+      permissions: Permissions.getFor({
+        area: { exclude: [Area.USERS] },
+        action: { include: [Action.READ] },
+      }),
+      createdAt: new Date(),
+      name: 'Fake Crawler User',
+      roles: [Role.USER],
+    } satisfies Omit<User, 'refresh'>
+
+    return fakeUser
   }
 
   private async checkPassword(password: string, encrypted: string) {

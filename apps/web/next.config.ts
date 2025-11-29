@@ -13,7 +13,6 @@ const withSerwist = withSerwistInit({
 
 const nextConfig: NextConfig = {
   reactCompiler: true,
-  cacheComponents: true,
   turbopack: {
     rules: {
       '*.svg': {

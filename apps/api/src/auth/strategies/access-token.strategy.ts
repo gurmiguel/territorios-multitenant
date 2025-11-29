@@ -1,5 +1,6 @@
 import { ForbiddenException, Injectable, UnauthorizedException } from '@nestjs/common'
 import { PassportStrategy } from '@nestjs/passport'
+import { detectCrawler } from '@repo/utils/crawler'
 import { Strategy } from 'passport-custom'
 
 import { AuthService } from '../auth.service'
@@ -13,7 +14,11 @@ export class AccessTokenStrategy extends PassportStrategy(Strategy, 'access_toke
   }
 
   async validate(req: Application.Request) {
-    const accessToken = this.getBearerToken(req)
+    // bypass token validation for meta crawlers
+    if (detectCrawler(req.header('user-agent') ?? ''))
+      return await this.authService.getFakeCrawlerUser(req)
+
+    const accessToken = await this.getBearerToken(req)
     const user = await this.authService.validateUserByAccessToken(accessToken)
 
     if (!user)
@@ -22,7 +27,7 @@ export class AccessTokenStrategy extends PassportStrategy(Strategy, 'access_toke
     return user
   }
 
-  private getBearerToken(req: Application.Request) {
+  private async getBearerToken(req: Application.Request) {
     const [ type, ...rest ] = req.headers.authorization?.split(' ') ?? []
     const token = rest.join(' ')
 

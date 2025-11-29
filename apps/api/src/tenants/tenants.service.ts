@@ -2,7 +2,7 @@ import { Injectable, Scope } from '@nestjs/common'
 
 @Injectable({ scope: Scope.DEFAULT })
 export class TenantsService {
-  getTenantIdFromRequest(request: Application.Request) {
+  getTenantHostFromRequest(request: Application.Request) {
     let tenantHost = request.headers['x-tenant-host'] || request.headers['referer'] || null
 
     if (Array.isArray(tenantHost))

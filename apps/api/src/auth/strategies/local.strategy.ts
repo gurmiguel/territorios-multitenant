@@ -23,7 +23,7 @@ export class LocalStrategy extends PassportStrategy(Strategy, 'local') {
     const { username } = req.body
     let tenantHost = req.body.tenant
 
-    tenantHost ??= this.tenantsService.getTenantIdFromRequest(req)
+    tenantHost ??= this.tenantsService.getTenantHostFromRequest(req)
 
     if (!tenantHost)
       throw new MissingTenantException()

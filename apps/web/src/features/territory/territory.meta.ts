@@ -6,7 +6,7 @@ import { Territory } from './types'
 import { ServerApiClient } from '../api/api.server'
 import { getTenant } from '../api/utils.server'
 
-export async function generateMetadata({ params }: { params: Promise<{ number: string }> }) {
+export async function generateMetadata({ params }: { params: Promise<{ number: string }> }): Promise<Metadata> {
   const { number } = await params
 
   const territory = await fetchTerritory(number)
