@@ -3,7 +3,7 @@ import { Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogT
 import { ExternalLinkIcon, PencilIcon } from '@repo/ui/components/ui/icons'
 import { useState } from 'react'
 
-import { EditMapDialog } from './edit-map.dialog'
+import { EditMapLinkDialog } from './edit-map-link.dialog'
 import { CustomDialogProps } from './types'
 
 type Props = CustomDialogProps<{
@@ -46,7 +46,7 @@ export function MapLinkDialog({ open, onClose, context }: Props) {
         </DialogContent>
       </Dialog>
 
-      <EditMapDialog
+      <EditMapLinkDialog
         open={open && stage === 'edit'}
         context={context}
         onClose={() => setStage('main')}

@@ -17,13 +17,18 @@ import { TerritoryListItem as ITerritoryListItem } from '../territory/types'
 
 export function TerritoriesPage() {
   const queryClient = useQueryClient()
-  const { can } = useAuth()
+  const { can, cannot } = useAuth()
 
   const router = useRouter()
 
   const { data, isLoading } = useQuery<{items: ITerritoryListItem[]}>({
     queryKey: ['territories'],
     refetchOnReconnect: true,
+    select({ items }) {
+      if (cannot('territories:write'))
+        return { items: items.filter(it => !it.hidden) }
+      return { items }
+    },
   })
 
   useEffect(() => {

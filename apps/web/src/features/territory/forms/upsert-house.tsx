@@ -77,7 +77,9 @@ export function useUpsertHouseForm(house?: House) {
     <div className="flex flex-col space-y-1">
       <div className="flex justify-between items-start space-x-2">
         <label className="block flex-1">
-          <TextInput name="number" label="N° da casa" registerOptions={{ deps: ['noNumber'] }} disabled={form.watch('noNumber')} />
+          <TextInput name="number" inputMode="numeric"
+            label="N° da casa" registerOptions={{ deps: ['noNumber'] }}
+            disabled={form.watch('noNumber')} />
           <ErrorMessage field="number" />
         </label>
         <label className="flex items-center space-x-1 shrink-0 mt-2 -mb-1 py-2">
@@ -117,6 +119,7 @@ export function useUpsertHouseForm(house?: House) {
           <div key={id} className="-mt-1.5 mb-2">
             <div className="flex items-center space-x-1">
               <TextInput name={`phones.${i}.number`}
+                inputMode="tel"
                 wrapperClassName="flex-1"
                 label="Telefone"
                 leftIcon={<PhoneIcon />} />
@@ -136,7 +139,7 @@ export function useUpsertHouseForm(house?: House) {
         </div>
       </fieldset>
       <div>
-        <TextInput name="observation" registerOptions={{ deps: ['number', 'noNumber'] }} label="Observações" />
+        <TextInput name="observation" inputMode="text" registerOptions={{ deps: ['number', 'noNumber'] }} label="Observações" />
         <ErrorMessage field="observation" />
       </div>
     </div>

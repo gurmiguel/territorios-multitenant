@@ -106,7 +106,7 @@ export function EditImageDialog({ open, onClose, context }: Props) {
           </DialogHeader>
 
           <FormProvider {...form}>
-            <form onSubmit={form.handleSubmit(onValidSubmit)}>
+            <form noValidate onSubmit={form.handleSubmit(onValidSubmit)}>
               <div className="flex flex-col mb-4">
                 {fields}
               </div>
@@ -118,10 +118,12 @@ export function EditImageDialog({ open, onClose, context }: Props) {
                     onClick={handleRemoveImage}>Remover Imagem</RemoveImageButton>
                 )}
 
-                <DialogClose asChild>
-                  <Button variant="ghost" color="muted" className="uppercase">Cancelar</Button>
-                </DialogClose>
-                <Button type="submit">OK</Button>
+                <div className="flex gap-[inherit]">
+                  <DialogClose asChild>
+                    <Button variant="ghost" color="muted" className="uppercase">Cancelar</Button>
+                  </DialogClose>
+                  <Button type="submit">OK</Button>
+                </div>
               </DialogFooter>
             </form>
           </FormProvider>

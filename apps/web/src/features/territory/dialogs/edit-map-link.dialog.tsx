@@ -9,7 +9,7 @@ import { FormProvider, SubmitHandler } from 'react-hook-form'
 
 import { ApiClient } from '~/features/api/api.client'
 
-import { UpdateMapFormData, useUpdateMap } from '../forms/update-map'
+import { UpdateMapFormData, useUpdateMapLink } from '../forms/update-map-link'
 import TerritoryEvents from '../territory.events'
 import { Territory } from '../types'
 import { CustomDialogProps } from './types'
@@ -20,13 +20,13 @@ type Props = CustomDialogProps<{
   map: string | null
 }>
 
-export function EditMapDialog({ open, onClose, context }: Props) {
+export function EditMapLinkDialog({ open, onClose, context }: Props) {
   const queryClient = useQueryClient()
   const {
     form,
     fields,
     getDefaultValue,
-  } = useUpdateMap({ map: context.map })
+  } = useUpdateMapLink({ map: context.map })
 
   const onValidSubmit: SubmitHandler<UpdateMapFormData> = async data => {
     const territory = await ApiClient.getInstance().mutate<Territory>(`territories/${context.territoryId}`, data, {
@@ -60,7 +60,7 @@ export function EditMapDialog({ open, onClose, context }: Props) {
         </DialogHeader>
 
         <FormProvider {...form}>
-          <form onSubmit={form.handleSubmit(onValidSubmit)}>
+          <form noValidate onSubmit={form.handleSubmit(onValidSubmit)}>
             <div className="flex flex-col mb-4">
               {fields}
             </div>

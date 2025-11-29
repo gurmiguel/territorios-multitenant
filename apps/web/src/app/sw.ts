@@ -72,9 +72,11 @@ const serwist = new Serwist({
     },
     {
       matcher: ({ request, sameOrigin, url }) =>
-        sameOrigin
-        && request.method === 'GET'
-        && !!url.pathname.match(/^\/_next\/(static|image)/i),
+        request.method === 'GET'
+        && (
+          sameOrigin && !!url.pathname.match(/^\/_next\/(static|image)/i)
+          || url.hostname.includes('.r2.cloudflarestorage.com')
+        ),
       handler: new NetworkFirst({
         cacheName: 'static-assets',
         matchOptions: {

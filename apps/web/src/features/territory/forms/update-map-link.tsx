@@ -16,7 +16,7 @@ const schema = z.object({
 
 export type UpdateMapFormData = z.infer<typeof schema>
 
-export function useUpdateMap(data: Pick<Territory, 'map'>) {
+export function useUpdateMapLink(data: Pick<Territory, 'map'>) {
   const getDefaultValue = (data: Pick<Territory, 'map'>) => ({
     map: data?.map ?? '',
   } as UpdateMapFormData)
@@ -31,7 +31,7 @@ export function useUpdateMap(data: Pick<Territory, 'map'>) {
   const fields = (
     <div className="flex flex-col space-y-1">
       <div>
-        <TextInput name="map" label="Mapa" />
+        <TextInput name="map" label="Mapa" type="url" />
         <ErrorMessage field="map" />
       </div>
     </div>

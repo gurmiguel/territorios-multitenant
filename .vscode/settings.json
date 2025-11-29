@@ -5,5 +5,10 @@
     "editor.formatOnSave": true
   },
   "typescript.tsdk": "node_modules/typescript/lib",
-  "tailwindCSS.experimental.configFile": "packages/ui/src/globals.css"
+  "tailwindCSS.experimental.configFile": "packages/ui/src/globals.css",
+  "tailwindCSS.classAttributes": [
+    "class",
+    "className",
+    "wrapperClassName"
+  ]
 }

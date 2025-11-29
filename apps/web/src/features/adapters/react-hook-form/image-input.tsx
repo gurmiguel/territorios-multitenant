@@ -45,6 +45,7 @@ export function ImageInput({ preview = true, previewProps, value: _, ...props }:
             {...props}
             {...field}
             type="file"
+            className={cn('appearance-none', props.className)}
             onChange={handleChangeEvent(field.onChange)}
           />
           {previewImage && (

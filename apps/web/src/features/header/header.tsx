@@ -33,8 +33,8 @@ export function Header() {
           <Button
             variant="ghost"
             className={cn(
-              '-ml-2 rounded-full accessible-text-primary-foreground w-12 h-12 p-0! transition-all',
-              !shouldShowBackButton && 'w-0 mr-2 opacity-0 pointer-events-none',
+              '-ml-1 rounded-full accessible-text-primary-foreground w-12 h-12 p-0! transition-all',
+              !shouldShowBackButton && 'w-0 mx-2 opacity-0 pointer-events-none',
             )}
             asChild
           >

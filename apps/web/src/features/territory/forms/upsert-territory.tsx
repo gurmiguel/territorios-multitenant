@@ -38,18 +38,25 @@ export function useUpsertTerritory(territory?: Partial<Territory>) {
     progressive: true,
   })
 
+  const color = form.watch('color')
+
   const fields = (
     <div className="flex flex-col space-y-1">
       <div>
-        <TextInput name="number" label="Número do território" />
+        <TextInput name="number" label="Número do território" inputMode="numeric" />
         <ErrorMessage field="number" />
       </div>
 
       <div className={cn('flex justify-between space-x-4', !territory?.id && 'hidden')}>
-        <div className="flex-1">
-          <TextInput name="color" label="Cor" />
+        <div>
+          <TextInput name="color" label="Cor"
+            type="color" wrapperClassName="flex-row items-center border-input border-b border-b-foreground"
+            className="w-auto aspect-16/14 border-0">
+            {color?.toUpperCase() ?? '---'}
+          </TextInput>
           <ErrorMessage field="color" />
         </div>
+        <div className="flex-1" />
         <div>
           <label className="flex items-center space-x-1 shrink-0 mt-2 -mb-1 py-2">
             <span className="text-sm">Ocultar?</span>

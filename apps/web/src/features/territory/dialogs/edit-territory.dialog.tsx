@@ -85,7 +85,7 @@ export function EditTerritoryDialog({ open, onClose, context }: Props) {
           </DialogHeader>
 
           <FormProvider {...form}>
-            <form onSubmit={form.handleSubmit(onValidSubmit)}>
+            <form noValidate onSubmit={form.handleSubmit(onValidSubmit)}>
               <div className="flex flex-col mb-4">
                 {fields}
               </div>
