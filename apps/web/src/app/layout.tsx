@@ -28,7 +28,7 @@ export default function RootLayout({
               <QueryProvider>
                 <HeaderProvider>
                   <Header />
-                  <main className="flex flex-col flex-1 container">
+                  <main className="flex flex-col flex-1 container-fluid">
                     {children}
                   </main>
                 </HeaderProvider>

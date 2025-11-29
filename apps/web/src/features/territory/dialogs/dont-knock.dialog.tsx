@@ -21,7 +21,7 @@ export function DontKnockWarningDialog({ open, onClose, context: { data } }: Pro
         <div className="flex flex-col">
           Não tocar nas casas:
 
-          <hr className="border-0.5 border-accent-foreground my-4" />
+          <hr className="divider" />
 
           <div className="">
             {data.map((s, i) => (

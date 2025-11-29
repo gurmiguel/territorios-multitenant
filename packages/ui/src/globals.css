@@ -222,6 +222,16 @@
   @apply mx-auto py-6 px-3 sm:px-6;
 }
 
+@utility container-fluid {
+  @apply w-full mx-auto py-6 px-3 sm:px-6;
+}
+
+@utility divider {
+  border-bottom: 0.5px solid;
+
+  @apply border-accent-foreground my-4;
+}
+
 @utility absolute-fill {
   position: absolute;
   top: 0;

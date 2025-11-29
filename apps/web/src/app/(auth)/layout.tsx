@@ -82,5 +82,5 @@ export default function AuthLayout({ children }: PropsWithChildren) {
 
   if (loading) return <Loading />
 
-  return <>{children}</>
+  return <div className="flex flex-col flex-1 container">{children}</div>
 }
