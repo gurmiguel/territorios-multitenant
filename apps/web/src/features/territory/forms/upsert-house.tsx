@@ -6,7 +6,7 @@ import { cn } from '@repo/ui/lib/utils'
 import { delay } from '@repo/utils/delay'
 import { HouseTypes } from '@repo/utils/types'
 import { useRef } from 'react'
-import { useFieldArray, useForm } from 'react-hook-form'
+import { useFieldArray, useForm, useWatch } from 'react-hook-form'
 import z from 'zod'
 
 import { Checkbox } from '~/features/adapters/react-hook-form/checkbox'
@@ -69,6 +69,8 @@ export function useUpsertHouseForm(house?: House) {
     name: 'phones',
   })
 
+  const noNumber = useWatch({ control: form.control, name: 'noNumber' })
+
   function handleAddPhone() {
     append({ number: '' }, { shouldFocus: true })
   }
@@ -79,7 +81,7 @@ export function useUpsertHouseForm(house?: House) {
         <label className="block flex-1">
           <TextInput name="number" inputMode="numeric"
             label="N° da casa" registerOptions={{ deps: ['noNumber'] }}
-            disabled={form.watch('noNumber')} />
+            disabled={noNumber} />
           <ErrorMessage field="number" />
         </label>
         <label className="flex items-center space-x-1 shrink-0 mt-2 -mb-1 py-2">

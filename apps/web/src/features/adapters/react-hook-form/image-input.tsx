@@ -3,7 +3,7 @@ import { Input } from '@repo/ui/components/ui/input'
 import { cn } from '@repo/ui/lib/utils'
 import { Override } from '@repo/utils/types'
 import { ComponentProps, useState } from 'react'
-import { Controller, useFormContext } from 'react-hook-form'
+import { Controller, useFormContext, useWatch } from 'react-hook-form'
 
 interface Props {
   name: string
@@ -13,7 +13,7 @@ interface Props {
 }
 
 export function ImageInput({ preview = true, previewProps, value: _, ...props }: Override<ComponentProps<typeof Input>, Props>) {
-  const { watch } = useFormContext()
+  const { control } = useFormContext()
   const [previewImage, setPreviewImage] = useState<string>()
   const [key, setKey] = useState<number>()
 
@@ -27,7 +27,7 @@ export function ImageInput({ preview = true, previewProps, value: _, ...props }:
     reader.readAsDataURL(file)
   }
 
-  const value = watch(props.name)
+  const value = useWatch({ control, name: props.name })
 
   if (!value && previewImage) {
     setKey(k => (k ?? 0) + 1)

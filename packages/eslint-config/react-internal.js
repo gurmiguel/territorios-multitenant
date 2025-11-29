@@ -29,7 +29,6 @@ export const config = [
       ...pluginReactHooks.configs.recommended.rules,
       // React scope no longer necessary with new JSX transform.
       'react/react-in-jsx-scope': 'off',
-      'react-hooks/incompatible-library': 'off',
     },
   },
 ]

@@ -1,6 +1,6 @@
 import { standardSchemaResolver } from '@hookform/resolvers/standard-schema'
 import { cn } from '@repo/ui/lib/utils'
-import { useForm } from 'react-hook-form'
+import { useForm, useWatch } from 'react-hook-form'
 import z from 'zod'
 
 import { Checkbox } from '~/features/adapters/react-hook-form/checkbox'
@@ -38,7 +38,7 @@ export function useUpsertTerritory(territory?: Partial<Territory>) {
     progressive: true,
   })
 
-  const color = form.watch('color')
+  const color = useWatch({ control: form.control, name: 'color' })
 
   const fields = (
     <div className="flex flex-col space-y-1">

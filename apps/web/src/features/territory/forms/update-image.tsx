@@ -1,5 +1,5 @@
 import { standardSchemaResolver } from '@hookform/resolvers/standard-schema'
-import { useForm } from 'react-hook-form'
+import { useForm, useWatch } from 'react-hook-form'
 import z from 'zod'
 
 import { ErrorMessage } from '~/features/adapters/react-hook-form/error-message'
@@ -27,6 +27,8 @@ export function useUpdateImage() {
     progressive: true,
   })
 
+  const currentImage = useWatch({ control: form.control, name: 'image' })
+
   const fields = (
     <div className="flex flex-col space-y-1">
       <div>
@@ -40,5 +42,6 @@ export function useUpdateImage() {
     form,
     getDefaultValue,
     fields,
+    currentImage,
   }
 }

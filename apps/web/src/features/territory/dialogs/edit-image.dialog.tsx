@@ -5,7 +5,7 @@ import { toast } from '@repo/ui/components/ui/sonner'
 import { delay } from '@repo/utils/delay'
 import { useQueryClient } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
-import { FormProvider, SubmitHandler, useFormContext } from 'react-hook-form'
+import { FormProvider, SubmitHandler, useFormContext, useWatch } from 'react-hook-form'
 
 import { ApiClient } from '~/features/api/api.client'
 import { invalidateCache } from '~/features/api/utils.server'
@@ -28,6 +28,7 @@ export function EditImageDialog({ open, onClose, context }: Props) {
     form,
     fields,
     getDefaultValue,
+    currentImage,
   } = useUpdateImage()
 
   const [currentStep, setCurrentStep] = useState<'main' | 'delete'>('main')
@@ -112,7 +113,7 @@ export function EditImageDialog({ open, onClose, context }: Props) {
               </div>
 
               <DialogFooter>
-                {!!context.imageUrl && (
+                {(!!context.imageUrl || !!currentImage) && (
                   <RemoveImageButton variant="ghost"
                     className="ml-0 mr-auto uppercase"
                     onClick={handleRemoveImage}>Remover Imagem</RemoveImageButton>
@@ -153,9 +154,9 @@ export function EditImageDialog({ open, onClose, context }: Props) {
 }
 
 function RemoveImageButton(props: Omit<React.ComponentProps<typeof Button>, 'color'>) {
-  const { watch } = useFormContext<UpdateImageFormData>()
+  const { control } = useFormContext<UpdateImageFormData>()
 
-  const image = watch('image')
+  const image = useWatch({ control, name: 'image' })
 
   return <Button {...props} color={image ? 'foreground' : 'destructive'} />
 }
