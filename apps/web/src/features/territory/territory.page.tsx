@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 'use client'
 
 import { Accordion } from '@repo/ui/components/ui/accordion'
@@ -101,10 +102,17 @@ export default function TerritoryPage() {
       {!!territory && (
         <>
           <div className="relative w-full">
-            <Image src={territory.imageUrl ?? territoryImageFallback} alt=""
-              width={365} height={365}
-              className="mb-4 mx-auto"
-            />
+            {territory.imageUrl ? (
+              <img src={territory.imageUrl} alt=""
+                width={365} height={365}
+                className="mb-4 mx-auto" />
+            )
+              : (
+                <Image src={territoryImageFallback} alt=""
+                  width={365} height={365}
+                  className="mb-4 mx-auto"
+                />
+              )}
             {can('assets:write') && can('territories:write') && (
               <Button variant="ghost" color="foreground"
                 className="absolute top-3 right-2 rounded-full size-12 p-0!"
