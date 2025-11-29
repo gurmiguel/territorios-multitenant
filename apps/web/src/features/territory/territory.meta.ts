@@ -2,6 +2,8 @@ import { Metadata } from 'next'
 import parseDuration from 'parse-duration'
 import { cache } from 'react'
 
+import territoryImageFallback from '~/assets/territory.png'
+
 import { Territory } from './types'
 import { ServerApiClient } from '../api/api.server'
 import { getTenant } from '../api/utils.server'
@@ -10,6 +12,8 @@ export async function generateMetadata({ params }: { params: Promise<{ number: s
   const { number } = await params
 
   const territory = await fetchTerritory(number)
+
+  console.log('Metadata fetch', {territory})
 
   return {
     title: `Território ${territory.number}`,
@@ -24,10 +28,10 @@ const fetchTerritory = cache(async (number: string): Promise<Territory> => {
     return {
       id: -1,
       color: '#ffffff',
-      number,
+      number: `${number} - offline`,
       streets: [],
       hidden: false,
-      imageUrl: null,
+      imageUrl: territoryImageFallback.src,
       map: null,
     }
   }
