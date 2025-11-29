@@ -53,7 +53,7 @@ export abstract class ApiClientBase {
     }
 
     if (!response.ok)
-      throw new ApiError(response.status, response.statusText, {url, ...await response.json()})
+      throw new ApiError(response.status, response.statusText, {url, response: await response.text()})
 
     return response
   }
@@ -124,7 +124,7 @@ export abstract class ApiClientBase {
     })
 
     if (!response.ok && response.status !== 499) {
-      throw new ApiError(response.status, response.statusText, {url, ...await response.json()})
+      throw new ApiError(response.status, response.statusText, {url, response: await response.text()})
     }
 
     const { access_token, refresh_token } = await response.json()
