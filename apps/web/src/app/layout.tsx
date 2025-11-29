@@ -1,6 +1,7 @@
 import './globals.css'
 
 import { Toaster } from '@repo/ui/components/ui/sonner'
+import { Analytics } from '@vercel/analytics/next'
 import { Metadata } from 'next'
 
 import ZodProvider from '~/features/adapters/zod-provider'
@@ -22,6 +23,7 @@ export default function RootLayout({
       <head/>
       <body>
         <DummyAwaiter />
+        <Analytics />
         <ThemeProvider>
           <AuthProvider>
             <ZodProvider>

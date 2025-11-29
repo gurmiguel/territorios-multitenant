@@ -17,6 +17,7 @@
     "@repo/utils": "*",
     "@serwist/next": "^9.2.1",
     "@tanstack/react-query": "^5.80.6",
+    "@vercel/analytics": "^1.5.0",
     "date-fns": "^4.1.0",
     "immer": "^10.1.1",
     "jose": "^6.0.11",
