@@ -41,6 +41,7 @@ const fetchTerritory = cache(async (number: string): Promise<Territory> => {
     headers: { 'x-tenant-host': await getTenant() },
     next: {
       revalidate: parseDuration('1 day')!,
+      tags: [`territories/${number}`],
     },
   })
 

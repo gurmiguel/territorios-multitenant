@@ -55,6 +55,8 @@ export function EditTerritoryDialog({ open, onClose, context }: Props) {
 
     await ApiClient.getInstance().mutate(`/territories/${context.territory.id}`, null, { method: 'DELETE' })
 
+    invalidateCache('territories', `territories/${context.territory.id}`)
+
     const eventHandler = new TerritoryEvents(queryClient, true)
 
     eventHandler['territory.deleted']({

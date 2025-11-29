@@ -56,7 +56,9 @@ Authorization: Bearer {{accessToken}}
 # @prompt number
 # @name getTerritory
 GET {{baseUrl}}/territories/{{number}}
-Authorization: Bearer {{accessToken}}
+# Authorization: Bearer {{accessToken}}
+x-tenant-host: alemanha.territorios.app
+User-Agent: WhatsApp/2.3.6 N
 
 ###
 
