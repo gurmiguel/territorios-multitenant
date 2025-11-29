@@ -1,4 +1,5 @@
 import { Metadata } from 'next'
+import parseDuration from 'parse-duration'
 import { cache } from 'react'
 
 import { Territory } from './types'
@@ -35,7 +36,7 @@ const fetchTerritory = cache(async (number: string): Promise<Territory> => {
     credentials: 'omit',
     headers: { 'x-tenant-host': await getTenant() },
     next: {
-      revalidate: 86400, // 1 day
+      revalidate: parseDuration('1 day')!,
     },
   })
 

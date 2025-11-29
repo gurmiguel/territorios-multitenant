@@ -5,7 +5,6 @@ import { Metadata } from 'next'
 
 import ZodProvider from '~/features/adapters/zod-provider'
 import { QueryProvider } from '~/features/api/query-provider'
-import { DummyAwaiter } from '~/features/api/utils'
 import { AuthProvider } from '~/features/auth/auth.context'
 import { getCongregationData } from '~/features/congregation/congregation.data'
 import { HeaderProvider } from '~/features/header/context'
@@ -21,7 +20,6 @@ export default function RootLayout({
     <html lang="pt-BR" suppressHydrationWarning>
       <head/>
       <body>
-        <DummyAwaiter />
         <ThemeProvider>
           <AuthProvider>
             <ZodProvider>

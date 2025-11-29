@@ -1,3 +1,4 @@
+import parseDuration from 'parse-duration'
 import { cache } from 'react'
 
 import { ServerApiClient } from '../api/api.server'
@@ -9,7 +10,7 @@ export const getCongregationData = cache(async function() {
     headers: { 'x-tenant-host': await getTenant() },
     credentials: 'omit',
     next: {
-      revalidate: 60,
+      revalidate: parseDuration('1 week')!,
     },
   })
 
