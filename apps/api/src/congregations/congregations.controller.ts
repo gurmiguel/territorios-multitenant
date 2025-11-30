@@ -1,4 +1,4 @@
-import { Controller, Get, NotFoundException, Post, Request, UseGuards, UseGuards } from '@nestjs/common'
+import { Controller, Get, NotFoundException, Post, Request, UseGuards } from '@nestjs/common'
 
 import { AllowAnonymous } from '~/auth/decorators/allow-anonymous.decorator'
 import { SuperTokenAuthGuard } from '~/auth/guards/super-token.guard'
