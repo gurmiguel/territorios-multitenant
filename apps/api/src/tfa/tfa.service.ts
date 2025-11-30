@@ -34,7 +34,7 @@ export class TfaService {
       const { iv, authTag, encrypted } = this.encryptUserHash(secret)
 
       await this.superadminService.update({
-        where: { email: username },
+        where: { email: username, tfaEnabled: false },
         data: { secret: Buffer.from([iv, authTag, encrypted].join(TfaService.hashSeparator), 'utf8').toString('base64'), tfaEnabled: false },
       })
 
