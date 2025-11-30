@@ -27,7 +27,7 @@ const TEST_USER = {
   createdAt: new Date(),
   name: 'Test User',
   email: 'test@example.com',
-  permissions: Permissions.getAllPermissions(),
+  permissions: Permissions.getTenantAdminPermissions(),
   refresh: jest.fn(),
   roles: [Role.ADMIN],
 } satisfies Application.Request['user']

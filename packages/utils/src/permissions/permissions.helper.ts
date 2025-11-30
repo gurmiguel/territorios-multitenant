@@ -5,12 +5,12 @@ import { IPermission, IPermissionStr } from './types'
 export const Permissions = new class PermissionsHelper {
   getDefaultUserPermissions() {
     return this.getFor({
-      area: { exclude: [Area.USERS] },
+      area: { exclude: [Area.TENANTS, Area.USERS] },
       action: { include: [Action.READ] },
     })
   }
 
-  getAllPermissions(areas?: Area[], exclude?: Action[]): IPermissionStr[] {
+  getTenantAdminPermissions(areas?: Area[], exclude?: Action[]): IPermissionStr[] {
     return this.getFor({
       area: { include: areas },
       action: { exclude },

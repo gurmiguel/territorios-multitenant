@@ -11,8 +11,10 @@ import { PrismaModule } from './db/prisma.module'
 import { ApplicationExceptionModule } from './exceptions/application-exception/application-exception.module'
 import { CatchAllExceptionsFilter } from './exceptions/catch-all-exception.filter'
 import { RequestLoggingInterceptor } from './logging/request-logging.interceptor'
+import { SuperadminModule } from './superadmin/superadmin.module'
 import { TenantsModule } from './tenants/tenants.module'
 import { TerritoriesModule } from './territories/territories.module'
+import { TfaModule } from './tfa/tfa.module'
 import { UsersModule } from './users/users.module'
 
 @Module({
@@ -34,6 +36,8 @@ import { UsersModule } from './users/users.module'
     TerritoriesModule,
     ApplicationExceptionModule,
     AssetsModule,
+    TfaModule,
+    SuperadminModule,
   ],
   providers: [
     {

@@ -22,6 +22,7 @@ export class DataValidationExceptionFilter extends BaseExceptionFilter {
       P2011: 'Missing value',
       P2012: 'Missing value',
       P2019: 'Missing value',
+      P2025: 'Invalid data',
     }
 
     if (false === exception.code in errorMap)
@@ -31,7 +32,7 @@ export class DataValidationExceptionFilter extends BaseExceptionFilter {
       .status(HttpStatus.BAD_REQUEST)
       .json({
         statusCode: HttpStatus.BAD_REQUEST,
-        message: errorMap[exception.code] || `Invalid operation: ${exception.code}`,
+        message: `[${exception.code}] ` + (errorMap[exception.code] || 'Invalid operation'),
         meta: exception.meta,
       })
   }

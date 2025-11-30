@@ -6,6 +6,7 @@ import { PassportModule } from '@nestjs/passport'
 
 import { Configuration } from '~/config/configuration'
 import { CongregationsModule } from '~/congregations/congregations.module'
+import { SuperadminModule } from '~/superadmin/superadmin.module'
 import { UsersModule } from '~/users/users.module'
 
 import { AuthController } from './auth.controller'
@@ -16,12 +17,14 @@ import { AccessTokenStrategy } from './strategies/access-token.strategy'
 import { GoogleStrategy } from './strategies/google.strategy'
 import { LocalStrategy } from './strategies/local.strategy'
 import { RefreshTokenStrategy } from './strategies/refresh-token.strategy'
+import { SuperTokenStrategy } from './strategies/super-token.strategy'
 
 @Module({
   imports: [
     UsersModule,
     CongregationsModule,
     PassportModule,
+    SuperadminModule,
     JwtModule.registerAsync({
       inject: [ConfigService],
       useFactory: async (configService: ConfigService<Configuration, true>) => ({
@@ -36,6 +39,7 @@ import { RefreshTokenStrategy } from './strategies/refresh-token.strategy'
     GoogleStrategy,
     AccessTokenStrategy,
     RefreshTokenStrategy,
+    SuperTokenStrategy,
     {
       provide: APP_GUARD,
       useClass: AccessTokenAuthGuard,
@@ -45,6 +49,7 @@ import { RefreshTokenStrategy } from './strategies/refresh-token.strategy'
       useClass: AllowGuard,
     },
   ],
+  exports: [AuthService],
   controllers: [AuthController],
 })
 export class AuthModule implements OnApplicationBootstrap {

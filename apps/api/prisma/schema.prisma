@@ -97,6 +97,15 @@ model AccountProvider {
   @@unique([provider, userId])
 }
 
+model SuperAdmin {
+  id         String   @id @default(uuid())
+  name       String
+  email      String   @unique
+  createdAt  DateTime @default(now())
+  secret     String?
+  tfaEnabled Boolean  @default(false)
+}
+
 model User {
   id          String   @id @default(uuid())
   name        String

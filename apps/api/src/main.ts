@@ -42,8 +42,9 @@ bootstrap()
 
 declare global {
   namespace Application {
-    interface Request extends e.Request {
+    interface Request<T = any> extends e.Request {
       id: string
+      body: T
     }
     interface Response extends e.Response {}
   }

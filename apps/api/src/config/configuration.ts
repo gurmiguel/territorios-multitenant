@@ -1,5 +1,6 @@
 import { LogLevel } from '@nestjs/common'
 import '@nestjs/config'
+import { MAIN_APP_TITLE } from '@repo/utils/shared-constants'
 
 function configuration() {
   const host = process.env.HOST ?? (process.env.HTTPS
@@ -7,6 +8,7 @@ function configuration() {
     : 'http://localhost')
   const port = parseInt(process.env.PORT ?? '3333', 10)
   return {
+    mode: process.env.NODE_ENV ?? 'development',
     host,
     port,
     origin: process.env.PROXY_HOST ?? `${host}${port && port !== 80 ? `:${port}` : ''}`,
@@ -20,6 +22,7 @@ function configuration() {
       defaultPassword: process.env.DEFAULT_PASSWORD ?? '@@default',
     },
     constants: {
+      appTitle: MAIN_APP_TITLE,
       /** Amount of time a status update will override the previous one instead of creating a new one */
       statusThreshold: '1 minute',
       statusBleedingLimit: 3,

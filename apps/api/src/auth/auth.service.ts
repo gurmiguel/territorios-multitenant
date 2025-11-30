@@ -9,7 +9,8 @@ import z from 'zod'
 
 import { Configuration } from '~/config/configuration'
 import { CongregationsService } from '~/congregations/congregations.service'
-import { Congregation, User as PrismaUser } from '~/generated/prisma/client'
+import { Congregation, SuperAdmin, User as PrismaUser } from '~/generated/prisma/client'
+import { SuperadminService } from '~/superadmin/superadmin.service'
 import { TenantsService } from '~/tenants/tenants.service'
 import { UsersService } from '~/users/users.service'
 
@@ -21,6 +22,7 @@ export class AuthService {
   constructor(
     protected readonly congregationsService: CongregationsService,
     protected readonly usersService: UsersService,
+    protected readonly superadminService: SuperadminService,
     protected readonly tenantsService: TenantsService,
     protected readonly jwtService: JwtService,
     private readonly config: ConfigService<Configuration, true>,
@@ -106,7 +108,7 @@ export class AuthService {
           where: { id: user.id },
           data: {
             roles: [Role.ADMIN, Role.USER],
-            permissions: Permissions.getAllPermissions(),
+            permissions: Permissions.getTenantAdminPermissions(),
           },
         }),
       }
@@ -159,6 +161,45 @@ export class AuthService {
     }
   }
 
+  async superadminSignin(superadmin: Pick<SuperAdmin, 'id' | 'email'>) {
+    const payload: SuperAdminTokenPayload = {
+      sub: superadmin.id,
+      iss: 'superadmin',
+      type: 'access_token',
+      username: superadmin.email,
+    }
+    return {
+      access_token: await this.jwtService.signAsync(payload, { expiresIn: '1 hour' }),
+    }
+  }
+
+  async validateSuperToken(superToken: string) {
+    try {
+      const token = await this.jwtService.verifyAsync<SuperAdminTokenPayload>(superToken)
+        .catch(error => {
+          throw new ForbiddenException('Invalid token', { cause: error, description: (error as Error).message })
+        })
+
+      if (token.type !== 'access_token')
+        throw new ForbiddenException('Token is not a valid access_token')
+
+      if (token.iss !== 'superadmin')
+        throw new ForbiddenException('Token is not valid')
+
+      const superadmin = await this.superadminService.find({
+        where: { id: token.sub },
+      })
+
+      if (!superadmin)
+        throw new UnauthorizedException()
+
+      return superadmin
+    } catch (e) {
+      this.logger.debug(e instanceof Error ? `${e.name}: ${e.message}` : e)
+      throw e instanceof HttpException ? e : new UnauthorizedException()
+    }
+  }
+
   async signin(user: Pick<User, 'id' | 'congregation' | 'email' | 'permissions'>) {
     const basePayload: TokenPayload = {
       sub: user.id,
@@ -193,7 +234,7 @@ export class AuthService {
   }
 
   async updateAdminsPermissions() {
-    const allPermissions = Permissions.getAllPermissions()
+    const allPermissions = Permissions.getTenantAdminPermissions()
     const { count } = await this.usersService.updateMany({
       where: {
         roles: { has: Role.ADMIN },
@@ -272,6 +313,11 @@ type User = Express.User
 interface TokenPayload {
   sub: User['id']
   iss: string
+}
+
+interface SuperAdminTokenPayload extends TokenPayload {
+  type: 'access_token'
+  username: SuperAdmin['email']
 }
 
 interface AccessTokenPayload extends TokenPayload {
