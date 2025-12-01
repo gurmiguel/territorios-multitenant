@@ -24,14 +24,21 @@ export function HouseItem({ house, territoryId, territoryNumber, streetId }: Pro
     <>
       <button
         type="button"
-        className="flex items-center w-full py-2.5 px-5 font-normal text-left hover:bg-gray-100/50 active:bg-gray-200 transition-colors"
+        className="flex flex-col gap-1.5 w-full py-2.5 px-5 font-normal text-left hover:bg-gray-100/50 active:bg-gray-200 transition-colors"
         onClick={() => setOpenDialog('add-registry')}
       >
-        <span className="flex items-center mr-auto font-semibold tracking-tight">
-          {formatHouseNumber(house)}
-          {!house.phones.length && <PhoneOffIcon size={14} className="ml-3 text-muted-foreground" />}
-        </span>
-        {house.updates?.[0] && <span className="ml-auto text-right"><StatusUpdateComponent status={house.updates[0]} /></span>}
+        <div className="flex w-full items-center">
+          <span className="flex items-center mr-auto font-semibold tracking-tight">
+            {formatHouseNumber(house)}
+            {!house.phones.length && <PhoneOffIcon size={14} className="ml-3 text-muted-foreground" />}
+          </span>
+          {house.updates?.[0] && <span className="ml-auto text-right"><StatusUpdateComponent status={house.updates[0]} /></span>}
+        </div>
+        {house.observation && (
+          <div className="text-left text-xs -ml-1.5 -mr-2.5 py-1 px-2 rounded-md text-sidebar-primary-foreground bg-sidebar-primary caret-up-sidebar-primary">
+            {house.observation}
+          </div>
+        )}
       </button>
 
       <AddHistoryDialog

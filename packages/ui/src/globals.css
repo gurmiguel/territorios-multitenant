@@ -38,8 +38,8 @@
   --chart-5: oklch(0.4305 0.1599 265.3017);
   --sidebar: oklch(1.0000 0 0);
   --sidebar-foreground: oklch(0.3211 0 0);
-  --sidebar-primary: oklch(0.7276 0.1315 259.9090);
-  --sidebar-primary-foreground: oklch(1.0000 0 0);
+  --sidebar-primary: oklch(0.8271 0.077 259.45);
+  --sidebar-primary-foreground: var(--color-foreground);
   --sidebar-accent: oklch(1.0000 0 0);
   --sidebar-accent-foreground: oklch(0.4305 0.1599 265.3017);
   --sidebar-border: oklch(1.0000 0 0);
@@ -257,5 +257,29 @@
   }
   @variant active {
     background-color: color-mix(in oklab, --value(--color-*) 95%, transparent);
+  }
+}
+
+@utility caret-up-* {
+  --opacity: calc(--modifier(integer) * 1%);
+  --color: --alpha(--value(--color-*, [color]) / var(--opacity, 100%));
+  --size: 0.5em;
+  position: relative;
+  z-index: 1;
+
+  &:after {
+    content: '';
+    display: inline-block;
+    position: absolute;
+    bottom: 100%;
+    left: calc(1em - (var(--size) * 0.5));
+    z-index: -1;
+    margin-bottom: -0.1em;
+    width: 0;
+    height: 0;
+    border-left: var(--size) solid transparent;
+    border-right: var(--size) solid transparent;
+    border-bottom: var(--size) solid var(--color);
+    border-radius: var(--size);
   }
 }
