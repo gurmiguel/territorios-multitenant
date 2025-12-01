@@ -30,7 +30,7 @@ model Congregation {
 
 model Territory {
   id     Int     @id @default(autoincrement())
-  number String  @unique
+  number String
   color  String
   hidden Boolean
   map    String?
@@ -42,6 +42,8 @@ model Territory {
   congregationId Int
 
   streets Street[]
+
+  @@unique([congregationId, number])
 }
 
 model Street {
@@ -67,7 +69,7 @@ model House {
 
   updates StatusUpdate[]
 
-  @@unique([type, number, complement])
+  @@unique([streetId, type, number, complement])
 }
 
 model StatusUpdate {
