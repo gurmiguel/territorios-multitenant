@@ -29,7 +29,7 @@ import { SuperTokenStrategy } from './strategies/super-token.strategy'
       inject: [ConfigService],
       useFactory: async (configService: ConfigService<Configuration, true>) => ({
         secret: configService.get('auth', { infer: true }).secret,
-        signOptions: { expiresIn: '60m' },
+        signOptions: { expiresIn: '60m', algorithm: 'HS256' },
       }),
     }),
   ],
