@@ -19,6 +19,6 @@ import { S3Manager } from './s3/s3.manager'
   ],
   controllers: [AssetsController],
   providers: [AssetsService, S3Manager, MulterConfigService],
-  exports: [S3Manager, MulterConfigService],
+  exports: [AssetsService, S3Manager, MulterConfigService],
 })
 export class AssetsModule {}

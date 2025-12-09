@@ -3,6 +3,7 @@ import { ConfigModule } from '@nestjs/config'
 import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core'
 import { EventEmitterModule } from '@nestjs/event-emitter'
 
+import { AppController } from './app.controller'
 import { AssetsModule } from './assets/assets.module'
 import { AuthModule } from './auth/auth.module'
 import configuration from './config/configuration'
@@ -49,5 +50,6 @@ import { UsersModule } from './users/users.module'
       useClass: RequestLoggingInterceptor,
     },
   ],
+  controllers: [AppController],
 })
 export class AppModule {}

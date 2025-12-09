@@ -1,4 +1,4 @@
-import { DeleteObjectCommand } from '@aws-sdk/client-s3'
+import { DeleteObjectCommand, HeadBucketCommand } from '@aws-sdk/client-s3'
 import { Injectable, Logger } from '@nestjs/common'
 
 import { CongregationsService } from '~/congregations/congregations.service'
@@ -31,6 +31,17 @@ export class AssetsService {
 
   async updateTerritoryImage(userId: string, territoryId: number, file: Express.MulterS3.File) {
     return await this.upsertAsset(file, userId, AssetType.TERRITORY, territoryId)
+  }
+
+  async getHealthCheck() {
+    try {
+      await this.s3.send(new HeadBucketCommand({ Bucket: this.s3Manager.getBucket() }))
+
+      return true
+    } catch (error) {
+      this.logger.error('Error occurred during health check', { error })
+      return false
+    }
   }
 
   private async upsertAsset(file: Express.MulterS3.File, userId: string, type: 'MAP'): Promise<Asset>
