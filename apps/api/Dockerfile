@@ -52,4 +52,8 @@ COPY --from=build /app .
 
 WORKDIR /app/apps/api
 
+ENV PORT=3000
+
+EXPOSE 3000
+
 CMD ["/bin/sh", "-c", "npm run db:migrate && cd ../.. && turbo run api#start --env-mode=loose"]
