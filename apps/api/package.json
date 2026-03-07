@@ -21,6 +21,7 @@
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "db:run": "docker run --name territorios-pg -e POSTGRES_PASSWORD=secret -e POSTGRES_DB=application -p 5432:5432 postgres",
     "db:start": "docker start learn-with-ai-pg -ia",
+    "db:migrate": "prisma migrate deploy",
     "create-cert": "mkcert -install && mkcert -cert-file certificates/localhost.pem -key-file certificates/localhost-key.pem localhost *.territorios.app territorios.app",
     "proxy-ssl": "local-ssl-proxy --source 8443 --target 3333 --key certificates/localhost-key.pem --cert certificates/localhost.pem"
   },
