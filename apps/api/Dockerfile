@@ -46,10 +46,6 @@ WORKDIR /app
 COPY --from=build /app/package-lock.json ./
 RUN npm i -g prisma@$(npm show prisma version)
 
-RUN addgroup --system --gid 1001 nodejs
-RUN adduser --system --uid 1001 nestjs
-USER nestjs
-
 ENV NODE_ENV=production
 
 COPY --from=build /app .
