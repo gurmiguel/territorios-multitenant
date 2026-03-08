@@ -28,6 +28,11 @@ jobs:
           username: ${{secrets.DOCKERHUB_USERNAME}}
           password: ${{secrets.DOCKERHUB_TOKEN}}
 
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+        with:
+          version: latest
+
       - name: Build & Push docker image
         uses: docker/build-push-action@v7
         with:
@@ -37,3 +42,5 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           annotations: ${{ steps.meta.outputs.annotations }}
           platforms: linux/amd64
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
