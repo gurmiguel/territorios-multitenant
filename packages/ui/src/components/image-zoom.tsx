@@ -82,7 +82,7 @@ function InnerImageZoom({ src, onClose }: InnerProps) {
       <TransformComponent>
         <div className="flex w-dvw h-dvh" onClick={handleClickOutside}>
           <div ref={wrapper} className="m-auto">
-            <img src={src} alt="" />
+            <img src={src} alt="" className="max-w-dvw max-h-dvh" />
           </div>
         </div>
       </TransformComponent>
