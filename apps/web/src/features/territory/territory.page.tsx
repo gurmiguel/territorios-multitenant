@@ -102,19 +102,22 @@ export default function TerritoryPage() {
       {!!territory && (
         <>
           <div className="relative w-full">
-            {territory.imageUrl ? (
-              <img src={territory.imageUrl} alt=""
-                width={365} height={365}
-                className="mb-4 mx-auto" />
-            )
-              : (
-                <Image src={territoryImageFallback} alt=""
+            <label htmlFor="edit-image">
+              {territory.imageUrl ? (
+                <img src={territory.imageUrl} alt=""
                   width={365} height={365}
-                  className="mb-4 mx-auto"
-                />
-              )}
+                  className="mb-4 mx-auto" />
+              )
+                : (
+                  <Image src={territoryImageFallback} alt=""
+                    width={365} height={365}
+                    className="mb-4 mx-auto"
+                  />
+                )}
+            </label>
             {can('assets:write') && can('territories:write') && (
-              <Button variant="ghost" color="foreground"
+              <Button id="edit-image" variant="ghost"
+                color="foreground"
                 className="absolute top-3 right-2 rounded-full size-12 p-0!"
                 onClick={() => setOpenDialog('edit-image')}
               >

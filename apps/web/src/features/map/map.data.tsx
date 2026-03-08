@@ -2,9 +2,13 @@ import { getTenantFromHost } from '../api/utils'
 import { getTenant } from '../api/utils.server'
 
 export async function getMapUrl() {
+  const tenant = typeof window === 'undefined' ? await getTenant() : getTenantFromHost(window.location.host)
   const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL!}/congregations`, {
     headers: {
-      'x-tenant-host': typeof window === 'undefined' ? await getTenant() : getTenantFromHost(window.location.host),
+      'x-tenant-host': tenant,
+    },
+    next: {
+      tags: [`map/${tenant}`],
     },
   })
   const data = await response.json()
