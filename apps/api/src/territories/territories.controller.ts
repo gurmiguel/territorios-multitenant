@@ -6,6 +6,7 @@ import { filter, map, merge } from 'rxjs'
 
 import { AllowAnonymous } from '~/auth/decorators/allow-anonymous.decorator'
 import { Allow } from '~/auth/decorators/allow.decorator'
+import { SafeAuth } from '~/auth/decorators/safe-auth.decorator'
 import { fromTypedEvent } from '~/utils/event'
 
 import { HouseCreatedEvent } from './events/houses/house-created.event'
@@ -51,6 +52,7 @@ export class TerritoriesController {
     }
   }
 
+  @SafeAuth()
   @Allow([Area.TERRITORIES, Action.WRITE])
   @Post()
   async create(@Request() req: Application.Request) {
@@ -59,6 +61,7 @@ export class TerritoriesController {
     return await this.territoriesService.createTerritory(data)
   }
 
+  @SafeAuth()
   @Allow([Area.TERRITORIES, Action.WRITE])
   @Patch(':id')
   async update(@Param('id') id: string, @Request() req: Application.Request) {
@@ -67,6 +70,7 @@ export class TerritoriesController {
     return await this.territoriesService.updateTerritory(parseInt(id), data)
   }
 
+  @SafeAuth()
   @Allow([Area.TERRITORIES, Action.DELETE])
   @Delete(':id')
   async delete(@Param('id') id: string) {

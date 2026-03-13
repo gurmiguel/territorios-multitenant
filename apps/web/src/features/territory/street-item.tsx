@@ -30,7 +30,7 @@ export function StreetItem({ territoryId, territoryNumber, street }: Props) {
   }, null), [street.houses])
 
   function handleContextMenuOpen(e: MouseEvent<HTMLButtonElement>) {
-    if (!can('streets:delete')) return
+    if (!can('safe', 'streets:delete')) return
 
     e.preventDefault()
 

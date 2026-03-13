@@ -2,6 +2,10 @@ import { Action } from './action.enum'
 import { Area } from './area.enum'
 import { IPermission, IPermissionStr } from './types'
 
+const allPermissions = new Set(Object.values(Area).flatMap(area =>
+  Object.values(Action).map(action => [area, action].join(':')),
+))
+
 export const Permissions = new class PermissionsHelper {
   getDefaultUserPermissions() {
     return this.getFor({
@@ -24,6 +28,10 @@ export const Permissions = new class PermissionsHelper {
       .filter(action => !config?.action?.exclude?.includes(action))
 
     return areas.flatMap(area => actions.map(action => Permission(area, action)))
+  }
+
+  isValid(permission: string) {
+    return allPermissions.has(permission)
   }
 }
 

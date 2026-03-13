@@ -1,6 +1,7 @@
 export interface User {
   username: string
   permissions: string[]
+  isSafeProvider: boolean
 }
 
 export type ActionResponse = null | {

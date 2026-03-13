@@ -1,7 +1,8 @@
-import { Controller, Get, NotFoundException, Post, Request, UseGuards } from '@nestjs/common'
+import { Controller, Get, NotFoundException, Post, Request } from '@nestjs/common'
 
 import { AllowAnonymous } from '~/auth/decorators/allow-anonymous.decorator'
-import { SuperTokenAuthGuard } from '~/auth/guards/super-token.guard'
+import { SafeAuth } from '~/auth/decorators/safe-auth.decorator'
+import { SuperTokenAuth } from '~/auth/decorators/super-token.decorator'
 import { TenantsService } from '~/tenants/tenants.service'
 
 import { CongregationsService } from './congregations.service'
@@ -29,7 +30,8 @@ export class CongregationsController {
   }
 
   @Post()
-  @UseGuards(SuperTokenAuthGuard)
+  @SafeAuth()
+  @SuperTokenAuth()
   async create(@Request() req: Application.Request) {
     const newCongregation = await this.congregationsService.create(req.body)
 

@@ -76,7 +76,7 @@ export default function TerritoryPage() {
   function handleMapClick() {
     if (!territory) return
 
-    if (can('territories:write'))
+    if (can('safe', 'territories:write'))
       return setOpenDialog('map-link')
 
     window.open(territory.map!, '_blank')
@@ -115,7 +115,7 @@ export default function TerritoryPage() {
                   />
                 )}
             </label>
-            {can('assets:write') && can('territories:write') && (
+            {can('safe') && can('assets:write') && can('territories:write') && (
               <Button id="edit-image" variant="ghost"
                 color="foreground"
                 className="absolute top-3 right-2 rounded-full size-12 p-0!"
@@ -129,7 +129,7 @@ export default function TerritoryPage() {
           <div className="w-full flex justify-between items-center mb-3">
             {territory.streets.length > 0 && <p className="text-sm text-left">A Trabalhar: <strong className="text-lg align-[-0.075em]">{missingHouses}</strong></p>}
             <div className="flex items-center space-x-2 ml-auto">
-              {(can('territories:write') || !!territory.map) && (
+              {(can('safe', 'territories:write') || !!territory.map) && (
                 <Button variant="default"
                   className="rounded-full size-12 px-0! py-0 accessible-bg-secondary-foreground"
                   onClick={handleMapClick}
@@ -152,7 +152,7 @@ export default function TerritoryPage() {
               />
             ))}
 
-            {can('streets:write') && (
+            {can('safe', 'streets:write') && (
               <button
                 type="button"
                 className="flex items-center w-full py-2.5 pl-1 pr-4 font-normal text-left hover:bg-gray-100/50 active:bg-gray-200 transition-colors uppercase"

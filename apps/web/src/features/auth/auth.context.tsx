@@ -13,8 +13,8 @@ interface AuthContext {
   }
   login(accessToken: string, user: User): void
   logout(): void
-  can(...permission: IPermission[]): boolean
-  cannot(...permission: IPermission[]): boolean
+  can(...permission: (IPermission | 'safe')[]): boolean
+  cannot(...permission: (IPermission | 'safe')[]): boolean
 }
 
 const authContext = createContext({} as AuthContext)
@@ -57,11 +57,23 @@ export function AuthProvider({ children }: PropsWithChildren) {
   }, [dispatch])
 
   const can = useCallback<AuthContext['can']>((...permissions) => {
-    return permissions.some(permission => state.user?.permissions?.includes(Permission(permission))) || false
+    if (permissions.includes('safe') && !state.user?.isSafeProvider)
+      return false
+
+    return permissions.some(permission => {
+      if (permission === 'safe') return false
+      return state.user?.permissions?.includes(Permission(permission))
+    }) || false
   }, [state])
 
   const cannot = useCallback<AuthContext['cannot']>((...permissions) => {
-    return permissions.every(permission => state.user?.permissions?.includes(Permission(permission)) ?? true) === false
+    if (permissions.includes('safe') && !state.user?.isSafeProvider)
+      return true
+
+    return permissions.every(permission => {
+      if (permission === 'safe') return true
+      return state.user?.permissions?.includes(Permission(permission)) ?? true
+    }) === false
   }, [state])
 
   return (

@@ -9,6 +9,7 @@ import { FormProvider, SubmitHandler } from 'react-hook-form'
 
 import { ApiClient } from '~/features/api/api.client'
 import { invalidateCache } from '~/features/api/utils.server'
+import { useAuth } from '~/features/auth/auth.context'
 
 import { CustomDialogProps } from './types'
 import { TerritoryFormData, useUpsertTerritory } from '../forms/upsert-territory'
@@ -20,6 +21,8 @@ type Props = CustomDialogProps<{
 }>
 
 export function EditTerritoryDialog({ open, onClose, context }: Props) {
+  const { can } = useAuth()
+
   const queryClient = useQueryClient()
   const {
     form,
@@ -93,15 +96,17 @@ export function EditTerritoryDialog({ open, onClose, context }: Props) {
               </div>
 
               <DialogFooter>
-                <Button variant="ghost"
-                  color="destructive"
-                  className="ml-0 mr-auto uppercase"
-                  onClick={handleRemoveTerritory}>Remover</Button>
+                {can('safe', 'territories:delete') && (
+                  <Button variant="ghost"
+                    color="destructive"
+                    className="ml-0 mr-auto uppercase"
+                    onClick={handleRemoveTerritory}>Remover</Button>
+                )}
 
                 <DialogClose asChild>
                   <Button variant="ghost" color="muted" className="uppercase">Cancelar</Button>
                 </DialogClose>
-                <Button type="submit">OK</Button>
+                {can('safe', 'territories:write') && <Button type="submit">OK</Button>}
               </DialogFooter>
             </form>
           </FormProvider>

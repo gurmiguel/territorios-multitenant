@@ -32,13 +32,14 @@ export class ApiClient extends ApiClientBase {
     const accessToken = await this.deferredAccessToken!.unwrap()
 
     if (accessToken === 'offline')
-      return { accessToken, user: { username: 'offline', permissions: [] } as User }
+      return { accessToken, user: { username: 'offline', permissions: [], isSafeProvider: false } as User }
 
     const payload = decodeJwt<User>(accessToken)
 
     const user: User = {
       username: payload.username,
       permissions: payload.permissions,
+      isSafeProvider: payload.isSafeProvider,
     }
 
     return { accessToken, user }

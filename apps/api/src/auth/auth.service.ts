@@ -200,7 +200,11 @@ export class AuthService {
       if (!superadmin)
         throw new UnauthorizedException()
 
-      return superadmin
+      return {
+        ...superadmin,
+        provider: token.provider,
+        isSafeProvider: token.isSafeProvider,
+      }
     } catch (e) {
       this.logger.debug(e instanceof Error ? `${e.name}: ${e.message}` : e)
       throw e instanceof HttpException ? e : new UnauthorizedException()

@@ -43,7 +43,7 @@ Content-Type: application/json
 
 
 # @name getProfile
-GET {{baseUrl}}/users
+GET {{baseUrl}}/users/me
 Authorization: Bearer {{accessToken}}
 
 ### Territories

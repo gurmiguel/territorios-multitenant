@@ -65,7 +65,7 @@ export function TerritoriesPage() {
             />
           ))}
 
-          {!isLoading && can('territories:write') && (
+          {!isLoading && can('territories:write', 'safe') && (
             <li>
               <button type="button"
                 className={cn([

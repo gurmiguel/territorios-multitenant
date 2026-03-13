@@ -6,6 +6,7 @@ import { DotIcon, EyeOffIcon } from 'lucide-react'
 import Link from 'next/link'
 import { ComponentProps, useState } from 'react'
 
+import { useAuth } from '../auth/auth.context'
 import { EditTerritoryDialog } from '../territory/dialogs/edit-territory.dialog'
 import { TerritoryListItem as ITerritoryListItem } from '../territory/types'
 
@@ -17,9 +18,14 @@ const CustomDotIcon = (props: ComponentProps<typeof DotIcon>) =>
   <DotIcon {...props} size={48} className={cn(props.className, '-mx-1')} />
 
 export function TerritoryListItem({ territory }: Props) {
+  const { cannot } = useAuth()
+
   const [openDialog, setOpenDialog] = useState<'edit-territory' | null>(null)
 
   function handleOpenEditDialog(e: React.MouseEvent<HTMLAnchorElement>): void {
+    if (cannot('safe', 'territories:write', 'territories:delete'))
+      return
+
     e.preventDefault()
 
     setOpenDialog('edit-territory')

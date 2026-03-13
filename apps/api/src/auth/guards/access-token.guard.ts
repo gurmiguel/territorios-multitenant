@@ -3,6 +3,7 @@ import { Reflector } from '@nestjs/core'
 import { AuthGuard, IAuthGuard } from '@nestjs/passport'
 
 import { ALLOW_ANONYMOUS_KEY } from '../decorators/allow-anonymous.decorator'
+import { SUPER_TOKEN_KEY } from '../decorators/super-token.decorator'
 
 @Injectable()
 export class AccessTokenAuthGuard extends AuthGuard('access_token') {
@@ -14,8 +15,9 @@ export class AccessTokenAuthGuard extends AuthGuard('access_token') {
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const useGuards = this.reflector.getAllAndMerge<Function[]>('__guards__', [context.getHandler(), context.getClass()])
+    const isSuperTokenGuarded = this.reflector.getAllAndOverride<boolean | void>(SUPER_TOKEN_KEY, [context.getHandler(), context.getClass()])
 
-    if (this.hasAuthGuards(useGuards))
+    if (this.hasAuthGuards(useGuards) || isSuperTokenGuarded)
       return true
 
     try {
