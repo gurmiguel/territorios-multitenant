@@ -13,6 +13,7 @@ import { AuthController } from './auth.controller'
 import { AuthService } from './auth.service'
 import { AccessTokenAuthGuard } from './guards/access-token.guard'
 import { AllowGuard } from './guards/allow.guard'
+import { SafeAuthGuard } from './guards/safe-auth.guard'
 import { AccessTokenStrategy } from './strategies/access-token.strategy'
 import { GoogleStrategy } from './strategies/google.strategy'
 import { LocalStrategy } from './strategies/local.strategy'
@@ -47,6 +48,10 @@ import { SuperTokenStrategy } from './strategies/super-token.strategy'
     {
       provide: APP_GUARD,
       useClass: AllowGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: SafeAuthGuard,
     },
   ],
   exports: [AuthService],

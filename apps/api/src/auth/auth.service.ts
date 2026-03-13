@@ -14,6 +14,9 @@ import { SuperadminService } from '~/superadmin/superadmin.service'
 import { TenantsService } from '~/tenants/tenants.service'
 import { UsersService } from '~/users/users.service'
 
+import { AuthProviders } from './auth-providers.enum'
+import { SafeAuthGuard } from './guards/safe-auth.guard'
+
 @Injectable()
 export class AuthService {
   protected readonly logger = new Logger(AuthService.name)
@@ -43,10 +46,10 @@ export class AuthService {
     if (!user || await this.checkPassword(password, this.config.get('auth', { infer: true }).defaultPassword))
       return null
 
-    return this.buildUser(user)
+    return this.buildUser(user, AuthProviders.Email)
   }
 
-  async validateUserByProvider(tenantHost: string, provider: string, uid: string, profile: Pick<User, 'email' | 'name'>): Promise<User | null> {
+  async validateUserByProvider(tenantHost: string, provider: AuthProviders, uid: string, profile: Pick<User, 'email' | 'name'>): Promise<User | null> {
     const tenant = await this.congregationsService.find({ where: { domains: { has: tenantHost } } })
 
     if (!tenant) throw new Error(`Invalid Tenant: ${tenantHost}`)
@@ -121,7 +124,7 @@ export class AuthService {
       })
     }
 
-    return this.buildUser(user)
+    return this.buildUser(user, provider)
   }
 
   async validateUserByRefreshToken(refreshToken: string) {
@@ -143,7 +146,7 @@ export class AuthService {
         throw new ForbiddenException(`Token is not a valid ${tokenType}`)
 
       if (tokenPayload.sub === AuthService.CRAWLER_FAKE_USERID) {
-        return this.buildUser(await this.getFakeCrawlerUser(tokenPayload.iss.split(';')))
+        return this.buildUser(await this.getFakeCrawlerUser(tokenPayload.iss.split(';')), tokenPayload.provider)
       }
 
       const user = await this.usersService.find({
@@ -154,7 +157,7 @@ export class AuthService {
       if (!user)
         throw new UnauthorizedException()
 
-      return this.buildUser(user)
+      return this.buildUser(user, tokenPayload.provider ?? AuthProviders.Email)
     } catch (e) {
       this.logger.debug(e instanceof Error ? `${e.name}: ${e.message}` : e)
       throw e instanceof HttpException ? e : new UnauthorizedException()
@@ -162,11 +165,15 @@ export class AuthService {
   }
 
   async superadminSignin(superadmin: Pick<SuperAdmin, 'id' | 'email'>) {
+    const provider = AuthProviders.TFA
+
     const payload: SuperAdminTokenPayload = {
       sub: superadmin.id,
       iss: 'superadmin',
       type: 'access_token',
       username: superadmin.email,
+      provider,
+      isSafeProvider: SafeAuthGuard.isSafeProvider(provider),
     }
     return {
       access_token: await this.jwtService.signAsync(payload, { expiresIn: '1 hour' }),
@@ -200,10 +207,12 @@ export class AuthService {
     }
   }
 
-  async signin(user: Pick<User, 'id' | 'congregation' | 'email' | 'permissions'>) {
+  async signin(user: Pick<User, 'id' | 'congregation' | 'email' | 'permissions'>, provider: AuthProviders) {
     const basePayload: TokenPayload = {
       sub: user.id,
       iss: user.congregation.domains.join(';'),
+      provider,
+      isSafeProvider: SafeAuthGuard.isSafeProvider(provider),
     }
     const payload = {
       username: user.email,
@@ -215,7 +224,7 @@ export class AuthService {
     }
   }
 
-  async signup({ email, name }: Pick<User, 'email' | 'name'>, tenant: Congregation) {
+  async signup({ email, name }: Pick<User, 'email' | 'name'>, provider: AuthProviders, tenant: Congregation) {
     const { success: isValid } = z.object({ email: z.email().nonempty(), name: z.string() }).safeParse({ email, name })
 
     if (!isValid) throw new BadRequestException('Invalid email or name')
@@ -230,7 +239,7 @@ export class AuthService {
       include: { congregation: true },
     })
 
-    return this.signin(this.buildUser(user))
+    return this.signin(this.buildUser(user, provider), provider)
   }
 
   async updateAdminsPermissions() {
@@ -279,6 +288,8 @@ export class AuthService {
       createdAt: new Date(),
       name: 'Fake Crawler User',
       roles: [Role.USER],
+      provider: AuthProviders.Email,
+      isSafeProvider: false,
     } satisfies Omit<User, 'refresh'>
 
     return fakeUser
@@ -290,7 +301,7 @@ export class AuthService {
     return compare(password, encrypted)
   }
 
-  private buildUser(user: PrismaUser & { congregation: Congregation }) {
+  private buildUser(user: PrismaUser & { congregation: Congregation }, provider: AuthProviders) {
     const {
       /* use spread operator to remove any sensitive info here */
       ...userData
@@ -300,6 +311,8 @@ export class AuthService {
 
     return {
       ...userData,
+      provider,
+      isSafeProvider: SafeAuthGuard.isSafeProvider(provider),
       async refresh() {
         Object.assign(this, await usersService.find({ where: { id: userData.id }, include: { congregation: true } }))
         return this
@@ -313,6 +326,8 @@ type User = Express.User
 interface TokenPayload {
   sub: User['id']
   iss: string
+  provider: AuthProviders
+  isSafeProvider: boolean
 }
 
 interface SuperAdminTokenPayload extends TokenPayload {

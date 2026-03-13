@@ -3,6 +3,7 @@ import { Controller, Get, Post, Request, UnauthorizedException, UseGuards } from
 import { TenantHolderService } from '~/tenants/tenant-holder.service'
 import { ByPassTenant } from '~/tenants/tenants.interceptor'
 
+import { AuthProviders } from './auth-providers.enum'
 import { AuthService } from './auth.service'
 import { AllowAnonymous } from './decorators/allow-anonymous.decorator'
 import { GoogleAuthGuard } from './guards/google.guard'
@@ -20,13 +21,13 @@ export class AuthController {
   @ByPassTenant()
   @Post('/login')
   async login(@Request() req: Application.Request) {
-    return await this.authService.signin(req.user!)
+    return await this.authService.signin(req.user!, AuthProviders.Email)
   }
 
   @Post('/signup')
   @AllowAnonymous()
   async signup(@Request() req: Application.Request) {
-    return await this.authService.signup(req.body, this.tenantHolder.getTenant())
+    return await this.authService.signup(req.body, AuthProviders.Email, this.tenantHolder.getTenant())
   }
 
   @UseGuards(GoogleAuthGuard)
@@ -47,7 +48,7 @@ export class AuthController {
   async refreshTokenAuth(@Request() req: Application.Request) {
     const { user } = req
 
-    if (user) return await this.authService.signin(user)
+    if (user) return await this.authService.signin(user, user.provider)
     else throw new UnauthorizedException('Invalid Refresh token')
   }
 }

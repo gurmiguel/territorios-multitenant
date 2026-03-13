@@ -4,6 +4,7 @@ import { AuthGuard } from '@nestjs/passport'
 import { MissingTenantException } from '~/exceptions/tenant-exceptions'
 import { TenantsService } from '~/tenants/tenants.service'
 
+import { AuthProviders } from '../auth-providers.enum'
 import { AuthService } from '../auth.service'
 import { GoogleStrategy } from '../strategies/google.strategy'
 
@@ -45,7 +46,7 @@ export class GoogleAuthGuard extends AuthGuard('google') {
     const activate = (await super.canActivate(context)) as boolean
 
     if (activate) {
-      const { refresh_token } = await this.authService.signin(request.user!)
+      const { refresh_token } = await this.authService.signin(request.user!, AuthProviders.Google)
 
       const redirectUrl = new URL(session.redirectUrl)
       redirectUrl.searchParams.set('auth_result', 'success')
