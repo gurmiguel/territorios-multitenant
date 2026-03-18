@@ -84,7 +84,7 @@ export function Header() {
           )}
         </nav>
       </div>
-      <div className="block flex-1 shrink-0 basis-16 w-full" />
+      <div className="block grow-0 shrink-0 basis-16 w-full" />
     </>
   )
 }
