@@ -7,7 +7,7 @@ export default async function manifest(): Promise<MetadataRoute.Manifest> {
 
   return {
     name: `Territórios ${congregation.name}`,
-    short_name: 'Territórios',
+    short_name: `Territórios ${congregation.name}`,
     description: 'Gerenciamento dos territórios de campo da congregação',
     theme_color: '#778bc4',
     id: '/',
