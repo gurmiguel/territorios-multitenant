@@ -12,14 +12,19 @@ declare global {
 
 declare const self: ServiceWorkerGlobalScope
 
+const NO_CACHE_PAGES = new Set([
+  '/usuarios',
+])
+
 const serwist = new Serwist({
   precacheEntries: self.__SW_MANIFEST,
   clientsClaim: true,
   navigationPreload: true,
   runtimeCaching: [
     {
-      matcher: ({ request, sameOrigin }) =>
+      matcher: ({ request, url, sameOrigin }) =>
         sameOrigin
+        && !NO_CACHE_PAGES.has(url.pathname)
         && request.method === 'GET'
         && request.headers.get('RSC') === '1'
         && request.headers.get('Next-Router-Prefetch') === '1',
@@ -36,8 +41,9 @@ const serwist = new Serwist({
       }),
     },
     {
-      matcher: ({ request, sameOrigin }) =>
+      matcher: ({ request, url, sameOrigin }) =>
         sameOrigin
+        && !NO_CACHE_PAGES.has(url.pathname)
         && request.headers.get('RSC') === '1'
         && request.method === 'GET',
       handler: new NetworkFirst({
@@ -56,6 +62,7 @@ const serwist = new Serwist({
     {
       matcher: ({ request, sameOrigin, url }) =>
         sameOrigin
+        && !NO_CACHE_PAGES.has(url.pathname)
         && request.method === 'GET'
         && ['', 'document'].includes(request.destination)
         && !!url.pathname.match(/^\/[^.]*$/i), // match extension-less urls
@@ -73,6 +80,7 @@ const serwist = new Serwist({
     {
       matcher: ({ request, sameOrigin, url }) =>
         request.method === 'GET'
+        && !NO_CACHE_PAGES.has(url.pathname)
         && (
           sameOrigin && !!url.pathname.match(/^\/_next\/(static|image)/i)
           || url.hostname.includes('.r2.cloudflarestorage.com')
@@ -114,11 +122,6 @@ const serwist = new Serwist({
           const sameOrigin = request.url.startsWith(self.location.origin)
           const url = new URL(request.url)
           const isRSC = url.searchParams.has('_rsc')
-          console.log('offline fallback', url.href, sameOrigin
-            && !isRSC
-            && request.method === 'GET'
-            && ['', 'document'].includes(request.destination)
-            && !!url.pathname.match(/^\/[^.]*$/i))
           return sameOrigin
             && !isRSC
             && request.method === 'GET'

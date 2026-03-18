@@ -7,7 +7,7 @@ const updatedAt = new Date('2025-11-28').toLocaleDateString('pt-BR')
 export default function PrivacyPolicyPage() {
   return (
     <div className="flex flex-col gap-2 py-3">
-      <HeaderConfig title="Política de Privacidade" backRoute="/territorios" showMap />
+      <HeaderConfig title="Política de Privacidade" backRoute="/territorios" show={['map']} />
 
       <h1 className="text-3xl mb-4">Política de Privacidade</h1>
 

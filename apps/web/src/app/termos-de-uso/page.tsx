@@ -5,7 +5,7 @@ import { HeaderConfig } from '~/features/header/context'
 export default function TermsOfUsePage() {
   return (
     <div className="flex flex-col gap-2 py-3">
-      <HeaderConfig title="Termos de Uso" backRoute="/territorios" showMap />
+      <HeaderConfig title="Termos de Uso" backRoute="/territorios" show={['map']} />
 
       <h1 className="text-3xl mb-4">Termos e Condições de Uso do Site</h1>
 

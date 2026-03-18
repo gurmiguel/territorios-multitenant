@@ -24,28 +24,30 @@ export class ApiClient extends ApiClientBase {
     return ApiClient.instance
   }
 
-  public async getAccessToken() {
-    if (!this.deferredAccessToken) {
+  public async getAccessToken(forceRefresh = false) {
+    if (!this.deferredAccessToken || forceRefresh) {
       await this.refreshTokens()
     }
 
     const accessToken = await this.deferredAccessToken!.unwrap()
 
     if (accessToken === 'offline')
-      return { accessToken, user: { username: 'offline', permissions: [], isSafeProvider: false } as User }
+      return { accessToken, user: { id: 'unknown', username: 'offline', permissions: [], provider: 'email', isSafeProvider: false } as User }
 
     const payload = decodeJwt<User>(accessToken)
 
     const user: User = {
+      id: payload.sub!,
       username: payload.username,
       permissions: payload.permissions,
+      provider: payload.provider,
       isSafeProvider: payload.isSafeProvider,
     }
 
     return { accessToken, user }
   }
 
-  protected async getAuthCookies() {
+  public async getAuthCookies() {
     return {
       refreshToken: Cookies.get(REFRESH_TOKEN_COOKIE_NAME),
     }

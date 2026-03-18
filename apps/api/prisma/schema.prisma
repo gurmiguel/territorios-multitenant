@@ -124,6 +124,8 @@ model User {
   uploadedAssets Asset[]
 
   @@unique([email, congregationId])
+  @@index([congregationId], name: "index_congregationId")
+  @@index([createdAt], name: "index_createdAt")
 }
 
 model Asset {

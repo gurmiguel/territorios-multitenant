@@ -9,16 +9,17 @@ const allPermissions = new Set(Object.values(Area).flatMap(area =>
 export const Permissions = new class PermissionsHelper {
   getDefaultUserPermissions() {
     return this.getFor({
-      area: { exclude: [Area.TENANTS, Area.USERS] },
+      area: { exclude: [Area.CONGREGATION, Area.USERS] },
       action: { include: [Action.READ] },
     })
   }
 
   getTenantAdminPermissions(areas?: Area[], exclude?: Action[]): IPermissionStr[] {
+    const incompatible = this.getFor({ area: { include: [Area.CONGREGATION] }, action: { exclude: [Action.WRITE] } })
     return this.getFor({
       area: { include: areas },
       action: { exclude },
-    })
+    }).filter(p => !incompatible.includes(p))
   }
 
   getFor(config?: { area?: GetForConfig<Area>, action?: GetForConfig<Action> }): IPermissionStr[] {

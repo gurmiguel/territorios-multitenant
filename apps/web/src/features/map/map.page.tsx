@@ -16,7 +16,7 @@ export function MapPage({ mapUrl }: { mapUrl: string | undefined }) {
 
   return (
     <div className="flex flex-col">
-      <HeaderConfig title="Mapa Completo" showMap backRoute />
+      <HeaderConfig title="Mapa Completo" show={['map']} backRoute />
       <div className="relative w-full aspect-3/4">
         {mapUrl ? (
           <ImageZoom src={mapUrl}>

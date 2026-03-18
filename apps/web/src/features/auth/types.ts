@@ -1,6 +1,8 @@
 export interface User {
+  id: string
   username: string
   permissions: string[]
+  provider: string
   isSafeProvider: boolean
 }
 

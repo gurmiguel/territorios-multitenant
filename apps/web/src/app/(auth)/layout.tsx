@@ -1,5 +1,6 @@
 'use client'
 
+import Loading from '@repo/ui/components/loading'
 import { delay } from '@repo/utils/delay'
 import { useRouter } from 'next/navigation'
 import { PropsWithChildren, useEffect, useState } from 'react'
@@ -8,8 +9,6 @@ import { useNetworkState } from 'react-use'
 import { ApiError } from '~/features/api/api.base'
 import { ApiClient } from '~/features/api/api.client'
 import { useAuth } from '~/features/auth/auth.context'
-
-import Loading from '../loading'
 
 let swRegistered = false
 

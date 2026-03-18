@@ -37,6 +37,7 @@ function Input({ className, wrapperClassName, type, label, leftIcon, rightIcon, 
           'focus-visible:ring-0',
           'user-invalid:border-b-destructive',
           leftIcon && 'pl-6',
+          rightIcon && 'pr-6',
           className,
         )}
         id={props.name}
@@ -50,6 +51,15 @@ function Input({ className, wrapperClassName, type, label, leftIcon, rightIcon, 
         ])}
         >
           {React.cloneElement(leftIcon, { className: cn(!leftIcon.props.size && 'size-4', 'text-muted-foreground text-currentColor', leftIcon.props.className) })}
+        </span>
+      )}
+      {rightIcon && (
+        <span className={cn([
+          'absolute right-0 top-0 pt-3 h-full flex items-center pointer-events-none',
+          'peer-user-invalid:text-destructive',
+        ])}
+        >
+          {React.cloneElement(rightIcon, { className: cn(!rightIcon.props.size && 'size-4', 'text-muted-foreground text-currentColor', rightIcon.props.className) })}
         </span>
       )}
       <span className={cn([

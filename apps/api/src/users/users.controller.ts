@@ -1,12 +1,15 @@
-import { BadRequestException, Controller, Get, Logger, NotFoundException, Param, Patch, Request } from '@nestjs/common'
+import { BadRequestException, Controller, Delete, Get, Logger, NotFoundException, Param, Patch, Request } from '@nestjs/common'
 import { Action } from '@repo/utils/permissions/action.enum'
 import { Area } from '@repo/utils/permissions/area.enum'
 import { Permissions } from '@repo/utils/permissions/permissions.helper'
+import { IPermissionStr } from '@repo/utils/permissions/types'
 
 import { Allow } from '~/auth/decorators/allow.decorator'
 import { SafeAuth } from '~/auth/decorators/safe-auth.decorator'
 
 import { UsersService } from './users.service'
+
+const ALL_PERMISSIONS = Permissions.getTenantAdminPermissions()
 
 @Controller('users')
 export class UsersController {
@@ -39,6 +42,9 @@ export class UsersController {
           select: { provider: true },
         },
       },
+      orderBy: [
+        { createdAt: 'asc' },
+      ],
     })
 
     return users
@@ -65,7 +71,13 @@ export class UsersController {
     await this.usersService.update({
       where: { id: userId },
       data: {
-        permissions: req.body.permissions,
+        permissions: (req.body.permissions as IPermissionStr[])
+          // keep original permission order
+          .toSorted((a, b) => {
+            const ai = ALL_PERMISSIONS.indexOf(a)
+            const bi = ALL_PERMISSIONS.indexOf(b)
+            return ai - bi
+          }),
       },
     })
 
@@ -74,5 +86,23 @@ export class UsersController {
     })
 
     return { ok: true }
+  }
+
+  @SafeAuth()
+  @Allow([Area.USERS, Action.DELETE])
+  @Delete(':id')
+  async deleteUser(@Param('id') id: string, @Request() req: Application.Request) {
+    const { congregationId } = req.user!
+
+    try {
+      await this.usersService.delete({
+        where: { id, congregationId },
+      })
+
+      return { ok: true }
+    } catch (err) {
+      this.logger.error(`Failed to delete user with ID ${id} in congregation ${congregationId}`, err)
+      throw new BadRequestException('Failed to delete user')
+    }
   }
 }

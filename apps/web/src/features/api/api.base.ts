@@ -139,7 +139,7 @@ export abstract class ApiClientBase {
     return true
   }
 
-  protected abstract getAuthCookies(): Promise<{ accessToken?: string, refreshToken?: string }>
+  public abstract getAuthCookies(): Promise<{ accessToken?: string, refreshToken?: string }>
   protected abstract setAuthCookies(refreshToken: string, accessToken?: string): Promise<void>
   protected abstract clearAuthCookies(): Promise<void>
 

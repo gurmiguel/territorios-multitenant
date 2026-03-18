@@ -1,6 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 'use client'
 
+import Loading from '@repo/ui/components/loading'
 import { Accordion } from '@repo/ui/components/ui/accordion'
 import { Button } from '@repo/ui/components/ui/button'
 import { MapIcon, PencilIcon, PlusIcon } from '@repo/ui/components/ui/icons'
@@ -10,7 +11,6 @@ import { subMonths } from 'date-fns'
 import Image from 'next/image'
 import { useEffect, useEffectEvent, useMemo, useState } from 'react'
 
-import Loading from '~/app/loading'
 import territoryImageFallback from '~/assets/territory.png'
 import WhatsappIcon from '~/assets/whatsapp-icon.svg'
 
@@ -95,7 +95,7 @@ export default function TerritoryPage() {
 
   return (
     <div className="flex flex-col flex-1 items-center">
-      <HeaderConfig title={`Território ${number}`} backRoute="/territorios" showMap />
+      <HeaderConfig title={`Território ${number}`} backRoute="/territorios" show={['map']} />
 
       {isLoading && <Loading />}
 

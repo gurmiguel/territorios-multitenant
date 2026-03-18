@@ -1,13 +1,12 @@
 'use client'
 
+import Loading from '@repo/ui/components/loading'
 import { PlusIcon } from '@repo/ui/components/ui/icons'
 import { cn } from '@repo/ui/lib/utils'
 import { PAGES_CACHE_NAME } from '@serwist/next/worker'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
-
-import Loading from '~/app/loading'
 
 import { TerritoryListItem } from './territory-list-item'
 import { useAuth } from '../auth/auth.context'
@@ -56,7 +55,7 @@ export function TerritoriesPage() {
       {isLoading && <Loading />}
 
       <div className="flex">
-        <HeaderConfig title="Territórios" showMap />
+        <HeaderConfig title="Territórios" show={['map']} />
 
         <ul className="flex-1">
           {data?.items?.map(territory => (

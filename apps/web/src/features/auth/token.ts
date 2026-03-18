@@ -1,10 +1,12 @@
 import { decodeJwt } from 'jose'
 
-export const tryDecodeJwt = (token: string | undefined) => {
+import { User } from './types'
+
+export const tryDecodeJwt = <T = User>(token: string | undefined) => {
   try {
     if (!token) return null
 
-    return decodeJwt(token)
+    return decodeJwt<T>(token)
   } catch {
     return null
   }

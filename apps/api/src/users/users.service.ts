@@ -29,6 +29,10 @@ export class UsersService {
     return this.prisma.user.update
   }
 
+  get delete() {
+    return this.prisma.user.delete
+  }
+
   async addProvider(data: Prisma.AccountProviderCreateArgs['data']) {
     await this.prisma.accountProvider.create({ data })
   }

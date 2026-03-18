@@ -60,6 +60,9 @@ export function AuthProvider({ children }: PropsWithChildren) {
     if (permissions.includes('safe') && !state.user?.isSafeProvider)
       return false
 
+    if (permissions.length === 1 && permissions[0] === 'safe')
+      return true
+
     return permissions.some(permission => {
       if (permission === 'safe') return false
       return state.user?.permissions?.includes(Permission(permission))
@@ -69,6 +72,9 @@ export function AuthProvider({ children }: PropsWithChildren) {
   const cannot = useCallback<AuthContext['cannot']>((...permissions) => {
     if (permissions.includes('safe') && !state.user?.isSafeProvider)
       return true
+
+    if (permissions.length === 1 && permissions[0] === 'safe')
+      return false
 
     return permissions.every(permission => {
       if (permission === 'safe') return true
