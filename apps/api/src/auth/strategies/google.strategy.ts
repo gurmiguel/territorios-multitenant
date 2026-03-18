@@ -5,6 +5,7 @@ import { Profile, Strategy } from 'passport-google-oauth20'
 
 import { Configuration } from '~/config/configuration'
 
+import { AuthProviders } from '../auth-providers.enum'
 import { AuthService } from '../auth.service'
 
 @Injectable()
@@ -29,7 +30,7 @@ export class GoogleStrategy extends PassportStrategy(Strategy) {
   async validate(req: Application.Request, accessToken: string, refreshToken: string, profile: Profile) {
     const sessionKey = (this as any)._key
     const session = req.session[sessionKey]
-    const user = await this.authService.validateUserByProvider(session.tenant, profile.provider, profile.id, {
+    const user = await this.authService.validateUserByProvider(session.tenant, profile.provider as AuthProviders, profile.id, {
       name: profile.displayName,
       email: profile.emails![0]!.value,
     })

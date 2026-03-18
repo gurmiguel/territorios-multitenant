@@ -44,3 +44,20 @@ jobs:
           platforms: linux/amd64
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+      - name: Publish event to webhook
+        if: success()
+        run: |
+          # Construct a payload that Dokploy expects for a push event
+          payload=$(jq -n \
+            --arg ref "${{ github.ref }}" \
+            --arg sha "${{ github.sha }}" \
+            --arg message "${{ github.event.head_commit.message }}" \
+            --arg repo "${{ github.repository }}" \
+            --arg actor "${{ github.actor }}" \
+            '{ ref: $ref, head_commit: { id: $sha, message: $message }, repository: { full_name: $repo }, pusher: { name: $actor } }')
+
+          curl -X POST "${{ secrets.DOKPLOY_WEBHOOK_URL }}" \
+            -H "Content-Type: application/json" \
+            -H "X-Github-Event: push"
+            -d "$payload"

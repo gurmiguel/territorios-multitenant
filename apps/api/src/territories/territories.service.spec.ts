@@ -4,6 +4,7 @@ import { Permissions, Role } from '@repo/utils/permissions/index'
 import parseDuration from 'parse-duration'
 
 import { AppModule } from '~/app.module'
+import { AuthProviders } from '~/auth/auth-providers.enum'
 import configuration from '~/config/configuration'
 import { PrismaService } from '~/db/prisma.service'
 import { ValidationException } from '~/exceptions/application-exception/validation-exception'
@@ -30,6 +31,8 @@ const TEST_USER = {
   permissions: Permissions.getTenantAdminPermissions(),
   refresh: jest.fn(),
   roles: [Role.ADMIN],
+  isSafeProvider: true,
+  provider: AuthProviders.Google,
 } satisfies Application.Request['user']
 
 describe('TerritoriesService', () => {
