@@ -77,9 +77,11 @@ export class ApiClient extends ApiClientBase {
     return navigator.onLine === true
   }
 
-  protected async refreshTokens() {
+  public async refreshTokens() {
     const { accessToken, refreshToken} = await refreshTokensAction()
 
     await this.setAuthCookies(refreshToken, accessToken)
+
+    return { accessToken, refreshToken }
   }
 }

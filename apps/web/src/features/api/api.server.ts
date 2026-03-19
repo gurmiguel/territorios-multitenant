@@ -1,7 +1,7 @@
 import { cookies } from 'next/headers'
 import parseDuration from 'parse-duration'
 
-import { ApiClientBase } from './api.base'
+import { ApiClientBase, ApiError } from './api.base'
 import { ACCESS_TOKEN_COOKIE_NAME, REFRESH_TOKEN_COOKIE_NAME } from '../auth/constants'
 
 export class ServerApiClient extends ApiClientBase {
@@ -60,5 +60,38 @@ export class ServerApiClient extends ApiClientBase {
 
     cookieStore.delete(ACCESS_TOKEN_COOKIE_NAME)
     cookieStore.delete(REFRESH_TOKEN_COOKIE_NAME)
+  }
+
+  public async refreshTokens() {
+    this.refreshToken ??= (await this.getAuthCookies()).refreshToken
+
+    const url = '/auth/refresh'
+
+    const response = await fetch(this.buildUrl(url), {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ refresh_token: this.refreshToken }),
+    }).catch(error => {
+      return Response.json({
+        error,
+        access_token: 'offline',
+        refresh_token: this.refreshToken,
+      }, { status: 499, statusText: 'Client Closed Request' })
+    })
+
+    if (!response.ok && response.status !== 499) {
+      throw new ApiError(response.status, response.statusText, {url, response: await response.text()})
+    }
+
+    const { access_token, refresh_token } = await response.json()
+
+    this.accessToken = access_token
+    this.refreshToken = refresh_token
+
+    await this.authenticate(access_token, refresh_token)
+
+    return { accessToken: this.accessToken, refreshToken: this.refreshToken! }
   }
 }

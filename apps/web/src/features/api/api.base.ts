@@ -104,42 +104,12 @@ export abstract class ApiClientBase {
     }
   }
 
-  protected async refreshTokens() {
-    this.refreshToken ??= (await this.getAuthCookies()).refreshToken
-
-    const url = '/auth/refresh'
-
-    const response = await fetch(this.buildUrl(url), {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ refresh_token: this.refreshToken }),
-    }).catch(error => {
-      return Response.json({
-        error,
-        access_token: 'offline',
-        refresh_token: this.refreshToken,
-      }, { status: 499, statusText: 'Client Closed Request' })
-    })
-
-    if (!response.ok && response.status !== 499) {
-      throw new ApiError(response.status, response.statusText, {url, response: await response.text()})
-    }
-
-    const { access_token, refresh_token } = await response.json()
-
-    this.accessToken = access_token
-    this.refreshToken = refresh_token
-
-    await this.setAuthCookies(refresh_token, access_token)
-  }
-
   protected shouldRefreshToken() {
     return true
   }
 
   public abstract getAuthCookies(): Promise<{ accessToken?: string, refreshToken?: string }>
+  public abstract refreshTokens(): Promise<{ accessToken?: string, refreshToken?: string }>
   protected abstract setAuthCookies(refreshToken: string, accessToken?: string): Promise<void>
   protected abstract clearAuthCookies(): Promise<void>
 
