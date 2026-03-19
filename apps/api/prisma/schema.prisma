@@ -78,9 +78,9 @@ model StatusUpdate {
   /// ["OK" | "Fail"]
   status String
 
-  user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId  String
-  house   House  @relation(fields: [houseId], references: [id], onDelete: Cascade)
+  user    User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
+  userId  String?
+  house   House   @relation(fields: [houseId], references: [id], onDelete: Cascade)
   houseId Int
 }
 
@@ -109,12 +109,13 @@ model SuperAdmin {
 }
 
 model User {
-  id          String   @id @default(uuid())
+  id          String    @id @default(uuid())
   name        String
   email       String
-  permissions String[] @default([])
-  createdAt   DateTime @default(now())
-  roles       String[] @default(["user"])
+  permissions String[]  @default([])
+  createdAt   DateTime  @default(now())
+  roles       String[]  @default(["user"])
+  deletedAt   DateTime?
 
   congregation   Congregation @relation(fields: [congregationId], references: [id], onDelete: Cascade)
   congregationId Int

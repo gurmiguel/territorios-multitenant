@@ -50,3 +50,15 @@ export async function initGoogleSignIn(returnUrl: string) {
 
   redirect(api.buildUrl(`/auth/google?redirectUrl=${returnUrl}&tenant=${tenant}`))
 }
+
+export async function refreshTokensAction() {
+  const api = ServerApiClient.getInstance()
+  const { refreshToken } = await api.getAuthCookies()
+  const { access_token, refresh_token } = await api.mutate<{ access_token: string, refresh_token: string }>('/auth/refresh', {
+    refresh_token: refreshToken,
+  })
+
+  await api.authenticate(access_token, refresh_token)
+
+  return { accessToken: access_token, refreshToken: refresh_token }
+}

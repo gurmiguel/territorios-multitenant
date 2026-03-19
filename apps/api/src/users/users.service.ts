@@ -29,6 +29,10 @@ export class UsersService {
     return this.prisma.user.update
   }
 
+  get upsert() {
+    return this.prisma.user.upsert
+  }
+
   get delete() {
     return this.prisma.user.delete
   }

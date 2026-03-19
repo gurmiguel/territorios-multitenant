@@ -20,7 +20,7 @@ export class ServerApiClient extends ApiClientBase {
   }
 
   public async authenticate(accessToken: string, refreshToken?: string) {
-    this.setAuthCookies(refreshToken, accessToken)
+    return this.setAuthCookies(refreshToken, accessToken)
   }
 
   public async getAuthCookies() {
@@ -36,7 +36,6 @@ export class ServerApiClient extends ApiClientBase {
     const cookieStore = await cookies()
 
     try {
-      console.log('login', { accessToken, refreshToken })
       if (accessToken)
         cookieStore.set(ACCESS_TOKEN_COOKIE_NAME, accessToken, {
           httpOnly: true,

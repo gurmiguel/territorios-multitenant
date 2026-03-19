@@ -31,7 +31,7 @@ export class UsersController {
     const { congregationId = -1 } = req.user!
 
     const users = await this.usersService.findMany({
-      where: { congregationId },
+      where: { congregationId, deletedAt: null },
       select: {
         email: true,
         id: true,
@@ -95,8 +95,13 @@ export class UsersController {
     const { congregationId } = req.user!
 
     try {
-      await this.usersService.delete({
+      await this.usersService.update({
         where: { id, congregationId },
+        data: {
+          deletedAt: new Date(),
+          // reset user permissions on delete
+          permissions: Permissions.getDefaultUserPermissions(),
+        },
       })
 
       return { ok: true }

@@ -38,7 +38,8 @@ export class AuthService {
 
     const user = await this.usersService.find({
       where: {
-        email: username, congregation: { domains: {has: tenantHost} },
+        congregation: { domains: {has: tenantHost} },
+        email: username,
       },
       include: { congregation: true },
     })
@@ -46,7 +47,12 @@ export class AuthService {
     if (!user || await this.checkPassword(password, this.config.get('auth', { infer: true }).defaultPassword))
       return null
 
-    return this.buildUser(user, AuthProviders.Email)
+    if (user.deletedAt !== null) {
+      await this.usersService.update({ where: { id: user.id }, data: { deletedAt: null } })
+      user.deletedAt = null
+    }
+
+    return this.buildUser(user, AuthProviders.TFA)
   }
 
   async validateUserByProvider(tenantHost: string, provider: AuthProviders, uid: string, profile: Pick<User, 'email' | 'name'>): Promise<User | null> {
@@ -57,6 +63,7 @@ export class AuthService {
     let user = await this.usersService.find({
       where: {
         congregation: { id: tenant.id },
+        deletedAt: null,
         email: profile.email,
       },
       include: {
@@ -124,18 +131,23 @@ export class AuthService {
       })
     }
 
+    if (user.deletedAt !== null) {
+      await this.usersService.update({ where: { id: user.id }, data: { deletedAt: null } })
+      user.deletedAt = null
+    }
+
     return this.buildUser(user, provider)
   }
 
   async validateUserByRefreshToken(refreshToken: string) {
-    return this.validateByToken('refresh_token', refreshToken)
+    return this.validateByToken('refresh_token', refreshToken, false)
   }
 
   async validateUserByAccessToken(accessToken: string) {
     return this.validateByToken('access_token', accessToken)
   }
 
-  private async validateByToken<T extends AccessTokenPayload | RefreshTokenPayload>(tokenType: T['type'], token: string) {
+  private async validateByToken<T extends AccessTokenPayload | RefreshTokenPayload>(tokenType: T['type'], token: string, allowSoftDeleted = true) {
     try {
       const tokenPayload = await this.jwtService.verifyAsync<T>(token)
         .catch(error => {
@@ -150,12 +162,23 @@ export class AuthService {
       }
 
       const user = await this.usersService.find({
-        where: { id: tokenPayload.sub, congregation: { domains: { hasSome: String(tokenPayload.iss).split(';') } } },
+        where: {
+          id: tokenPayload.sub,
+          congregation: {
+            domains: { hasSome: String(tokenPayload.iss).split(';') },
+          },
+          deletedAt: allowSoftDeleted ? undefined : null,
+        },
         include: { congregation: true },
       })
 
       if (!user)
         throw new UnauthorizedException()
+
+      if (user.deletedAt !== null) {
+        await this.usersService.update({ where: { id: user.id }, data: { deletedAt: null } })
+        user.deletedAt = null
+      }
 
       return this.buildUser(user, tokenPayload.provider ?? AuthProviders.Email)
     } catch (e) {
@@ -233,13 +256,15 @@ export class AuthService {
 
     if (!isValid) throw new BadRequestException('Invalid email or name')
 
-    const user = await this.usersService.create({
-      data: {
+    const user = await this.usersService.upsert({
+      where: { email_congregationId: { email, congregationId: tenant.id } },
+      create: {
         email,
         name,
         congregationId: tenant.id,
         permissions: Permissions.getDefaultUserPermissions(),
       },
+      update: { deletedAt: null },
       include: { congregation: true },
     })
 
@@ -294,6 +319,7 @@ export class AuthService {
       roles: [Role.USER],
       provider: AuthProviders.Email,
       isSafeProvider: false,
+      deletedAt: null,
     } satisfies Omit<User, 'refresh'>
 
     return fakeUser
@@ -318,7 +344,7 @@ export class AuthService {
       provider,
       isSafeProvider: SafeAuthGuard.isSafeProvider(provider),
       async refresh() {
-        Object.assign(this, await usersService.find({ where: { id: userData.id }, include: { congregation: true } }))
+        Object.assign(this, await usersService.find({ where: { id: userData.id, deletedAt: null }, include: { congregation: true } }))
         return this
       },
     }

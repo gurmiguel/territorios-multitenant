@@ -6,6 +6,7 @@ import Cookies from 'js-cookie'
 
 import { ApiClientBase } from './api.base'
 import { REFRESH_TOKEN_COOKIE_NAME } from '../auth/constants'
+import { refreshTokensAction } from '../auth/login.actions'
 import { User } from '../auth/types'
 
 export class ApiClient extends ApiClientBase {
@@ -74,5 +75,11 @@ export class ApiClient extends ApiClientBase {
 
   protected shouldRefreshToken() {
     return navigator.onLine === true
+  }
+
+  protected async refreshTokens() {
+    const { accessToken, refreshToken} = await refreshTokensAction()
+
+    await this.setAuthCookies(refreshToken, accessToken)
   }
 }

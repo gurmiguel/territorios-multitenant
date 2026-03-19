@@ -33,6 +33,7 @@ const TEST_USER = {
   roles: [Role.ADMIN],
   isSafeProvider: true,
   provider: AuthProviders.Google,
+  deletedAt: null,
 } satisfies Application.Request['user']
 
 describe('TerritoriesService', () => {

@@ -86,9 +86,11 @@ export function EditPermissionsDialog({ open, onClose, context }: Props) {
             </div>
 
             <DialogFooter>
-              <div className="ml-0 mr-auto">
-                {can('safe', 'users:delete') && <Button variant="ghost" color="destructive" className="uppercase" onClick={() => setIsDeleting(true)}>Remover Usuário</Button>}
-              </div>
+              {context.id !== user?.id && (
+                <div className="ml-0 mr-auto">
+                  {can('safe', 'users:delete') && <Button variant="ghost" color="destructive" className="uppercase" onClick={() => setIsDeleting(true)}>Remover Usuário</Button>}
+                </div>
+              )}
 
               <DialogClose asChild>
                 <Button variant="ghost" color="muted" className="uppercase">Cancelar</Button>

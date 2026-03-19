@@ -71,6 +71,7 @@ export default function AuthLayout({ children }: PropsWithChildren) {
         if (!isReady) return
         console.error('Could not login user', err)
         if (!navigator.onLine || err instanceof ApiError && err.status === 499) {
+          // user is offline
           setLoading(false)
         } else {
           logout()
