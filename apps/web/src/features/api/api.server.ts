@@ -3,20 +3,25 @@ import parseDuration from 'parse-duration'
 
 import { ApiClientBase, ApiError } from './api.base'
 import { ACCESS_TOKEN_COOKIE_NAME, REFRESH_TOKEN_COOKIE_NAME } from '../auth/constants'
+import { requestContext } from '../di/context'
 
+const SERVER_API_CLIENT_DI = 'SERVER_API_CLIENT_DI'
 export class ServerApiClient extends ApiClientBase {
-  private static instance: ServerApiClient
-
   private constructor(protected readonly baseUrl: string) {
     super()
     // Private constructor to prevent instantiation
   }
 
   public static getInstance(): ServerApiClient {
-    if (!ServerApiClient.instance) {
-      ServerApiClient.instance = new ServerApiClient(process.env.NEXT_PUBLIC_API_URL!.replace(/\/$/, ''))
+    const store = requestContext.getStore()
+    if (!store)
+      console.log('Request context store is not available, method called outside of a function wrapped in `withRequestScope`')
+    let instance: ServerApiClient = store?.get(SERVER_API_CLIENT_DI)
+    if (!instance) {
+      instance = new ServerApiClient(process.env.NEXT_PUBLIC_API_URL!.replace(/\/$/, ''))
+      requestContext.getStore()?.set(SERVER_API_CLIENT_DI, instance)
     }
-    return ServerApiClient.instance
+    return instance
   }
 
   public async authenticate(accessToken: string, refreshToken?: string) {

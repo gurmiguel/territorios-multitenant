@@ -4,8 +4,9 @@ import { delay } from '@repo/utils/delay'
 import { updateTag } from 'next/cache'
 
 import { ServerApiClient } from '~/features/api/api.server'
+import { withRequestScope } from '~/features/di/context'
 
-export async function deleteUser(userId: string) {
+export const deleteUser = withRequestScope(async (userId: string) => {
   const api = ServerApiClient.getInstance()
 
   await api.mutate(`/users/${userId}`, null, { method: 'DELETE' })
@@ -13,4 +14,4 @@ export async function deleteUser(userId: string) {
   await delay(500)
 
   updateTag('admin.users')
-}
+})

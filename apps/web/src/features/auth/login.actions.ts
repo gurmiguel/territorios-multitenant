@@ -7,8 +7,9 @@ import { ActionResponse, AuthErrorType, AuthResponse } from './types'
 import { ApiError } from '../api/api.base'
 import { ServerApiClient } from '../api/api.server'
 import { getTenant } from '../api/utils.server'
+import { withRequestScope } from '../di/context'
 
-export async function emailLogin(prevState: ActionResponse, data: FormData): Promise<ActionResponse> {
+export const emailLogin = withRequestScope(async (prevState: ActionResponse, data: FormData): Promise<ActionResponse> => {
   const api = ServerApiClient.getInstance()
 
   const email = data.get('email')?.toString()
@@ -41,18 +42,18 @@ export async function emailLogin(prevState: ActionResponse, data: FormData): Pro
     const keptState = prevState?.success === false ? prevState : null
     return { errorType: AuthErrorType.Unknown, ...keptState ?? {}, success: false, error: (e as Error).message, persist: { email: email, name } }
   }
-}
+})
 
-export async function initGoogleSignIn(returnUrl: string) {
+export const initGoogleSignIn = withRequestScope(async (returnUrl: string) => {
   const api = ServerApiClient.getInstance()
 
   const tenant = await getTenant()
 
   redirect(api.buildUrl(`/auth/google?redirectUrl=${returnUrl}&tenant=${tenant}`))
-}
+})
 
-export async function refreshTokensAction() {
+export const refreshTokensAction = withRequestScope(async () => {
   const api = ServerApiClient.getInstance()
 
-  return api.refreshTokens()
-}
+  return await api.refreshTokens()
+})
