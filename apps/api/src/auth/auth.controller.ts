@@ -21,7 +21,7 @@ export class AuthController {
   @ByPassTenant()
   @Post('/login')
   async login(@Request() req: Application.Request) {
-    return await this.authService.signin(req.user!, AuthProviders.TFA)
+    return await this.authService.signin(req.user!, AuthProviders.Email)
   }
 
   @Post('/signup')

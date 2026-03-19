@@ -52,7 +52,7 @@ export class AuthService {
       user.deletedAt = null
     }
 
-    return this.buildUser(user, AuthProviders.TFA)
+    return this.buildUser(user, AuthProviders.Email)
   }
 
   async validateUserByProvider(tenantHost: string, provider: AuthProviders, uid: string, profile: Pick<User, 'email' | 'name'>): Promise<User | null> {
